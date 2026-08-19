@@ -15,7 +15,8 @@ LUCE/
   backend/    Il "motore": API, ricerca nei materiali, generazione risposte, WhatsApp
   frontend/   La chat web che useranno i parrucchieri (e il pannello admin)
   data/       Il dataset "casi particolari" già recuperato dal Drive (vedi sotto)
-  docker-compose.yml   Avvia database + backend + frontend con un solo comando
+  docker-compose.yml   Avvia database + backend + frontend con un solo comando (in locale)
+  render.yaml            Configurazione per pubblicare backend+database su Render
   .env.example          Modello del file di configurazione da compilare
 ```
 
@@ -111,25 +112,115 @@ non lo indicizza.
 Caricare di nuovo un file con lo stesso nome nella stessa categoria lo
 aggiorna (nuova versione), senza dover ricostruire tutto l'indice.
 
-## 6. Collegare Superchat (WhatsApp)
+## 6. Mettere LUCE online (Render + Vercel)
+
+"Caricare i file per renderli accessibili da browser" in pratica significa:
+mettere il codice su **GitHub** (un archivio online del progetto, gratuito),
+e poi collegare due servizi che lo prendono da lì e lo fanno funzionare 24
+ore su 24 — non è come caricare foto su un sito, non si "trascina" nulla a
+mano. Con Render (backend + database) e Vercel (chat web) il collegamento è
+automatico: ogni volta che il codice su GitHub viene aggiornato, i due
+servizi si aggiornano da soli.
+
+Questi due servizi (Render e Vercel) richiedono un account personale: la
+creazione dell'account e l'inserimento dei dati di pagamento li devi fare tu
+direttamente sul loro sito — io posso preparare tutto il resto ma non posso
+creare account o inserire carte di pagamento per conto tuo.
+
+### 6.1 Mettere il codice su GitHub
+
+Il progetto è già pronto in locale come repository git (l'ho preparato io: è
+la "cronologia delle versioni" del codice). Ti serve solo un repository
+vuoto su GitHub dove spedirlo:
+
+1. Crea un account su <https://github.com> se non ne hai già uno.
+2. Crea un nuovo repository vuoto (bottone verde "New"), chiamalo per
+   esempio `luce`. **Non** selezionare "Add a README" — deve restare vuoto.
+3. GitHub ti mostrerà un indirizzo tipo `https://github.com/tuo-utente/luce.git`.
+   Da questa cartella (`LUCE/`), esegui:
+
+   ```bash
+   git remote add origin https://github.com/TUO-UTENTE/luce.git
+   git branch -M main
+   git push -u origin main
+   ```
+
+Da questo momento il codice è online su GitHub (privatamente, se hai scelto
+repository "Private" in fase di creazione — consigliato, dato che contiene la
+logica del tutor).
+
+### 6.2 Backend + database su Render
+
+1. Crea un account su <https://render.com> (puoi accedere direttamente con
+   GitHub).
+2. "New" → "Blueprint", seleziona il repository `luce` appena creato. Render
+   legge automaticamente il file `render.yaml` già incluso nel progetto e
+   propone di creare **due risorse**: il database Postgres (con pgvector,
+   supportato nativamente da Render) e il backend.
+3. Conferma la creazione. La prima build richiede qualche minuto.
+4. Aperta la risorsa `luce-backend`, vai su "Environment" e inserisci le
+   chiavi segrete che il Blueprint ha lasciato vuote apposta (`ANTHROPIC_API_KEY`,
+   `VOYAGE_API_KEY`, `STT_API_KEY`, e quelle di Superchat quando le avrai —
+   vedi sezione 7): sono le stesse della tabella nella sezione 2.
+5. Crea le tabelle nel database (una volta sola): apri la scheda "Shell" del
+   servizio `luce-backend` su Render e lancia:
+
+   ```bash
+   python -m scripts.init_db
+   ```
+6. Crea il primo utente admin, sempre dalla Shell:
+
+   ```bash
+   python -m scripts.create_admin nicola.ratti@katepiu.com "una-password-sicura"
+   ```
+7. Render ti assegna un indirizzo pubblico tipo
+   `https://luce-backend.onrender.com` — è l'indirizzo del backend, tienilo
+   a portata: serve al passo successivo.
+
+### 6.3 Chat web su Vercel
+
+1. Crea un account su <https://vercel.com> (anche qui, puoi usare GitHub).
+2. "Add New" → "Project", seleziona lo stesso repository `luce`.
+3. Vercel riconosce automaticamente che è un progetto Next.js. **Un solo
+   campo da cambiare**: in "Root Directory" seleziona `frontend` (il
+   progetto ha sia il backend sia il frontend nella stessa cartella
+   principale, va indicato dove si trova la parte web).
+4. In "Environment Variables" aggiungi:
+   - `NEXT_PUBLIC_API_BASE` = l'indirizzo del backend Render ottenuto al
+     passo precedente (es. `https://luce-backend.onrender.com`)
+5. "Deploy". Dopo un paio di minuti ottieni un indirizzo tipo
+   `https://luce.vercel.app` — è il link da dare ai parrucchieri per
+   accedere da smartphone.
+6. Torna su Render, apri `luce-backend` → "Environment", e imposta
+   `FRONTEND_ORIGIN` con l'indirizzo Vercel appena ottenuto (es.
+   `https://luce.vercel.app`), al posto di `*`: da questo momento solo la
+   vostra chat web può parlare con il backend, non chiunque su internet.
+
+Da qui in avanti, ogni volta che il codice viene aggiornato su GitHub (anche
+da me, in una conversazione futura), Render e Vercel ripubblicano da soli la
+versione nuova — non c'è più nulla da "caricare" a mano.
+
+## 7. Collegare Superchat (WhatsApp)
 
 1. Attiva l'account Superchat (vedi documento di architettura per il costo da
    verificare separatamente dal budget di €100/mese).
 2. Prendi `SUPERCHAT_API_KEY` e `SUPERCHAT_CHANNEL_ID` dalla loro dashboard,
-   mettili nel `.env`.
-3. Esegui una volta sola (dopo aver esposto il backend su un URL pubblico con
-   HTTPS — in locale non funziona, serve un dominio reale):
+   mettili tra le variabili d'ambiente di `luce-backend` su Render (o nel
+   `.env` locale se stai ancora testando in locale).
+3. Esegui una volta sola, dalla Shell del servizio su Render (serve un URL
+   pubblico HTTPS reale — quello di Render, non funziona in locale):
 
    ```bash
-   docker compose exec backend python -c "
+   python -c "
    from app.integrations.superchat import create_webhook
-   print(create_webhook('https://TUO-DOMINIO/webhooks/superchat', ['message_inbound']))
+   print(create_webhook('https://luce-backend.onrender.com/webhooks/superchat', ['message_inbound']))
    "
    ```
-4. Copia il `secret` restituito in `SUPERCHAT_WEBHOOK_SECRET` nel `.env` e
-   riavvia (`docker compose restart backend`).
+4. Copia il `secret` restituito nella variabile `SUPERCHAT_WEBHOOK_SECRET` su
+   Render e riavvia il servizio ("Manual Deploy" → "Deploy latest commit", o
+   basta salvare la variabile: Render riavvia da solo).
 
-## 7. Cosa NON è ancora incluso (fasi successive)
+## 8. Cosa NON è ancora incluso (fasi successive)
 
 - Verifica della firma dei webhook Superchat: lo schema esatto non è
   pubblico nella documentazione, va confermato con il loro supporto prima del
@@ -140,7 +231,7 @@ aggiorna (nuova versione), senza dover ricostruire tutto l'indice.
 - Informativa privacy/GDPR: da preparare (vedi documento di architettura).
 - Test con un vero account Superchat e con Postgres in esecuzione reale.
 
-## 8. Struttura tecnica, in breve
+## 9. Struttura tecnica, in breve
 
 - **Database**: PostgreSQL + pgvector (`backend/db/schema.sql`).
 - **Backend**: FastAPI (Python). Il flusso di risposta è in
