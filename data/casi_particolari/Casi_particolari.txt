@@ -1,0 +1,103 @@
+100 casistiche per preparazione del colore di base
+Formato: Caso | Base naturale | Colore attuale | Situazione | Base di partenza desiderata | Intervento indicativo
+Nota: è un dataset dimostrativo. La scelta reale del trattamento deve essere valutata sui capelli effettivi, soprattutto in presenza di decolorazioni, colorazioni chimiche o capelli molto porosi.
+Caso 001 | Biondo scuro | Biondo scuro naturale | Capelli vergini | Biondo scuro caldo | Nessun ripristino necessario
+Caso 002 | Castano chiaro | Biondo chiaro | Vecchia schiaritura | Biondo scuro caldo | Uniformare le lunghezze
+Caso 003 | Castano medio | Castano scuro | Colorazione precedente | Castano medio caldo | Ridurre la differenza di tono
+Caso 004 | Castano scuro | Nero cosmetico | Colorazione ripetuta | Castano scuro | Correggere gradualmente il tono
+Caso 005 | Biondo medio | Biondo platino | Decolorazione | Biondo medio caldo | Pre-pigmentazione/riempimento
+Caso 006 | Castano chiaro | Ramato intenso | Colorazione precedente | Castano chiaro caldo | Neutralizzare l'eccesso di riflesso
+Caso 007 | Castano medio | Rosso intenso | Tinta precedente | Castano medio caldo | Uniformare la base
+Caso 008 | Biondo scuro | Biondo cenere | Tonalizzazione | Biondo scuro naturale | Riportare calore
+Caso 009 | Castano chiaro | Castano molto scuro | Tinta scura | Castano chiaro | Alleggerimento controllato
+Caso 010 | Castano medio | Castano medio | Capelli vergini | Castano medio caldo | Nessun ripristino
+Caso 011 | Biondo chiaro | Biondo giallo | Decolorazione vecchia | Biondo chiaro caldo | Uniformare la porosità
+Caso 012 | Biondo scuro | Biondo dorato | Schiaritura | Biondo scuro dorato | Riempimento leggero
+Caso 013 | Castano chiaro | Ramato chiaro | Riflesso artificiale | Castano chiaro caldo | Uniformare
+Caso 014 | Castano medio | Mogano | Colorazione rossa | Castano medio caldo | Ridurre il pigmento artificiale
+Caso 015 | Castano scuro | Rosso scuro | Colorazione permanente | Castano scuro caldo | Uniformare la base
+Caso 016 | Biondo medio | Biondo chiarissimo | Decolorazione | Biondo medio | Riempimento del fondo
+Caso 017 | Castano chiaro | Biondo miele | Balayage | Castano chiaro caldo | Uniformare lunghezze e radici
+Caso 018 | Castano medio | Biondo beige | Schiariture | Castano medio caldo | Ripristinare il fondo
+Caso 019 | Castano scuro | Castano ramato | Colorazione | Castano scuro caldo | Uniformare il riflesso
+Caso 020 | Nero naturale | Nero cosmetico | Tinta precedente | Nero naturale | Nessuna correzione importante
+Caso 021 | Biondo scuro | Biondo molto chiaro | Decolorazione | Biondo scuro caldo | Pre-pigmentazione
+Caso 022 | Castano chiaro | Biondo freddo | Tonalizzazione | Castano chiaro | Recuperare pigmento caldo
+Caso 023 | Castano medio | Castano cenere | Tinta | Castano medio neutro | Correzione del riflesso
+Caso 024 | Castano scuro | Nero bluastro | Colorazione scura | Castano scuro | Riduzione del riflesso freddo
+Caso 025 | Biondo medio | Arancio | Decolorazione | Biondo medio caldo | Uniformare il fondo
+Caso 026 | Biondo chiaro | Giallo intenso | Decolorazione | Biondo chiaro caldo | Riempimento mirato
+Caso 027 | Castano chiaro | Rosso rame | Tinta | Castano chiaro caldo | Uniformare il tono
+Caso 028 | Castano medio | Rosso ciliegia | Colorazione fashion | Castano medio | Rimozione/riduzione del pigmento
+Caso 029 | Castano scuro | Mogano scuro | Tinta | Castano scuro caldo | Ridurre differenze
+Caso 030 | Biondo scuro | Castano chiaro | Colorazione precedente | Biondo scuro | Recuperare la base
+Caso 031 | Castano chiaro | Biondo dorato | Schiaritura | Castano chiaro dorato | Uniformare
+Caso 032 | Castano medio | Biondo ramato | Balayage | Castano medio caldo | Riportare le lunghezze verso la base
+Caso 033 | Castano scuro | Castano chiaro | Schiaritura | Castano scuro | Ripristinare profondità
+Caso 034 | Nero | Castano medio | Decolorazione | Nero naturale | Recuperare profondità
+Caso 035 | Biondo scuro | Rosso rame | Colorazione | Biondo scuro caldo | Ridurre il rosso artificiale
+Caso 036 | Castano chiaro | Arancio | Decolorazione | Castano chiaro caldo | Pre-pigmentazione
+Caso 037 | Castano medio | Biondo giallo | Decolorazione | Castano medio caldo | Ricostruire il fondo
+Caso 038 | Castano scuro | Biondo | Decolorazione intensa | Castano scuro caldo | Ripristino progressivo
+Caso 039 | Biondo medio | Castano freddo | Tinta | Biondo medio caldo | Riportare luminosità
+Caso 040 | Castano chiaro | Castano scuro freddo | Tinta | Castano chiaro caldo | Ridurre il pigmento scuro
+Caso 041 | Biondo scuro | Biondo cenere | Tonalizzante | Biondo scuro caldo | Riequilibrare il fondo
+Caso 042 | Castano medio | Ramato | Tinta | Castano medio caldo | Uniformare
+Caso 043 | Castano chiaro | Rosso | Tinta permanente | Castano chiaro | Ridurre il pigmento rosso
+Caso 044 | Biondo chiaro | Biondo beige | Tonalizzazione | Biondo chiaro caldo | Preparazione minima
+Caso 045 | Biondo medio | Biondo platino | Decolorazione | Biondo medio caldo | Riempimento
+Caso 046 | Castano scuro | Nero | Tinta ripetuta | Castano scuro | Riduzione del pigmento
+Caso 047 | Castano medio | Mogano rosso | Colorazione | Castano medio caldo | Uniformare il fondo
+Caso 048 | Nero naturale | Castano rossastro | Schiaritura | Nero/castano molto scuro | Recuperare profondità
+Caso 049 | Castano chiaro | Biondo molto chiaro | Balayage | Castano chiaro | Uniformare le lunghezze
+Caso 050 | Biondo scuro | Castano dorato | Tinta | Biondo scuro dorato | Avvicinare alla base
+Caso 051 | Castano medio | Arancio intenso | Decolorazione | Castano medio caldo | Correzione del fondo
+Caso 052 | Castano chiaro | Giallo-arancio | Decolorazione | Castano chiaro caldo | Pre-pigmentazione
+Caso 053 | Biondo scuro | Rosso mogano | Tinta | Biondo scuro caldo | Ridurre pigmentazione artificiale
+Caso 054 | Castano scuro | Castano ramato | Tinta | Castano scuro caldo | Uniformare
+Caso 055 | Biondo medio | Biondo freddo | Tonalizzante | Biondo medio naturale | Ripristinare calore
+Caso 056 | Castano chiaro | Castano cenere | Tinta | Castano chiaro neutro | Correggere riflesso
+Caso 057 | Castano medio | Nero blu | Tinta | Castano medio | Ridurre profondità e freddo
+Caso 058 | Castano scuro | Rosso intenso | Tinta | Castano scuro caldo | Uniformare
+Caso 059 | Biondo chiaro | Giallo pallido | Decolorazione | Biondo chiaro caldo | Riempimento leggero
+Caso 060 | Biondo scuro | Biondo miele | Schiaritura | Biondo scuro dorato | Riportare profondità
+Caso 061 | Castano chiaro | Biondo ramato | Balayage | Castano chiaro caldo | Uniformare
+Caso 062 | Castano medio | Castano molto chiaro | Schiaritura | Castano medio | Recuperare profondità
+Caso 063 | Castano scuro | Castano medio | Schiaritura | Castano scuro | Ripristinare la base
+Caso 064 | Nero | Rosso scuro | Colorazione | Nero/castano scurissimo | Ridurre il pigmento rosso
+Caso 065 | Biondo scuro | Arancio | Decolorazione | Biondo scuro caldo | Correzione del fondo
+Caso 066 | Castano chiaro | Ramato dorato | Tinta | Castano chiaro caldo | Uniformare
+Caso 067 | Castano medio | Biondo platino | Decolorazione | Castano medio caldo | Riempimento completo
+Caso 068 | Biondo medio | Castano scuro | Tinta | Biondo medio caldo | Alleggerimento controllato
+Caso 069 | Castano scuro | Mogano | Tinta | Castano scuro caldo | Riduzione del riflesso
+Caso 070 | Biondo chiaro | Biondo cenere | Tonalizzazione | Biondo chiaro naturale | Recuperare calore
+Caso 071 | Castano medio | Rosso rame | Tinta | Castano medio caldo | Uniformare
+Caso 072 | Castano chiaro | Biondo giallo | Decolorazione | Castano chiaro caldo | Riportare pigmento
+Caso 073 | Biondo scuro | Biondo chiarissimo | Decolorazione | Biondo scuro | Pre-pigmentazione
+Caso 074 | Castano scuro | Nero cosmetico | Tinta | Castano scuro | Ridurre pigmento artificiale
+Caso 075 | Castano medio | Rosso violaceo | Tinta fashion | Castano medio caldo | Rimuovere/ridurre pigmento
+Caso 076 | Biondo medio | Biondo beige freddo | Tonalizzazione | Biondo medio caldo | Recuperare calore
+Caso 077 | Castano chiaro | Castano ramato | Tinta | Castano chiaro caldo | Uniformare
+Caso 078 | Castano scuro | Biondo dorato | Decolorazione | Castano scuro caldo | Recuperare profondità
+Caso 079 | Nero | Castano rossastro | Schiaritura | Nero naturale | Ripristinare profondità
+Caso 080 | Biondo scuro | Castano cenere | Tinta | Biondo scuro caldo | Correggere il freddo
+Caso 081 | Castano chiaro | Rosso rame intenso | Tinta | Castano chiaro caldo | Ridurre pigmento artificiale
+Caso 082 | Castano medio | Biondo arancio | Decolorazione | Castano medio caldo | Ricostruire il fondo
+Caso 083 | Biondo scuro | Biondo giallo | Decolorazione | Biondo scuro dorato | Riportare profondità
+Caso 084 | Castano chiaro | Nero | Tinta | Castano chiaro | Riduzione progressiva
+Caso 085 | Castano medio | Mogano | Tinta | Castano medio caldo | Uniformare
+Caso 086 | Biondo medio | Biondo platino | Decolorazione | Biondo medio caldo | Pre-pigmentazione
+Caso 087 | Castano scuro | Rosso mogano | Tinta | Castano scuro caldo | Ridurre riflesso rosso
+Caso 088 | Biondo chiaro | Biondo dorato | Tonalizzazione | Biondo chiaro caldo | Nessuna correzione importante
+Caso 089 | Castano chiaro | Biondo freddo | Balayage | Castano chiaro caldo | Uniformare
+Caso 090 | Castano medio | Castano scuro | Tinta | Castano medio | Ridurre profondità
+Caso 091 | Biondo scuro | Rosso rame | Tinta | Biondo scuro caldo | Correggere il riflesso
+Caso 092 | Castano chiaro | Arancio intenso | Decolorazione | Castano chiaro caldo | Pre-pigmentazione
+Caso 093 | Castano medio | Biondo chiarissimo | Decolorazione | Castano medio caldo | Riempimento del fondo
+Caso 094 | Castano scuro | Castano chiaro dorato | Schiaritura | Castano scuro caldo | Recuperare profondità
+Caso 095 | Nero naturale | Nero cosmetico | Colorazione | Nero naturale | Nessun intervento importante
+Caso 096 | Biondo medio | Biondo giallo-arancio | Decolorazione | Biondo medio caldo | Correzione e uniformazione
+Caso 097 | Castano chiaro | Rosso intenso | Tinta permanente | Castano chiaro caldo | Ridurre pigmento artificiale
+Caso 098 | Castano medio | Castano freddo | Tinta | Castano medio caldo | Recuperare calore
+Caso 099 | Biondo scuro | Biondo molto chiaro | Decolorazione | Biondo scuro caldo | Riempimento/preparazione
+Caso 100 | Castano medio | Castano medio naturale | Capelli vergini | Castano medio caldo | Base già idonea all'henné

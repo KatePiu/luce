@@ -1,0 +1,121 @@
+-- Schema LUCE — tutor AI Accademia Coppola
+-- Vedi documento di architettura per la descrizione di ogni tabella.
+
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS pgcrypto; -- per gen_random_uuid()
+
+CREATE TABLE IF NOT EXISTS techniques (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    slug TEXT UNIQUE NOT NULL,          -- es. 'tagli', 'pieghe', 'tecnico', 'shatush', 'infusion', 'altri_prodotti', 'casi_particolari'
+    label TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS sources (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title TEXT NOT NULL,
+    technique_id UUID REFERENCES techniques(id),
+    video_title TEXT,                   -- titolo del video collegato, se presente
+    video_url TEXT,                     -- link diretto al video
+    document_url TEXT,                  -- link al documento originale (Drive)
+    origin_filename TEXT NOT NULL,      -- nome del file caricato
+    origin_kind TEXT NOT NULL CHECK (origin_kind IN ('transcript_csv', 'guide_doc', 'product_sheet', 'case_table', 'other')),
+    version INTEGER NOT NULL DEFAULT 1,
+    priority INTEGER NOT NULL DEFAULT 0,     -- priorità in caso di fonti multiple sullo stesso argomento
+    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'disabled')),
+    checksum TEXT,                       -- hash del contenuto, per capire se un file è cambiato
+    uploaded_by UUID,                    -- FK verso users, nullable per import iniziali
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_sources_technique ON sources(technique_id);
+CREATE INDEX IF NOT EXISTS idx_sources_status ON sources(status);
+
+-- Dimensione dell'embedding: 1024 (voyage-3 / voyage-multilingual-2).
+-- Se si cambia provider di embedding con dimensione diversa, aggiornare qui.
+CREATE TABLE IF NOT EXISTS chunks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    source_id UUID NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
+    seq INTEGER NOT NULL,                -- ordine del chunk all'interno della fonte
+    text TEXT NOT NULL,
+    start_timestamp TEXT,                -- 'HH:MM:SS' quando disponibile (da trascrizione)
+    end_timestamp TEXT,
+    embedding VECTOR(1024),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_chunks_source ON chunks(source_id);
+CREATE INDEX IF NOT EXISTS idx_chunks_embedding ON chunks USING hnsw (embedding vector_cosine_ops);
+
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email TEXT UNIQUE NOT NULL,
+    display_name TEXT,
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'staff' CHECK (role IN ('staff', 'admin', 'human_tutor')),
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS conversations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id),
+    channel TEXT NOT NULL CHECK (channel IN ('web', 'whatsapp')),
+    external_conversation_id TEXT,       -- id conversazione lato Superchat, per WhatsApp
+    external_contact_id TEXT,
+    status TEXT NOT NULL DEFAULT 'bot' CHECK (status IN ('bot', 'escalated', 'human_active', 'closed')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_conversations_external ON conversations(external_conversation_id);
+CREATE INDEX IF NOT EXISTS idx_conversations_status ON conversations(status);
+
+CREATE TABLE IF NOT EXISTS messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    conversation_id UUID NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+    direction TEXT NOT NULL CHECK (direction IN ('inbound', 'outbound')),
+    kind TEXT NOT NULL DEFAULT 'text' CHECK (kind IN ('text', 'voice')),
+    body TEXT,
+    voice_transcript TEXT,
+    voice_audio_url TEXT,
+    retrieval_score REAL,                -- punteggio di affidabilità del recupero, se applicabile
+    sources_cited JSONB,                 -- elenco {source_id, title, video_url, timestamp} citati nella risposta
+    external_message_id TEXT,            -- id Superchat, per idempotenza webhook
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_messages_external_dedup ON messages(external_message_id) WHERE external_message_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_id);
+
+CREATE TABLE IF NOT EXISTS escalations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    conversation_id UUID NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+    reason TEXT NOT NULL CHECK (reason IN (
+        'no_sources', 'insufficient_sources', 'conflicting_sources',
+        'missing_info', 'non_standard_case', 'source_requires_human',
+        'user_requested', 'repeated_failed_attempts'
+    )),
+    summary TEXT,
+    sources_consulted JSONB,
+    status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'in_progress', 'resolved')),
+    resolved_by UUID REFERENCES users(id),
+    resolution_notes TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    resolved_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_escalations_status ON escalations(status);
+
+CREATE TABLE IF NOT EXISTS audit_log (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    actor_id UUID REFERENCES users(id),
+    action TEXT NOT NULL,               -- es. 'source.upload', 'source.disable', 'escalation.resolve'
+    entity_type TEXT,
+    entity_id UUID,
+    metadata JSONB,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_log_actor ON audit_log(actor_id);

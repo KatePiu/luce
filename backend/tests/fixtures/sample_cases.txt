@@ -1,0 +1,5 @@
+3 casistiche di esempio
+Formato: Caso | Base naturale | Colore attuale | Situazione | Base di partenza desiderata | Intervento indicativo
+Caso 001 | Biondo scuro | Biondo scuro naturale | Capelli vergini | Biondo scuro caldo | Nessun ripristino necessario
+Caso 002 | Castano chiaro | Biondo chiaro | Vecchia schiaritura | Biondo scuro caldo | Uniformare le lunghezze
+Caso 003 | Castano medio | Castano scuro | Colorazione precedente | Castano medio caldo | Ridurre la differenza di tono

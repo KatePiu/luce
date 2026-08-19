@@ -1,0 +1,48 @@
+from pathlib import Path
+
+from app.rag.chunking import is_junk_filename, parse_case_table, parse_transcript_csv
+
+FIXTURES = Path(__file__).parent / "fixtures"
+
+
+def test_junk_filename_detected():
+    assert is_junk_filename("._Taglio_Mariam_guida_tecnica_md.docx")
+    assert not is_junk_filename("Taglio_Mariam_guida_tecnica_md.docx")
+
+
+def test_parse_comma_delimited_transcript():
+    raw = (FIXTURES / "sample_comma.csv").read_bytes()
+    chunks = parse_transcript_csv(raw, target_chars=900, overlap_chars=100)
+
+    assert len(chunks) == 1  # righe brevi, entrano in un solo chunk
+    assert chunks[0].start_timestamp == "00:00:04"  # normalizzato da HH:MM:SS:FF a HH:MM:SS
+    assert "croce" in chunks[0].text
+
+
+def test_parse_semicolon_delimited_transcript_ignores_duplicate_column():
+    raw = (FIXTURES / "sample_semicolon.csv").read_bytes()
+    chunks = parse_transcript_csv(raw, target_chars=900, overlap_chars=100)
+
+    assert len(chunks) == 1
+    # il testo non deve comparire due volte (colonna 'Testo completo' duplicata va ignorata)
+    assert chunks[0].text.count("miscela di doratura") == 1
+
+
+def test_transcript_chunking_respects_target_size_and_overlap():
+    raw = (FIXTURES / "sample_comma.csv").read_bytes()
+    chunks = parse_transcript_csv(raw, target_chars=60, overlap_chars=20)
+
+    assert len(chunks) > 1
+    for c in chunks:
+        assert c.start_timestamp is not None
+
+
+def test_case_table_one_row_per_case():
+    raw = (FIXTURES / "sample_cases.txt").read_bytes()
+    chunks = parse_case_table(raw)
+
+    assert len(chunks) == 3
+    assert all("Caso 00" in c.text for c in chunks)
+    # il contesto/formato deve essere anteposto a ogni chunk isolato
+    assert "Formato:" in chunks[0].text
+    assert "Formato:" in chunks[2].text

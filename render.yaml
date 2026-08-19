@@ -1,0 +1,68 @@
+# Blueprint Render: crea database + backend con un solo collegamento al repository.
+# Vedi README.md, sezione "Mettere LUCE online", per la procedura passo-passo.
+
+databases:
+  - name: luce-db
+    databaseName: luce
+    user: luce
+    plan: starter
+    postgresMajorVersion: "16"
+
+services:
+  - type: web
+    name: luce-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: luce-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ANTHROPIC_MODEL
+        value: claude-sonnet-4-5
+      - key: VOYAGE_MODEL
+        value: voyage-multilingual-2
+      - key: STT_API_BASE
+        value: https://api.openai.com/v1
+      - key: STT_MODEL
+        value: whisper-1
+      - key: SUPERCHAT_API_BASE
+        value: https://api.superchat.com/v1.0
+      - key: HUMAN_TUTOR_EMAIL
+        value: nicola.ratti@katepiu.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_FROM
+        value: luce@katepiu.com
+      - key: ENVIRONMENT
+        value: production
+      - key: FRONTEND_ORIGIN
+        value: "*" # dopo aver creato il progetto su Vercel, sostituire con es. https://luce.vercel.app
+      # Le voci seguenti contengono segreti: vanno inserite a mano nella
+      # dashboard Render dopo il primo deploy (Render le lascia vuote di
+      # proposito, non essendo generabili automaticamente).
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: VOYAGE_API_KEY
+        sync: false
+      - key: STT_API_KEY
+        sync: false
+      - key: SUPERCHAT_API_KEY
+        sync: false
+      - key: SUPERCHAT_WEBHOOK_SECRET
+        sync: false
+      - key: SUPERCHAT_CHANNEL_ID
+        sync: false
+      - key: SUPERCHAT_HUMAN_AGENT_USER_ID
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
