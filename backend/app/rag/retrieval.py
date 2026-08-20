@@ -126,8 +126,56 @@ def retrieve_with_priority(
     triples = [(r[0], r[1], r[2]) for r in rows]
     distances = [r[3] for r in rows]
     general = _rows_to_chunks(triples, distances)
+    general = _boost_named_technique(db, query, general)
 
     return priority, general
+
+
+_TECHNIQUE_NUMBER_RE = re.compile(r"tecnica[^\d]{0,20}?(\d+)", re.IGNORECASE)
+
+
+def _extract_technique_number(text: str) -> str | None:
+    match = _TECHNIQUE_NUMBER_RE.search(text)
+    return match.group(1) if match else None
+
+
+def _boost_named_technique(db: Session, query: str, chunks: list[RetrievedChunk]) -> list[RetrievedChunk]:
+    """Se la domanda cita un numero di tecnica preciso (es. "tecnica n°2"), le guide
+    della stessa serie (es. Infusion 1/2/3/4) usano un linguaggio molto simile tra loro
+    e la sola similarità semantica può confondere una tecnica con un'altra vicina —
+    trovato durante il test end-to-end del punto 25 (una domanda su "Infusion Tecnica 2"
+    non recuperava con punteggio sufficiente la trascrizione corretta).
+
+    Qui si esclude dai risultati qualunque fonte che citi ESPLICITAMENTE un numero
+    diverso nello stesso formato (fuorviante, tecnica sbagliata), e si aggiungono i
+    chunk più pertinenti delle fonti che citano il numero richiesto, anche se la sola
+    ricerca vettoriale non li avesse messi tra i risultati migliori.
+    """
+    number = _extract_technique_number(query)
+    if not number:
+        return chunks
+
+    filtered = [c for c in chunks if (_extract_technique_number(c.source_title) or number) == number]
+
+    matching_source_ids = [
+        s.id for s in db.query(Source).filter(Source.status == "active").all() if _extract_technique_number(s.title) == number
+    ]
+    if not matching_source_ids:
+        return filtered
+
+    present_ids = {c.chunk_id for c in filtered}
+    query_embedding = embed_query(query)
+    distance = Chunk.embedding.cosine_distance(query_embedding)
+    stmt = _base_query().where(Source.id.in_(matching_source_ids)).add_columns(distance.label("distance")).order_by(distance).limit(3)
+    rows = db.execute(stmt).all()
+    triples = [(r[0], r[1], r[2]) for r in rows]
+    distances = [r[3] for r in rows]
+    for extra in _rows_to_chunks(triples, distances):
+        if extra.chunk_id not in present_ids:
+            filtered.append(extra)
+
+    filtered.sort(key=lambda c: c.score, reverse=True)
+    return filtered
 
 
 _STOPWORDS = {
