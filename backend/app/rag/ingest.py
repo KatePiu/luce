@@ -24,12 +24,18 @@ def _guess_origin_kind(filename: str) -> str:
     lower = filename.lower()
     if lower.endswith(".csv"):
         return "transcript_csv"
-    if "caso" in lower or "casi" in lower:
+    # La tabella "casi particolari" è testo semplice con righe "Caso NNN | ...":
+    # solo un .txt con "caso/casi" nel nome va analizzato con quel parser. Un
+    # .docx con lo stesso nome è un documento Word vero e proprio (guida) — va
+    # controllato PRIMA di guardare "caso/casi" nel nome, altrimenti un file
+    # come "Casi_particolari_md.docx" verrebbe letto come se fosse testo
+    # semplice, producendo zero contenuto valido.
+    if lower.endswith((".docx", ".md")):
+        return "guide_doc"
+    if lower.endswith(".txt") and ("caso" in lower or "casi" in lower):
         return "case_table"
     if "scheda_prodotto" in lower or "prodotti" in lower:
         return "product_sheet"
-    if lower.endswith((".docx", ".md")):
-        return "guide_doc"
     return "other"
 
 

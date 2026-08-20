@@ -50,6 +50,10 @@ async def upload_source(
         raise HTTPException(status_code=400, detail=str(exc))
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
+    except Exception as exc:
+        # Diagnostica esplicita invece del generico 500: qui possono arrivare
+        # errori del provider di embedding (rate limit, timeout) o del parsing.
+        raise HTTPException(status_code=500, detail=f"{type(exc).__name__}: {exc}")
 
     return _source_out(source)
 
