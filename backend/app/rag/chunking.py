@@ -1,7 +1,8 @@
 """Estrazione e suddivisione in chunk dei materiali dell'Accademia.
 
-Supporta i tre formati reali trovati in _TRASCRIZIONI:
+Supporta i formati reali trovati in _TRASCRIZIONI:
 - CSV di trascrizione, in due varianti di delimitatore/colonne (vedi `parse_transcript_csv`)
+- CSV tabellare generico (es. elenco prodotti), quando non è una trascrizione (`parse_generic_csv_table`)
 - Documenti guida (.docx) — testo discorsivo, senza timestamp
 - Tabella casi particolari (.txt, righe "Caso NNN | campo | campo | ...")
 
@@ -82,6 +83,33 @@ def parse_transcript_csv(raw_bytes: bytes, target_chars: int, overlap_chars: int
         )
 
     return _group_rows_into_chunks(rows, target_chars, overlap_chars)
+
+
+def parse_generic_csv_table(raw_bytes: bytes) -> list[ChunkDraft]:
+    """CSV tabellare generico (es. elenco prodotti con colonne libere come
+    "Linea;Prodotto;A cosa serve"), diverso dal formato di trascrizione: non ha
+    colonne Speaker/Start Time/End Time. Usato come fallback quando un .csv non
+    è una trascrizione — vedi ingest.py. Una riga = un chunk, con le coppie
+    intestazione/valore unite in una frase leggibile."""
+    text = raw_bytes.decode("utf-8-sig", errors="replace")
+    sample = text[:2048]
+    try:
+        dialect = csv.Sniffer().sniff(sample, delimiters=",;")
+    except csv.Error:
+        dialect = csv.excel
+        dialect.delimiter = ";" if sample.count(";") > sample.count(",") else ","
+
+    reader = csv.DictReader(io.StringIO(text), dialect=dialect)
+    if not reader.fieldnames:
+        return []
+    headers = [h.strip() for h in reader.fieldnames if h and h.strip()]
+
+    chunks: list[ChunkDraft] = []
+    for row in reader:
+        parts = [f"{h}: {v.strip()}" for h in headers if (v := row.get(h)) and v.strip()]
+        if parts:
+            chunks.append(ChunkDraft(text=". ".join(parts)))
+    return chunks
 
 
 def _group_rows_into_chunks(rows: list[dict], target_chars: int, overlap_chars: int) -> list[ChunkDraft]:

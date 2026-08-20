@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from app.rag.chunking import is_junk_filename, parse_case_table, parse_transcript_csv
+from app.rag.chunking import is_junk_filename, parse_case_table, parse_generic_csv_table, parse_transcript_csv
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -35,6 +35,26 @@ def test_transcript_chunking_respects_target_size_and_overlap():
     assert len(chunks) > 1
     for c in chunks:
         assert c.start_timestamp is not None
+
+
+def test_generic_csv_table_ignores_empty_trailing_columns():
+    raw = (FIXTURES / "sample_product_table.csv").read_bytes()
+    chunks = parse_generic_csv_table(raw)
+
+    assert len(chunks) == 2
+    assert "Linea: Repair Care" in chunks[0].text
+    assert "Prodotto: Shampoo" in chunks[0].text
+    assert "mirtillo rosso" in chunks[0].text
+    # le due colonne senza intestazione (";;") non devono comparire come "': ...'"
+    assert ": ." not in chunks[0].text
+
+
+def test_transcript_csv_returns_empty_for_product_table():
+    # Deve tornare lista vuota (non un errore): ingest.py userà questo per
+    # capire che il file va analizzato con il parser tabellare generico.
+    raw = (FIXTURES / "sample_product_table.csv").read_bytes()
+    chunks = parse_transcript_csv(raw, target_chars=900, overlap_chars=100)
+    assert chunks == []
 
 
 def test_case_table_one_row_per_case():

@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.models import Chunk, Source, Technique
-from app.rag.chunking import is_junk_filename, parse_case_table, parse_docx, parse_transcript_csv
+from app.rag.chunking import is_junk_filename, parse_case_table, parse_docx, parse_generic_csv_table, parse_transcript_csv
 from app.rag.embeddings import embed_texts
 
 
@@ -67,6 +67,13 @@ def ingest_file(
 
     if origin_kind == "transcript_csv":
         drafts = parse_transcript_csv(raw_bytes, settings.chunk_target_chars, settings.chunk_overlap_chars)
+        if not drafts:
+            # Non ha le colonne di una trascrizione (Speaker Name/Start Time/End
+            # Time/Text): probabilmente è una tabella generica (es. elenco
+            # prodotti) esportata in CSV invece che come scheda Word.
+            drafts = parse_generic_csv_table(raw_bytes)
+            if drafts:
+                origin_kind = "product_sheet"
     elif origin_kind == "case_table":
         drafts = parse_case_table(raw_bytes)
     elif origin_kind in ("guide_doc", "product_sheet"):
