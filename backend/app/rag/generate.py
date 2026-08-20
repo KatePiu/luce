@@ -167,3 +167,33 @@ def answer_question(
         retrieval_score=combined[0].score if combined else None,
         cited_sources=cited_sources,
     )
+
+
+def debug_answer_question(db: Session, question: str) -> dict:
+    """Come `answer_question`, ma espone i passaggi interni (usato solo dall'endpoint
+    diagnostico admin) — in particolare la risposta grezza del modello e il motivo esatto
+    di un eventuale rifiuto del controllo di groundedness, altrimenti scartato."""
+    priority, general = retrieve_with_priority(db, question)
+    combined = sort_by_relevance_then_richness(priority + general)
+    videos = find_candidate_videos(db, question)
+
+    if not is_sufficient(combined) and not videos:
+        return {"stage": "insufficient_before_generation", "combined_top_score": combined[0].score if combined else None}
+
+    conflicting = detect_conflict(combined)
+    context_block = _build_context_block(priority, general, videos)
+    if conflicting:
+        context_block = AMBIGUITY_NOTE + context_block
+
+    user_message = f"CONTESTO RECUPERATO DAI MATERIALI DELL'ACCADEMIA:\n\n{context_block}\n\nDOMANDA DEL PARRUCCHIERE:\n{question}"
+    raw_response = call_claude(system=SYSTEM_PROMPT, user_message=user_message)
+    result = run_groundedness_checks(raw_response, combined)
+
+    return {
+        "stage": "generated",
+        "ambiguity_flagged": bool(conflicting),
+        "conflicting_with": conflicting.source_title if conflicting else None,
+        "raw_response": raw_response,
+        "groundedness_passed": result.passed,
+        "groundedness_reason": result.reason,
+    }

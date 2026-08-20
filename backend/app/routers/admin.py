@@ -7,7 +7,7 @@ from app.db import engine, get_db
 from app.escalation import resolve_escalation
 from app.models import Escalation, Source, Technique, User, Video
 from app.schema_tools import apply_schema
-from app.rag.generate import answer_question
+from app.rag.generate import answer_question, debug_answer_question
 from app.rag.ingest import SkippedJunkFile, ingest_file
 from app.rag.retrieval import RetrievedChunk, retrieve_with_priority, sort_by_relevance_then_richness
 from app.schemas import (
@@ -257,6 +257,14 @@ def _debug_chunk(c: RetrievedChunk, lane: str) -> dict:
         "start_timestamp": c.start_timestamp,
         "text_preview": c.text[:220],
     }
+
+
+@router.get("/debug/answer")
+def debug_answer(question: str, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    """Diagnostica: come test-response, ma mostra la risposta grezza del modello e il
+    motivo esatto di un eventuale rifiuto del controllo di groundedness (normalmente
+    scartato a favore del messaggio generico mostrato all'utente)."""
+    return debug_answer_question(db, question)
 
 
 @router.get("/debug/retrieval")
