@@ -23,7 +23,12 @@ def main():
         if db.query(User).filter(User.email == email).one_or_none():
             print(f"Utente {email} già esistente.")
             return
-        user = User(email=email, password_hash=hash_password(password), role="admin", display_name="Amministratore")
+        try:
+            password_hash = hash_password(password)
+        except ValueError as exc:
+            print(f"Errore: {exc}")
+            sys.exit(1)
+        user = User(email=email, password_hash=password_hash, role="admin", display_name="Amministratore")
         db.add(user)
         db.commit()
         print(f"Utente admin creato: {email}")

@@ -2,26 +2,35 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
+import bcrypt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.db import get_db
 from app.models import User
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Uso la libreria bcrypt direttamente invece di passlib: passlib 1.7.4 (non
+# più mantenuta) fa un self-test interno incompatibile con bcrypt >=4.1, che
+# fallisce anche su password normali con un errore fuorviante sui 72 byte.
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    if len(password.encode("utf-8")) > 72:
+        # Limite reale dell'algoritmo bcrypt: senza questo controllo l'errore
+        # arriva come un traceback illeggibile invece che un messaggio chiaro.
+        raise ValueError(
+            "La password è troppo lunga (bcrypt supporta al massimo 72 caratteri). "
+            "Scegline una più corta."
+        )
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(password: str, password_hash: str) -> bool:
-    return pwd_context.verify(password, password_hash)
+    return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
 
 
 def create_access_token(user_id: str) -> str:
