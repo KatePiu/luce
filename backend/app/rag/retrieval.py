@@ -222,18 +222,36 @@ def is_sufficient(chunks: list[RetrievedChunk]) -> bool:
     return chunks[0].score >= settings.retrieval_min_score
 
 
+def _chunks_agree(text_a: str, text_b: str) -> bool:
+    """Due chunk che condividono gran parte delle parole chiave dicono verosimilmente la
+    stessa cosa: non è un conflitto reale, solo la stessa informazione presente in più
+    fonti (es. una guida caricata due volte per errore con un nome file leggermente
+    diverso, o una guida scritta e la trascrizione dello stesso passaggio del video)."""
+    words_a, words_b = _keywords(text_a), _keywords(text_b)
+    if not words_a or not words_b:
+        return False
+    overlap = len(words_a & words_b) / min(len(words_a), len(words_b))
+    return overlap >= 0.6
+
+
 def detect_conflict(chunks: list[RetrievedChunk]) -> RetrievedChunk | None:
     """Euristica minima per i conflitti tra fonti: se il chunk migliore e un altro chunk da
-    una fonte diversa hanno punteggi molto vicini, segnaliamo un possibile conflitto da
-    lasciar decidere al controllo di groundedness / a un tutor umano, invece di scegliere
-    automaticamente quale fonte privilegiare. Restituisce il chunk in conflitto (per citarlo
-    correttamente), o None se non c'è conflitto.
+    una fonte diversa hanno punteggi molto vicini E dicono cose diverse, segnaliamo un
+    possibile conflitto da lasciar decidere al controllo di groundedness / a un tutor
+    umano, invece di scegliere automaticamente quale fonte privilegiare. Restituisce il
+    chunk in conflitto (per citarlo correttamente), o None se non c'è conflitto.
 
     Entrambi i chunk devono superare individualmente la soglia minima di affidabilità: se il
     punteggio migliore è già al limite della soglia, un secondo risultato mediocre e solo
     vagamente pertinente (rumore di fondo, non un'informazione realmente in disaccordo)
     finirebbe altrimenti per essere interpretato come una fonte "in conflitto", bloccando
     inutilmente domande su procedure già ben coperte da un'unica guida pertinente.
+
+    Bug reale trovato in produzione: un file guida caricato due volte con un nome quasi
+    identico (stesso contenuto, "_md.docx" vs ".md.docx") veniva segnalato come fonte "in
+    conflitto" con se stesso, perché la verifica guardava solo la vicinanza dei punteggi
+    tra fonti diverse, mai se il contenuto fosse davvero discordante — bloccando una
+    domanda a cui i materiali sapevano rispondere correttamente e senza ambiguità.
     """
     if len(chunks) < 2:
         return None
@@ -241,6 +259,11 @@ def detect_conflict(chunks: list[RetrievedChunk]) -> RetrievedChunk | None:
     if top.score < settings.retrieval_min_score:
         return None
     for c in chunks[1:3]:
-        if c.source_id != top.source_id and c.score >= settings.retrieval_min_score and (top.score - c.score) < 0.03:
-            return c
+        if c.source_id == top.source_id:
+            continue
+        if c.score < settings.retrieval_min_score or (top.score - c.score) >= 0.03:
+            continue
+        if _chunks_agree(top.text, c.text):
+            continue
+        return c
     return None

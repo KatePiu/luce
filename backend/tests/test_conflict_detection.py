@@ -1,7 +1,7 @@
 from app.rag.retrieval import RetrievedChunk, detect_conflict
 
 
-def _chunk(source_id: str, score: float) -> RetrievedChunk:
+def _chunk(source_id: str, score: float, text: str = "testo") -> RetrievedChunk:
     return RetrievedChunk(
         chunk_id=f"chunk-{source_id}-{score}",
         source_id=source_id,
@@ -12,7 +12,7 @@ def _chunk(source_id: str, score: float) -> RetrievedChunk:
         document_url=None,
         start_timestamp=None,
         end_timestamp=None,
-        text="testo",
+        text=text,
         score=score,
     )
 
@@ -33,7 +33,10 @@ def test_no_conflict_when_close_chunk_is_below_threshold_even_if_top_is_high():
 
 
 def test_conflict_when_both_chunks_are_reliable_and_close():
-    chunks = [_chunk("a", 0.70), _chunk("b", 0.68)]
+    chunks = [
+        _chunk("a", 0.70, "Per la miscela servono due misurini di rosso e due di emolliente."),
+        _chunk("b", 0.68, "Il taglio si esegue partendo dalle punte su capelli asciutti."),
+    ]
     conflicting = detect_conflict(chunks)
     assert conflicting is not None
     assert conflicting.source_id == "b"
@@ -47,3 +50,21 @@ def test_no_conflict_when_close_chunk_is_same_source():
 def test_no_conflict_when_scores_are_far_apart():
     chunks = [_chunk("a", 0.85), _chunk("b", 0.60)]
     assert detect_conflict(chunks) is None
+
+
+def test_no_conflict_when_sources_agree_despite_different_wording():
+    # Bug reale: una guida caricata due volte con un nome file quasi identico
+    # (stesso contenuto) veniva segnalata come "in conflitto con se stessa".
+    text_a = "Per la miscela di doratura servono due misurini di rosso normale e due misurini di emolliente."
+    text_b = "Per creare la miscela dorata occorrono due misurini di rosso normale più due misurini di emolliente."
+    chunks = [_chunk("a", 0.70, text_a), _chunk("b", 0.69, text_b)]
+    assert detect_conflict(chunks) is None
+
+
+def test_conflict_when_reliable_sources_disagree_on_different_topics():
+    text_a = "Per la miscela di doratura servono due misurini di rosso normale e due di emolliente."
+    text_b = "Il taglio si esegue partendo dalle punte con tecnica a scalare su capelli asciutti."
+    chunks = [_chunk("a", 0.70, text_a), _chunk("b", 0.68, text_b)]
+    conflicting = detect_conflict(chunks)
+    assert conflicting is not None
+    assert conflicting.source_id == "b"

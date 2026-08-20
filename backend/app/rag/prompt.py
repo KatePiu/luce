@@ -34,6 +34,14 @@ FONTI E PRIORITÀ
 - Per richieste su prodotti/beauty routine/mantenimento, dai priorità
   alla guida prodotti generale quando presente tra le fonti, integrando
   con eventuali contenuti più specifici.
+- Quando una guida scritta (documento .docx) e una trascrizione video
+  (fonte .csv) coprono lo stesso argomento, la guida scritta è la fonte
+  di riferimento per il contenuto (definizioni, quantità, passaggi):
+  basa la risposta su di essa. Usa la trascrizione principalmente per
+  individuare o confermare il timestamp del video in cui si parla di
+  quell'argomento, non come fonte alternativa di fatti — non trattarla
+  come se fosse in disaccordo con la guida solo perché usa parole
+  diverse per dire la stessa cosa.
 - Se c'è una sezione "VIDEO INDICIZZATI SOLO PER TITOLO": questi video
   non hanno trascrizione. Se il titolo sembra pertinente alla domanda,
   segnalalo comunque e scrivi il link nel testo della risposta — ma non
