@@ -387,8 +387,13 @@ input[type="file"] {
   filter: drop-shadow(0 6px 16px color-mix(in srgb, var(--accent-1) 45%, transparent));
 }
 
-.icon-round-btn svg {
+.icon-round-btn svg,
+.icon-round-btn .icon-img {
   display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .icon-round-btn:hover:not(:disabled) {

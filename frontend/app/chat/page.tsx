@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { MicIcon, SendIcon, StopIcon } from "@/components/ActionIcons";
+import { StopIcon } from "@/components/ActionIcons";
 import LuceMark from "@/components/LuceMark";
 import { api, clearToken, getToken, type CitedSource, type MessageOut } from "@/lib/api";
 
@@ -269,7 +269,11 @@ function ChatPageInner() {
           aria-label={recording ? "Ferma registrazione e invia" : "Registra messaggio vocale"}
           title={recording ? "Ferma e invia" : "Registra vocale"}
         >
-          {recording ? <StopIcon size={44} /> : <MicIcon size={44} />}
+          {recording ? (
+            <StopIcon size={44} />
+          ) : (
+            <img src="/icons/mic.png" alt="" width={44} height={44} className="icon-img" />
+          )}
         </button>
         <button
           className="icon-round-btn"
@@ -277,7 +281,7 @@ function ChatPageInner() {
           disabled={sending || escalated || !input.trim()}
           aria-label="Invia"
         >
-          <SendIcon size={44} />
+          <img src="/icons/send.png" alt="" width={44} height={44} className="icon-img" />
         </button>
       </div>
     </div>
