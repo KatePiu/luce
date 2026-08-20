@@ -50,13 +50,16 @@ CREATE TABLE IF NOT EXISTS sources (
 
 CREATE INDEX IF NOT EXISTS idx_sources_technique ON sources(technique_id);
 CREATE INDEX IF NOT EXISTS idx_sources_status ON sources(status);
-CREATE INDEX IF NOT EXISTS idx_sources_video ON sources(video_id);
 
 -- Migrazione da versioni precedenti dello schema (colonne rimosse/aggiunte):
 -- innocuo su un'installazione nuova, dove "sources" viene già creata nella forma finale.
+-- Deve stare PRIMA dell'indice su video_id: su un'installazione esistente la
+-- colonna non c'è finché questa ALTER non viene eseguita.
 ALTER TABLE sources DROP COLUMN IF EXISTS video_title;
 ALTER TABLE sources DROP COLUMN IF EXISTS video_url;
 ALTER TABLE sources ADD COLUMN IF NOT EXISTS video_id UUID REFERENCES videos(id) ON DELETE SET NULL;
+
+CREATE INDEX IF NOT EXISTS idx_sources_video ON sources(video_id);
 
 -- Dimensione dell'embedding: 1024 (voyage-3 / voyage-multilingual-2).
 -- Se si cambia provider di embedding con dimensione diversa, aggiornare qui.
