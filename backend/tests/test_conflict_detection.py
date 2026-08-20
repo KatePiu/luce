@@ -1,4 +1,4 @@
-from app.rag.retrieval import RetrievedChunk, detect_conflict
+from app.rag.retrieval import RetrievedChunk, detect_conflict, sort_by_relevance_then_richness
 
 
 def _chunk(source_id: str, score: float, text: str = "testo") -> RetrievedChunk:
@@ -68,3 +68,20 @@ def test_conflict_when_reliable_sources_disagree_on_different_topics():
     conflicting = detect_conflict(chunks)
     assert conflicting is not None
     assert conflicting.source_id == "b"
+
+
+def test_sort_prefers_richer_content_at_equal_rounded_relevance():
+    # A parità di punteggio arrotondato, la fonte con più parole chiave (più
+    # completa) deve comparire prima, invece di dipendere dall'ordine casuale
+    # con cui i risultati arrivano dal database.
+    sparse = _chunk("a", 0.701, "due misurini di rosso")
+    rich = _chunk("b", 0.699, "due misurini di rosso normale e due misurini di emolliente per la miscela di doratura")
+    ordered = sort_by_relevance_then_richness([sparse, rich])
+    assert ordered[0].source_id == "b"
+
+
+def test_sort_keeps_relevance_as_primary_key():
+    clearly_better = _chunk("a", 0.90, "testo breve")
+    clearly_worse_but_longer = _chunk("b", 0.40, "testo molto più lungo con molte parole chiave diverse qui dentro")
+    ordered = sort_by_relevance_then_richness([clearly_worse_but_longer, clearly_better])
+    assert ordered[0].source_id == "a"

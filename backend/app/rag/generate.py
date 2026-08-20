@@ -18,6 +18,7 @@ from app.rag.retrieval import (
     find_candidate_videos,
     is_sufficient,
     retrieve_with_priority,
+    sort_by_relevance_then_richness,
 )
 
 INSUFFICIENT_MATERIALS_MESSAGE = (
@@ -115,8 +116,7 @@ def answer_question(
     history: list[dict] | None = None,
 ) -> AnswerResult:
     priority, general = retrieve_with_priority(db, question)
-    combined = priority + general
-    combined.sort(key=lambda c: c.score, reverse=True)
+    combined = sort_by_relevance_then_richness(priority + general)
 
     videos = find_candidate_videos(db, question)
 

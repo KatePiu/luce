@@ -214,6 +214,19 @@ def find_candidate_videos(db: Session, query: str, limit: int = 3) -> list[Video
     ]
 
 
+def sort_by_relevance_then_richness(chunks: list[RetrievedChunk]) -> list[RetrievedChunk]:
+    """Ordina per rilevanza (punteggio, arrotondato) e poi per ricchezza di contenuto
+    (numero di parole chiave nel testo del chunk).
+
+    A parità di rilevanza — stesso punteggio arrotondato a due decimali, cioè
+    entro il margine già usato da `detect_conflict` per considerare due fonti
+    "vicine" — tra due fonti che trattano lo stesso argomento con pertinenza
+    praticamente identica si preferisce quella più completa/dettagliata, invece
+    di lasciare l'ordine al caso (es. l'ordine di inserimento nel database).
+    """
+    return sorted(chunks, key=lambda c: (round(c.score, 2), len(_keywords(c.text))), reverse=True)
+
+
 def is_sufficient(chunks: list[RetrievedChunk]) -> bool:
     """Soglia minima di affidabilità: se il miglior risultato è sotto soglia, i materiali
     non sono considerati sufficienti per generare una risposta tecnica (vedi app/rag/generate.py)."""
