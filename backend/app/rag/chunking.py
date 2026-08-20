@@ -40,6 +40,26 @@ def _normalize_timestamp(raw: str) -> str:
     return raw.strip()
 
 
+def _detect_delimiter(text: str) -> str:
+    """Individua il delimitatore (',' o ';') del CSV.
+
+    csv.Sniffer() lavora su un campione dei primi 2048 caratteri dell'intero
+    file: se in quella finestra cade un campo tra virgolette multi-riga molto
+    lungo (es. la colonna "Testo completo" di una trascrizione), il campione
+    contiene una virgoletta spaiata e lo sniffing fallisce. In quel caso
+    contare virgole/punti-e-virgola sull'intero campione è inaffidabile: la
+    prosa italiana dentro quel campo può contenere più virgole "di
+    punteggiatura" dei punti-e-virgola strutturali, facendo scegliere il
+    delimitatore sbagliato. La sola riga d'intestazione, invece, non contiene
+    mai testo tra virgolette: è la fonte affidabile per il conteggio.
+    """
+    first_line = text.splitlines()[0] if text else ""
+    try:
+        return csv.Sniffer().sniff(text[:2048], delimiters=",;").delimiter
+    except csv.Error:
+        return ";" if first_line.count(";") > first_line.count(",") else ","
+
+
 def parse_transcript_csv(raw_bytes: bytes, target_chars: int, overlap_chars: int) -> list[ChunkDraft]:
     """Analizza un CSV di trascrizione.
 
@@ -49,12 +69,8 @@ def parse_transcript_csv(raw_bytes: bytes, target_chars: int, overlap_chars: int
          (la quinta colonna duplica il testo della quarta — viene ignorata)
     """
     text = raw_bytes.decode("utf-8-sig", errors="replace")
-    sample = text[:2048]
-    try:
-        dialect = csv.Sniffer().sniff(sample, delimiters=",;")
-    except csv.Error:
-        dialect = csv.excel
-        dialect.delimiter = ";" if sample.count(";") > sample.count(",") else ","
+    dialect = csv.excel
+    dialect.delimiter = _detect_delimiter(text)
 
     reader = csv.DictReader(io.StringIO(text), dialect=dialect)
     if not reader.fieldnames:
@@ -92,12 +108,8 @@ def parse_generic_csv_table(raw_bytes: bytes) -> list[ChunkDraft]:
     è una trascrizione — vedi ingest.py. Una riga = un chunk, con le coppie
     intestazione/valore unite in una frase leggibile."""
     text = raw_bytes.decode("utf-8-sig", errors="replace")
-    sample = text[:2048]
-    try:
-        dialect = csv.Sniffer().sniff(sample, delimiters=",;")
-    except csv.Error:
-        dialect = csv.excel
-        dialect.delimiter = ";" if sample.count(";") > sample.count(",") else ","
+    dialect = csv.excel
+    dialect.delimiter = _detect_delimiter(text)
 
     reader = csv.DictReader(io.StringIO(text), dialect=dialect)
     if not reader.fieldnames:

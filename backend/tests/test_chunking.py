@@ -28,6 +28,22 @@ def test_parse_semicolon_delimited_transcript_ignores_duplicate_column():
     assert chunks[0].text.count("miscela di doratura") == 1
 
 
+def test_parse_semicolon_transcript_with_long_multiline_quoted_field():
+    # Bug reale: quando il campo "Testo completo" contiene interruzioni di riga
+    # ed è più lungo dei 2048 caratteri campionati per il rilevamento del
+    # delimitatore, il campione conteneva una virgoletta spaiata (sniff falliva)
+    # e il fallback contava virgole/punti-e-virgola su tutto il campione,
+    # scegliendo ',' invece di ';' a causa delle virgole nella prosa italiana.
+    raw = (FIXTURES / "sample_semicolon_long_quoted_field.csv").read_bytes()
+    chunks = parse_transcript_csv(raw, target_chars=5000, overlap_chars=100)
+
+    assert len(chunks) == 1
+    assert chunks[0].start_timestamp == "00:00:05"
+    assert chunks[0].end_timestamp == "00:00:20"
+    assert "Applico la mousse sulla parte superiore." in chunks[0].text
+    assert "Poi lavoro le lunghezze e le punte." in chunks[0].text
+
+
 def test_transcript_chunking_respects_target_size_and_overlap():
     raw = (FIXTURES / "sample_comma.csv").read_bytes()
     chunks = parse_transcript_csv(raw, target_chars=60, overlap_chars=20)
