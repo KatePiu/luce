@@ -32,6 +32,7 @@ class CitedSourceOut(BaseModel):
     title: str
     video_title: str | None = None
     video_url: str | None = None
+    video_platform: str | None = None
     document_url: str | None = None
     start_timestamp: str | None = None
 
@@ -69,9 +70,36 @@ class SourceOut(BaseModel):
     origin_kind: str
     version: int
     status: str
-    video_url: str | None
+    video_title: str | None
+    video_id: str | None
     document_url: str | None
     updated_at: datetime
+
+
+class VideoOut(BaseModel):
+    id: str
+    title: str
+    platform: str
+    url: str
+    technique: str | None
+    description: str | None
+    updated_at: datetime
+
+
+class VideoCreateRequest(BaseModel):
+    title: str
+    url: str
+    platform: str = "drive"
+    technique_slug: str | None = None
+    description: str | None = None
+
+
+class VideoUpdateRequest(BaseModel):
+    title: str | None = None
+    url: str | None = None
+    platform: str | None = None
+    technique_slug: str | None = None
+    description: str | None = None
 
 
 class EscalationOut(BaseModel):

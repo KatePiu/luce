@@ -22,14 +22,28 @@ class Technique(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class Video(Base):
+    __tablename__ = "videos"
+
+    id: Mapped[uuid.UUID] = _uuid_col()
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    platform: Mapped[str] = mapped_column(String, default="drive")
+    url: Mapped[str] = mapped_column(String, nullable=False)
+    technique_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("techniques.id"))
+    description: Mapped[str | None] = mapped_column(Text)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    technique: Mapped[Technique | None] = relationship()
+
+
 class Source(Base):
     __tablename__ = "sources"
 
     id: Mapped[uuid.UUID] = _uuid_col()
     title: Mapped[str] = mapped_column(String, nullable=False)
     technique_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("techniques.id"))
-    video_title: Mapped[str | None] = mapped_column(String)
-    video_url: Mapped[str | None] = mapped_column(String)
+    video_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("videos.id"))
     document_url: Mapped[str | None] = mapped_column(String)
     origin_filename: Mapped[str] = mapped_column(String, nullable=False)
     origin_kind: Mapped[str] = mapped_column(String, nullable=False)
@@ -43,6 +57,7 @@ class Source(Base):
 
     chunks: Mapped[list["Chunk"]] = relationship(back_populates="source", cascade="all, delete-orphan")
     technique: Mapped[Technique | None] = relationship()
+    video: Mapped[Video | None] = relationship()
 
 
 class Chunk(Base):

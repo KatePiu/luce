@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.escalation import resolve_escalation
-from app.models import Escalation, Source, Technique, User
+from app.models import Escalation, Source, Technique, User, Video
 from app.rag.generate import answer_question
 from app.rag.ingest import SkippedJunkFile, ingest_file
 from app.schemas import (
@@ -14,6 +14,9 @@ from app.schemas import (
     EscalationOut,
     ResolveEscalationRequest,
     SourceOut,
+    VideoCreateRequest,
+    VideoOut,
+    VideoUpdateRequest,
 )
 from app.security import require_admin
 
@@ -25,8 +28,7 @@ async def upload_source(
     file: UploadFile,
     technique_slug: str = Form(...),
     title: str | None = Form(None),
-    video_title: str | None = Form(None),
-    video_url: str | None = Form(None),
+    video_id: str | None = Form(None),
     document_url: str | None = Form(None),
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
@@ -39,8 +41,7 @@ async def upload_source(
             raw_bytes=raw_bytes,
             technique_slug=technique_slug,
             title=title,
-            video_title=video_title,
-            video_url=video_url,
+            video_id=video_id,
             document_url=document_url,
             uploaded_by=admin.id,
         )
@@ -61,10 +62,85 @@ def _source_out(source: Source) -> SourceOut:
         origin_kind=source.origin_kind,
         version=source.version,
         status=source.status,
-        video_url=source.video_url,
+        video_title=source.video.title if source.video else None,
+        video_id=str(source.video_id) if source.video_id else None,
         document_url=source.document_url,
         updated_at=source.updated_at,
     )
+
+
+def _video_out(video: Video) -> VideoOut:
+    return VideoOut(
+        id=str(video.id),
+        title=video.title,
+        platform=video.platform,
+        url=video.url,
+        technique=video.technique.slug if video.technique else None,
+        description=video.description,
+        updated_at=video.updated_at,
+    )
+
+
+@router.get("/videos", response_model=list[VideoOut])
+def list_videos(admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    videos = db.query(Video).order_by(Video.updated_at.desc()).all()
+    return [_video_out(v) for v in videos]
+
+
+@router.post("/videos", response_model=VideoOut)
+def create_video(payload: VideoCreateRequest, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    technique = None
+    if payload.technique_slug:
+        technique = db.query(Technique).filter(Technique.slug == payload.technique_slug).one_or_none()
+        if not technique:
+            technique = Technique(slug=payload.technique_slug, label=payload.technique_slug.replace("_", " ").title())
+            db.add(technique)
+            db.flush()
+    video = Video(
+        title=payload.title,
+        url=payload.url,
+        platform=payload.platform,
+        technique_id=technique.id if technique else None,
+        description=payload.description,
+    )
+    db.add(video)
+    db.commit()
+    return _video_out(video)
+
+
+@router.patch("/videos/{video_id}", response_model=VideoOut)
+def update_video(
+    video_id: str, payload: VideoUpdateRequest, admin: User = Depends(require_admin), db: Session = Depends(get_db)
+):
+    video = db.get(Video, video_id)
+    if not video:
+        raise HTTPException(status_code=404, detail="Video non trovato")
+    if payload.title is not None:
+        video.title = payload.title
+    if payload.url is not None:
+        video.url = payload.url
+    if payload.platform is not None:
+        video.platform = payload.platform
+    if payload.description is not None:
+        video.description = payload.description
+    if payload.technique_slug is not None:
+        technique = db.query(Technique).filter(Technique.slug == payload.technique_slug).one_or_none()
+        if not technique:
+            technique = Technique(slug=payload.technique_slug, label=payload.technique_slug.replace("_", " ").title())
+            db.add(technique)
+            db.flush()
+        video.technique_id = technique.id
+    db.commit()
+    return _video_out(video)
+
+
+@router.delete("/videos/{video_id}", status_code=204)
+def delete_video(video_id: str, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    video = db.get(Video, video_id)
+    if not video:
+        raise HTTPException(status_code=404, detail="Video non trovato")
+    db.delete(video)
+    db.commit()
 
 
 @router.get("/sources", response_model=list[SourceOut])

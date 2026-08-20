@@ -9,6 +9,7 @@ def _chunk(chunk_id: str, source_id: str = "src-1") -> RetrievedChunk:
         source_title="Henne Castano",
         video_title="04 - HENNE SHATUSH - CASTANO",
         video_url="https://drive.google.com/x",
+        video_platform="drive",
         document_url=None,
         start_timestamp="00:06:06",
         end_timestamp=None,

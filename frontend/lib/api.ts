@@ -35,6 +35,7 @@ export interface CitedSource {
   title: string;
   video_title?: string | null;
   video_url?: string | null;
+  video_platform?: string | null;
   document_url?: string | null;
   start_timestamp?: string | null;
 }
@@ -79,8 +80,19 @@ export interface SourceOut {
   origin_kind: string;
   version: number;
   status: "active" | "disabled";
-  video_url: string | null;
+  video_title: string | null;
+  video_id: string | null;
   document_url: string | null;
+  updated_at: string;
+}
+
+export interface VideoOut {
+  id: string;
+  title: string;
+  platform: "drive" | "vimeo" | "youtube" | "other";
+  url: string;
+  technique: string | null;
+  description: string | null;
   updated_at: string;
 }
 
@@ -93,12 +105,12 @@ export interface EscalationOut {
   created_at: string;
 }
 
+// Tassonomia a 5 categorie: Shatush e Infusion rientrano in "tecnico" (sono
+// tecniche di colorazione), non categorie a parte.
 export const TECHNIQUE_OPTIONS = [
-  { slug: "tagli", label: "Tagli" },
-  { slug: "pieghe", label: "Pieghe" },
-  { slug: "tecnico", label: "Tecnico / colorazione" },
-  { slug: "shatush", label: "Shatush / Henné" },
-  { slug: "infusion", label: "Infusion" },
+  { slug: "taglio", label: "Taglio" },
+  { slug: "piega", label: "Piega (phon e pieghe)" },
+  { slug: "tecnico", label: "Tecnico — Colorazione (incl. Shatush, Infusion)" },
   { slug: "altri_prodotti", label: "Altri prodotti" },
   { slug: "casi_particolari", label: "Casi particolari" },
 ];
@@ -122,11 +134,17 @@ const ALTRI_PRODOTTI_NAMES = [
 export function guessTechnique(filename: string): string {
   const name = filename.toUpperCase();
   if (name.includes("CASO") || name.includes("CASI")) return "casi_particolari";
-  if (name.startsWith("TAGLIO") || name.includes("TAGLIO_")) return "tagli";
-  if (name.startsWith("PHON") || name.includes("PIEGA_")) return "pieghe";
-  if (name.startsWith("TECNICO") || name.includes("TECNICO_")) return "tecnico";
-  if (name.includes("HENNE") || name.includes("SHATUSH") || name.includes("COLOR_OIL")) return "shatush";
-  if (name.includes("INFUSION")) return "infusion";
+  if (name.startsWith("TAGLIO") || name.includes("TAGLIO_")) return "taglio";
+  if (name.startsWith("PHON") || name.includes("PIEGA_")) return "piega";
+  if (
+    name.startsWith("TECNICO") ||
+    name.includes("TECNICO_") ||
+    name.includes("HENNE") ||
+    name.includes("SHATUSH") ||
+    name.includes("COLOR_OIL") ||
+    name.includes("INFUSION")
+  )
+    return "tecnico";
   if (name.includes("SCHEDA_PRODOTTO") || name.includes("GUIDA_PRODOTTI") || ALTRI_PRODOTTI_NAMES.some((p) => name.includes(p)))
     return "altri_prodotti";
   return TECHNIQUE_OPTIONS[0].slug;
@@ -163,7 +181,7 @@ export const api = {
 
   // --- Amministrazione ---
 
-  uploadSource: (file: File, techniqueSlug: string, extra: { title?: string; video_title?: string; video_url?: string; document_url?: string }) => {
+  uploadSource: (file: File, techniqueSlug: string, extra: { title?: string; video_id?: string; document_url?: string }) => {
     const form = new FormData();
     form.append("file", file);
     form.append("technique_slug", techniqueSlug);
@@ -191,4 +209,18 @@ export const api = {
 
   testResponse: (question: string) =>
     request<ChatMessageResponse>(`/admin/test-response?question=${encodeURIComponent(question)}`, { method: "POST" }),
+
+  // --- Gestione video (svincolata dalla piattaforma: oggi Drive, in futuro Vimeo o altro) ---
+
+  listVideos: () => request<VideoOut[]>("/admin/videos"),
+
+  createVideo: (data: { title: string; url: string; platform: string; technique_slug?: string; description?: string }) =>
+    request<VideoOut>("/admin/videos", { method: "POST", body: JSON.stringify(data) }),
+
+  updateVideo: (
+    videoId: string,
+    data: Partial<{ title: string; url: string; platform: string; technique_slug: string; description: string }>
+  ) => request<VideoOut>(`/admin/videos/${videoId}`, { method: "PATCH", body: JSON.stringify(data) }),
+
+  deleteVideo: (videoId: string) => request<void>(`/admin/videos/${videoId}`, { method: "DELETE" }),
 };

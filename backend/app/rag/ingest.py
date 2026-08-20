@@ -49,8 +49,7 @@ def ingest_file(
     raw_bytes: bytes,
     technique_slug: str,
     title: str | None = None,
-    video_title: str | None = None,
-    video_url: str | None = None,
+    video_id: str | None = None,
     document_url: str | None = None,
     uploaded_by=None,
 ) -> Source:
@@ -98,8 +97,7 @@ def ingest_file(
         )
         db.add(source)
 
-    source.video_title = video_title or source.video_title
-    source.video_url = video_url or source.video_url
+    source.video_id = video_id or source.video_id
     source.document_url = document_url or source.document_url
     db.flush()
 

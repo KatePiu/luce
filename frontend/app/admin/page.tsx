@@ -11,6 +11,7 @@ import {
   type CurrentUser,
   type EscalationOut,
   type SourceOut,
+  type VideoOut,
 } from "@/lib/api";
 
 type QueueStatus = "pending" | "uploading" | "done" | "error";
@@ -19,9 +20,17 @@ interface QueueItem {
   key: string;
   file: File;
   technique: string;
+  videoId: string;
   status: QueueStatus;
   message?: string;
 }
+
+const PLATFORM_OPTIONS = [
+  { slug: "drive", label: "Google Drive" },
+  { slug: "vimeo", label: "Vimeo" },
+  { slug: "youtube", label: "YouTube" },
+  { slug: "other", label: "Altro" },
+];
 
 export default function AdminPage() {
   const router = useRouter();
@@ -30,12 +39,19 @@ export default function AdminPage() {
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const [sources, setSources] = useState<SourceOut[]>([]);
+  const [videos, setVideos] = useState<VideoOut[]>([]);
   const [escalations, setEscalations] = useState<EscalationOut[]>([]);
 
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const [uploadingAll, setUploadingAll] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const [newVideoTitle, setNewVideoTitle] = useState("");
+  const [newVideoUrl, setNewVideoUrl] = useState("");
+  const [newVideoPlatform, setNewVideoPlatform] = useState("drive");
+  const [newVideoTechnique, setNewVideoTechnique] = useState(TECHNIQUE_OPTIONS[0].slug);
+  const [savingVideo, setSavingVideo] = useState(false);
 
   const [testQuestion, setTestQuestion] = useState("");
   const [testResult, setTestResult] = useState<string | null>(null);
@@ -61,6 +77,7 @@ export default function AdminPage() {
 
   function refresh() {
     api.listSources().then(setSources).catch((e) => setLoadError(e.message));
+    api.listVideos().then(setVideos).catch((e) => setLoadError(e.message));
     api.listEscalations("open").then(setEscalations).catch((e) => setLoadError(e.message));
   }
 
@@ -69,6 +86,7 @@ export default function AdminPage() {
       key: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`,
       file,
       technique: guessTechnique(file.name),
+      videoId: "",
       status: "pending",
     }));
     setQueue((prev) => [...prev, ...items]);
@@ -90,7 +108,9 @@ export default function AdminPage() {
       if (item.status === "done") continue;
       updateItem(item.key, { status: "uploading", message: undefined });
       try {
-        const source = await api.uploadSource(item.file, item.technique, {});
+        const source = await api.uploadSource(item.file, item.technique, {
+          video_id: item.videoId || undefined,
+        });
         updateItem(item.key, { status: "done", message: `Indicizzato come "${source.title}" (v${source.version})` });
       } catch (err) {
         updateItem(item.key, { status: "error", message: err instanceof Error ? err.message : "Caricamento non riuscito" });
@@ -115,6 +135,45 @@ export default function AdminPage() {
   async function handleDeleteSource(source: SourceOut) {
     if (!window.confirm(`Eliminare definitivamente "${source.title}"? Il file originale su Drive non viene toccato, ma va ricaricato da qui per riaverlo indicizzato.`)) return;
     await api.deleteSource(source.id);
+    refresh();
+  }
+
+  async function handleAddVideo(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newVideoTitle.trim() || !newVideoUrl.trim()) return;
+    setSavingVideo(true);
+    try {
+      await api.createVideo({
+        title: newVideoTitle.trim(),
+        url: newVideoUrl.trim(),
+        platform: newVideoPlatform,
+        technique_slug: newVideoTechnique,
+      });
+      setNewVideoTitle("");
+      setNewVideoUrl("");
+      refresh();
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : "Impossibile salvare il video");
+    } finally {
+      setSavingVideo(false);
+    }
+  }
+
+  async function handleVideoUrlEdit(video: VideoOut) {
+    const url = window.prompt(`Nuovo link per "${video.title}"`, video.url);
+    if (!url || url === video.url) return;
+    await api.updateVideo(video.id, { url });
+    refresh();
+  }
+
+  async function handleVideoPlatformChange(video: VideoOut, platform: string) {
+    await api.updateVideo(video.id, { platform });
+    refresh();
+  }
+
+  async function handleDeleteVideo(video: VideoOut) {
+    if (!window.confirm(`Eliminare il video "${video.title}"? Le trascrizioni/guide collegate restano, solo il link viene rimosso.`)) return;
+    await api.deleteVideo(video.id);
     refresh();
   }
 
@@ -162,10 +221,86 @@ export default function AdminPage() {
 
       <div style={{ padding: "1rem", display: "flex", flexDirection: "column", gap: "2rem" }}>
         <section>
+          <h2>Video guida</h2>
+          <p style={{ color: "var(--ink-muted)", fontSize: "0.85rem", marginTop: "-0.4rem" }}>
+            Un video può esistere anche solo con il titolo, senza trascrizione: il tutor lo propone comunque
+            se pertinente. La piattaforma è scelta qui, non nel codice — si può cambiare in ogni momento.
+          </p>
+
+          <form onSubmit={handleAddVideo} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            <input placeholder="Titolo del video" value={newVideoTitle} onChange={(e) => setNewVideoTitle(e.target.value)} />
+            <input placeholder="Link (Drive, Vimeo, ...)" value={newVideoUrl} onChange={(e) => setNewVideoUrl(e.target.value)} />
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <select value={newVideoPlatform} onChange={(e) => setNewVideoPlatform(e.target.value)} style={{ flex: 1 }}>
+                {PLATFORM_OPTIONS.map((p) => (
+                  <option key={p.slug} value={p.slug}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+              <select value={newVideoTechnique} onChange={(e) => setNewVideoTechnique(e.target.value)} style={{ flex: 1 }}>
+                {TECHNIQUE_OPTIONS.map((t) => (
+                  <option key={t.slug} value={t.slug}>
+                    {t.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button className="primary-btn" type="submit" disabled={savingVideo || !newVideoTitle.trim() || !newVideoUrl.trim()}>
+              {savingVideo ? "Salvataggio…" : "Aggiungi video"}
+            </button>
+          </form>
+
+          {videos.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginTop: "1rem" }}>
+              {videos.map((v) => (
+                <div
+                  key={v.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    padding: "0.5rem 0",
+                    borderBottom: "1px solid var(--border)",
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.title}</div>
+                    <div style={{ color: "var(--ink-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {v.technique} · {v.url}
+                    </div>
+                  </div>
+                  <select
+                    value={v.platform}
+                    onChange={(e) => handleVideoPlatformChange(v, e.target.value)}
+                    style={{ fontSize: "0.8rem", padding: "0.3rem 0.4rem" }}
+                  >
+                    {PLATFORM_OPTIONS.map((p) => (
+                      <option key={p.slug} value={p.slug}>
+                        {p.label}
+                      </option>
+                    ))}
+                  </select>
+                  <button className="icon-btn" onClick={() => handleVideoUrlEdit(v)}>
+                    Link
+                  </button>
+                  <button className="icon-btn" onClick={() => handleDeleteVideo(v)} style={{ color: "var(--danger)" }}>
+                    Elimina
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section>
           <h2>Carica nuovi materiali</h2>
           <p style={{ color: "var(--ink-muted)", fontSize: "0.85rem", marginTop: "-0.4rem" }}>
             Trascina anche più file insieme (CSV, .docx, .md, .txt). La categoria viene indovinata dal nome
-            del file — controllala prima di confermare, puoi cambiarla dal menu su ogni riga.
+            del file — controllala prima di confermare. Collega ogni file al video corrispondente (facoltativo:
+            se il file è una trascrizione o una guida discorsiva dello stesso video, collegali entrambi allo
+            stesso video così il tutor può combinarli e citare il timestamp giusto).
           </p>
 
           <div
@@ -208,6 +343,7 @@ export default function AdminPage() {
                   key={item.key}
                   style={{
                     display: "flex",
+                    flexWrap: "wrap",
                     alignItems: "center",
                     gap: "0.5rem",
                     padding: "0.5rem 0",
@@ -215,7 +351,7 @@ export default function AdminPage() {
                     fontSize: "0.85rem",
                   }}
                 >
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ flex: "1 1 100%", minWidth: 0 }}>
                     <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.file.name}</div>
                     {item.message && (
                       <div style={{ color: item.status === "error" ? "var(--danger)" : "var(--ink-muted)" }}>{item.message}</div>
@@ -230,6 +366,19 @@ export default function AdminPage() {
                     {TECHNIQUE_OPTIONS.map((t) => (
                       <option key={t.slug} value={t.slug}>
                         {t.label}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={item.videoId}
+                    onChange={(e) => updateItem(item.key, { videoId: e.target.value })}
+                    disabled={item.status === "uploading" || item.status === "done"}
+                    style={{ fontSize: "0.8rem", padding: "0.4rem 0.5rem", flex: 1, minWidth: "8rem" }}
+                  >
+                    <option value="">Nessun video collegato</option>
+                    {videos.map((v) => (
+                      <option key={v.id} value={v.id}>
+                        {v.title}
                       </option>
                     ))}
                   </select>
@@ -264,6 +413,7 @@ export default function AdminPage() {
                     <div>{s.title}</div>
                     <div style={{ color: "var(--ink-muted)" }}>
                       {s.technique} · v{s.version} · {s.origin_filename}
+                      {s.video_title && ` · video: ${s.video_title}`}
                     </div>
                   </td>
                   <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>

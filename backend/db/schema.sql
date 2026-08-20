@@ -6,17 +6,36 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto; -- per gen_random_uuid()
 
 CREATE TABLE IF NOT EXISTS techniques (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    slug TEXT UNIQUE NOT NULL,          -- es. 'tagli', 'pieghe', 'tecnico', 'shatush', 'infusion', 'altri_prodotti', 'casi_particolari'
+    -- tassonomia a 5 categorie: 'taglio', 'piega', 'tecnico' (colorazione — include
+    -- anche Shatush e Infusion), 'altri_prodotti', 'casi_particolari'.
+    slug TEXT UNIQUE NOT NULL,
     label TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Un video guida, indipendente dai file di supporto (trascrizione/timestamp):
+-- può esistere anche da solo, con il solo titolo, se non c'è ancora una
+-- trascrizione — l'agente potrà comunque proporne il link. La piattaforma è
+-- esplicita (oggi Drive, in futuro Vimeo o altro) così cambiarla non tocca
+-- la logica dell'agente, solo questo record.
+CREATE TABLE IF NOT EXISTS videos (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title TEXT NOT NULL,
+    platform TEXT NOT NULL DEFAULT 'drive' CHECK (platform IN ('drive', 'vimeo', 'youtube', 'other')),
+    url TEXT NOT NULL,
+    technique_id UUID REFERENCES techniques(id),
+    description TEXT,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_videos_technique ON videos(technique_id);
 
 CREATE TABLE IF NOT EXISTS sources (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title TEXT NOT NULL,
     technique_id UUID REFERENCES techniques(id),
-    video_title TEXT,                   -- titolo del video collegato, se presente
-    video_url TEXT,                     -- link diretto al video
+    video_id UUID REFERENCES videos(id) ON DELETE SET NULL,  -- video a cui questa fonte si riferisce (trascrizione o guida discorsiva dello stesso video)
     document_url TEXT,                  -- link al documento originale (Drive)
     origin_filename TEXT NOT NULL,      -- nome del file caricato
     origin_kind TEXT NOT NULL CHECK (origin_kind IN ('transcript_csv', 'guide_doc', 'product_sheet', 'case_table', 'other')),
@@ -31,6 +50,13 @@ CREATE TABLE IF NOT EXISTS sources (
 
 CREATE INDEX IF NOT EXISTS idx_sources_technique ON sources(technique_id);
 CREATE INDEX IF NOT EXISTS idx_sources_status ON sources(status);
+CREATE INDEX IF NOT EXISTS idx_sources_video ON sources(video_id);
+
+-- Migrazione da versioni precedenti dello schema (colonne rimosse/aggiunte):
+-- innocuo su un'installazione nuova, dove "sources" viene già creata nella forma finale.
+ALTER TABLE sources DROP COLUMN IF EXISTS video_title;
+ALTER TABLE sources DROP COLUMN IF EXISTS video_url;
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS video_id UUID REFERENCES videos(id) ON DELETE SET NULL;
 
 -- Dimensione dell'embedding: 1024 (voyage-3 / voyage-multilingual-2).
 -- Se si cambia provider di embedding con dimensione diversa, aggiornare qui.
