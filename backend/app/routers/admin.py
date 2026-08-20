@@ -87,6 +87,18 @@ def set_source_status(
     return _source_out(source)
 
 
+@router.delete("/sources/{source_id}", status_code=204)
+def delete_source(source_id: str, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    """Elimina definitivamente una fonte e i suoi chunk indicizzati (cascade).
+    Il file originale su Drive/disco non viene toccato: si può ricaricare in
+    qualsiasi momento dal pannello."""
+    source = db.get(Source, source_id)
+    if not source:
+        raise HTTPException(status_code=404, detail="Fonte non trovata")
+    db.delete(source)
+    db.commit()
+
+
 @router.get("/escalations", response_model=list[EscalationOut])
 def list_escalations(
     status: str | None = None, admin: User = Depends(require_admin), db: Session = Depends(get_db)

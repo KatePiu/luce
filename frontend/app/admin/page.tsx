@@ -112,6 +112,12 @@ export default function AdminPage() {
     refresh();
   }
 
+  async function handleDeleteSource(source: SourceOut) {
+    if (!window.confirm(`Eliminare definitivamente "${source.title}"? Il file originale su Drive non viene toccato, ma va ricaricato da qui per riaverlo indicizzato.`)) return;
+    await api.deleteSource(source.id);
+    refresh();
+  }
+
   async function handleResolve(escalationId: string) {
     const notes = window.prompt("Note sulla risoluzione (facoltative):") || "";
     await api.resolveEscalation(escalationId, notes);
@@ -260,9 +266,12 @@ export default function AdminPage() {
                       {s.technique} · v{s.version} · {s.origin_filename}
                     </div>
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
                     <button className="icon-btn" onClick={() => toggleSource(s)}>
                       {s.status === "active" ? "Disattiva" : "Attiva"}
+                    </button>
+                    <button className="icon-btn" onClick={() => handleDeleteSource(s)} style={{ color: "var(--danger)" }}>
+                      Elimina
                     </button>
                   </td>
                 </tr>

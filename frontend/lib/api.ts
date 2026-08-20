@@ -26,6 +26,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const detail = await res.json().catch(() => ({ detail: res.statusText }));
     throw new Error(detail.detail || "Errore di comunicazione con il server");
   }
+  if (res.status === 204) return undefined as T;
   return res.json();
 }
 
@@ -176,6 +177,8 @@ export const api = {
 
   setSourceStatus: (sourceId: string, status: "active" | "disabled") =>
     request<SourceOut>(`/admin/sources/${sourceId}/status?status=${status}`, { method: "PATCH" }),
+
+  deleteSource: (sourceId: string) => request<void>(`/admin/sources/${sourceId}`, { method: "DELETE" }),
 
   listEscalations: (status?: string) =>
     request<EscalationOut[]>(`/admin/escalations${status ? `?status=${status}` : ""}`),
