@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import LuceMark from "@/components/LuceMark";
 import { api, setToken } from "@/lib/api";
 
 export default function LoginPage() {
@@ -28,7 +29,10 @@ export default function LoginPage() {
 
   return (
     <form className="form-page" onSubmit={handleSubmit}>
-      <h1>LUCE</h1>
+      <h1>
+        <LuceMark size={30} />
+        LUCE
+      </h1>
       <p style={{ color: "var(--ink-muted)", marginTop: 0 }}>
         Accedi con l&apos;account fornito dall&apos;Accademia Coppola.
       </p>

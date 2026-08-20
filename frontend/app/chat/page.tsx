@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import LuceMark from "@/components/LuceMark";
 import { api, clearToken, getToken, type CitedSource, type MessageOut } from "@/lib/api";
 
 interface DisplayMessage {
@@ -164,7 +165,10 @@ function ChatPageInner() {
   return (
     <div className="page">
       <div className="top-bar">
-        <h1>LUCE</h1>
+        <h1>
+          <LuceMark size={20} />
+          LUCE
+        </h1>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <Link href="/history" className="icon-btn">
             Cronologia
@@ -186,30 +190,47 @@ function ChatPageInner() {
             Scrivi una domanda tecnica, oppure tieni premuto il microfono per un messaggio vocale.
           </div>
         )}
-        {messages.map((m) => (
-          <div key={m.id} className={`bubble ${m.direction}${m.escalated ? " escalated" : ""}`}>
-            {m.text}
-            {m.sources && m.sources.length > 0 && (
-              <div className="sources-box">
-                {m.sources.map((s) => (
-                  <div key={s.source_id}>
-                    Fonte: {s.title}
-                    {s.video_title && ` — ${s.video_title}`}
-                    {s.start_timestamp && ` (dal minuto ${s.start_timestamp})`}
-                    {(s.video_url || s.document_url) && (
-                      <>
-                        {" · "}
-                        <a href={s.video_url || s.document_url || "#"} target="_blank" rel="noreferrer">
-                          Apri
-                        </a>
-                      </>
-                    )}
-                  </div>
-                ))}
+        {messages.map((m) =>
+          m.direction === "inbound" ? (
+            <div key={m.id} className="bubble inbound">
+              {m.text}
+            </div>
+          ) : (
+            <div key={m.id} className={`assistant-row${m.escalated ? " escalated" : ""}`}>
+              <div className="assistant-avatar">
+                <LuceMark size={14} />
               </div>
-            )}
+              <div className="assistant-content">
+                {m.text}
+                {m.sources && m.sources.length > 0 && (
+                  <div className="sources-box">
+                    {m.sources.map((s) => (
+                      <div key={s.source_id}>
+                        Fonte: {s.title}
+                        {s.video_title && ` — ${s.video_title}`}
+                        {s.start_timestamp && ` (dal minuto ${s.start_timestamp})`}
+                        {(s.video_url || s.document_url) && (
+                          <>
+                            {" · "}
+                            <a href={s.video_url || s.document_url || "#"} target="_blank" rel="noreferrer">
+                              Apri
+                            </a>
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        )}
+        {sending && (
+          <div className="assistant-row">
+            <div className="thinking-orb" />
+            <div className="thinking-label">Sto cercando nei materiali dell&apos;Accademia…</div>
           </div>
-        ))}
+        )}
         <div ref={listEndRef} />
       </div>
 
@@ -249,7 +270,12 @@ function ChatPageInner() {
         >
           {recording ? "■" : "🎤"}
         </button>
-        <button className="round-btn" onClick={handleSend} disabled={sending || escalated || !input.trim()} aria-label="Invia">
+        <button
+          className="round-btn send"
+          onClick={handleSend}
+          disabled={sending || escalated || !input.trim()}
+          aria-label="Invia"
+        >
           ➤
         </button>
       </div>
