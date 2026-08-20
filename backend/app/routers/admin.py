@@ -9,6 +9,7 @@ from app.models import Escalation, Source, Technique, User, Video
 from app.schema_tools import apply_schema
 from app.rag.generate import answer_question
 from app.rag.ingest import SkippedJunkFile, ingest_file
+from app.rag.retrieval import RetrievedChunk, retrieve_with_priority, sort_by_relevance_then_richness
 from app.schemas import (
     ChatMessageResponse,
     CitedSourceOut,
@@ -246,3 +247,27 @@ def test_response(question: str, admin: User = Depends(require_admin), db: Sessi
         cited_sources=[CitedSourceOut(**s.__dict__) for s in result.cited_sources],
         retrieval_score=result.retrieval_score,
     )
+
+
+def _debug_chunk(c: RetrievedChunk, lane: str) -> dict:
+    return {
+        "lane": lane,
+        "source_title": c.source_title,
+        "score": round(c.score, 4),
+        "start_timestamp": c.start_timestamp,
+        "text_preview": c.text[:220],
+    }
+
+
+@router.get("/debug/retrieval")
+def debug_retrieval(question: str, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    """Diagnostica: mostra i punteggi grezzi di recupero per una domanda, senza passare
+    dalla generazione/dai controlli di gruppo — utile per capire perché una fonte attesa
+    non viene trovata o viene superata da un'altra meno pertinente."""
+    priority, general = retrieve_with_priority(db, question)
+    combined = sort_by_relevance_then_richness(priority + general)
+    return {
+        "priority": [_debug_chunk(c, "casi_particolari") for c in priority],
+        "general": [_debug_chunk(c, "generale") for c in general],
+        "combined_order": [_debug_chunk(c, "priority" if c in priority else "generale") for c in combined],
+    }
