@@ -7,6 +7,7 @@ def _chunk(chunk_id: str, source_id: str = "src-1") -> RetrievedChunk:
         chunk_id=chunk_id,
         source_id=source_id,
         source_title="Henne Castano",
+        video_id="video-1",
         video_title="04 - HENNE SHATUSH - CASTANO",
         video_url="https://drive.google.com/x",
         video_platform="drive",

@@ -6,6 +6,7 @@ def _chunk(source_id: str, score: float, text: str = "testo") -> RetrievedChunk:
         chunk_id=f"chunk-{source_id}-{score}",
         source_id=source_id,
         source_title=f"Fonte {source_id}",
+        video_id=None,
         video_title=None,
         video_url=None,
         video_platform=None,

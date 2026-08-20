@@ -14,12 +14,21 @@ from app.rag.embeddings import embed_query
 
 CASI_PARTICOLARI_SLUG = "casi_particolari"
 
+# Le trascrizioni video (CSV) non vanno mai usate come fonte di contenuto per
+# rispondere: solo le "ricostruzioni discorsive" (guide .docx, tabelle .txt) sono
+# fonte di verità per il merito della risposta. Il CSV serve esclusivamente a
+# individuare il timestamp del video sullo stesso argomento — vedi
+# `_attach_video_timestamps`. Richiesta esplicita dell'Accademia dopo un caso reale
+# in cui una trascrizione veniva citata come se fosse una fonte alternativa di fatti.
+TRANSCRIPT_ORIGIN_KIND = "transcript_csv"
+
 
 @dataclass
 class RetrievedChunk:
     chunk_id: str
     source_id: str
     source_title: str
+    video_id: str | None
     video_title: str | None
     video_url: str | None
     video_platform: str | None
@@ -61,6 +70,7 @@ def _rows_to_chunks(rows, distances) -> list[RetrievedChunk]:
                 chunk_id=str(chunk.id),
                 source_id=str(source.id),
                 source_title=source.title,
+                video_id=str(source.video_id) if source.video_id else None,
                 video_title=video.title if video else None,
                 video_url=video.url if video else None,
                 video_platform=video.platform if video else None,
@@ -74,21 +84,35 @@ def _rows_to_chunks(rows, distances) -> list[RetrievedChunk]:
     return results
 
 
-def retrieve(db: Session, query: str, technique_slug: str | None = None, top_k: int | None = None) -> list[RetrievedChunk]:
+def retrieve(
+    db: Session,
+    query: str,
+    technique_slug: str | None = None,
+    top_k: int | None = None,
+    query_embedding: list[float] | None = None,
+    exclude_transcripts: bool = False,
+) -> list[RetrievedChunk]:
     """Ricerca semantica sui chunk attivi, opzionalmente filtrata per tecnica/categoria.
 
     Il punteggio restituito è la similarità coseno: pgvector espone l'operatore
     `<=>` come *distanza* coseno (0 = identico, 2 = opposto), quindi la
     similarità è `1 - distanza`.
+
+    `exclude_transcripts` esclude le fonti CSV (trascrizioni): usarlo per la ricerca
+    di CONTENUTO, dato che solo le guide scritte devono rispondere nel merito — vedi
+    `TRANSCRIPT_ORIGIN_KIND`. `query_embedding` evita di ricalcolare l'embedding
+    quando già disponibile (ogni chiamata all'API di embedding ha un costo).
     """
     top_k = top_k or settings.retrieval_top_k
-    query_embedding = embed_query(query)
+    query_embedding = query_embedding or embed_query(query)
 
     distance = Chunk.embedding.cosine_distance(query_embedding)
     stmt = _base_query()
 
     if technique_slug:
         stmt = stmt.join(Technique, Source.technique_id == Technique.id).where(Technique.slug == technique_slug)
+    if exclude_transcripts:
+        stmt = stmt.where(Source.origin_kind != TRANSCRIPT_ORIGIN_KIND)
 
     stmt = stmt.add_columns(distance.label("distance")).order_by(distance).limit(top_k)
 
@@ -96,6 +120,30 @@ def retrieve(db: Session, query: str, technique_slug: str | None = None, top_k: 
     triples = [(r[0], r[1], r[2]) for r in rows]
     distances = [r[3] for r in rows]
     return _rows_to_chunks(triples, distances)
+
+
+def _attach_video_timestamps(db: Session, chunks: list[RetrievedChunk], query_embedding: list[float]) -> list[RetrievedChunk]:
+    """Le fonti di contenuto (guide .docx, tabelle .txt) non hanno un timestamp proprio.
+    Per ognuna, se collegata a un video che ha anche una trascrizione CSV indicizzata,
+    cerca il passaggio della trascrizione più pertinente alla domanda e ne usa il
+    timestamp di inizio — SENZA usare il testo della trascrizione come contenuto: serve
+    solo a individuare il minuto del video in cui si parla di quell'argomento."""
+    distance = Chunk.embedding.cosine_distance(query_embedding)
+    for c in chunks:
+        if c.start_timestamp or not c.video_id:
+            continue
+        stmt = (
+            _base_query()
+            .where(Source.origin_kind == TRANSCRIPT_ORIGIN_KIND, Source.video_id == c.video_id)
+            .add_columns(distance.label("distance"))
+            .order_by(distance)
+            .limit(1)
+        )
+        row = db.execute(stmt).first()
+        if row:
+            c.start_timestamp = row[0].start_timestamp
+            c.end_timestamp = row[0].end_timestamp
+    return chunks
 
 
 def retrieve_with_priority(
@@ -107,17 +155,24 @@ def retrieve_with_priority(
     fonti generali (guide, prodotti) che restano comunque disponibili come
     contesto complementare per la procedura/i prodotti da usare.
 
+    Entrambe le corsie cercano solo tra le fonti di contenuto (guide scritte,
+    tabelle): le trascrizioni CSV vengono escluse dalla ricerca semantica e
+    consultate solo dopo, per attaccare un timestamp video pertinente — vedi
+    `_attach_video_timestamps`.
+
     Ritorna (chunk_prioritari_da_casi_particolari, chunk_generali_dalle_altre_fonti).
     """
-    priority = retrieve(db, query, technique_slug=CASI_PARTICOLARI_SLUG, top_k=top_k)
+    query_embedding = embed_query(query)
+    priority = retrieve(
+        db, query, technique_slug=CASI_PARTICOLARI_SLUG, top_k=top_k, query_embedding=query_embedding, exclude_transcripts=True
+    )
 
     top_k = top_k or settings.retrieval_top_k
-    query_embedding = embed_query(query)
     distance = Chunk.embedding.cosine_distance(query_embedding)
     stmt = (
         _base_query()
         .join(Technique, Source.technique_id == Technique.id)
-        .where(Technique.slug != CASI_PARTICOLARI_SLUG)
+        .where(Technique.slug != CASI_PARTICOLARI_SLUG, Source.origin_kind != TRANSCRIPT_ORIGIN_KIND)
         .add_columns(distance.label("distance"))
         .order_by(distance)
         .limit(top_k)
@@ -126,7 +181,10 @@ def retrieve_with_priority(
     triples = [(r[0], r[1], r[2]) for r in rows]
     distances = [r[3] for r in rows]
     general = _rows_to_chunks(triples, distances)
-    general = _boost_named_technique(db, query, general)
+    general = _boost_named_technique(db, query, general, query_embedding)
+
+    priority = _attach_video_timestamps(db, priority, query_embedding)
+    general = _attach_video_timestamps(db, general, query_embedding)
 
     return priority, general
 
@@ -139,17 +197,18 @@ def _extract_technique_number(text: str) -> str | None:
     return match.group(1) if match else None
 
 
-def _boost_named_technique(db: Session, query: str, chunks: list[RetrievedChunk]) -> list[RetrievedChunk]:
+def _boost_named_technique(db: Session, query: str, chunks: list[RetrievedChunk], query_embedding: list[float]) -> list[RetrievedChunk]:
     """Se la domanda cita un numero di tecnica preciso (es. "tecnica n°2"), le guide
     della stessa serie (es. Infusion 1/2/3/4) usano un linguaggio molto simile tra loro
     e la sola similarità semantica può confondere una tecnica con un'altra vicina —
     trovato durante il test end-to-end del punto 25 (una domanda su "Infusion Tecnica 2"
-    non recuperava con punteggio sufficiente la trascrizione corretta).
+    non recuperava con punteggio sufficiente la guida corretta).
 
     Qui si esclude dai risultati qualunque fonte che citi ESPLICITAMENTE un numero
     diverso nello stesso formato (fuorviante, tecnica sbagliata), e si aggiungono i
-    chunk più pertinenti delle fonti che citano il numero richiesto, anche se la sola
-    ricerca vettoriale non li avesse messi tra i risultati migliori.
+    chunk più pertinenti delle fonti (di contenuto, non trascrizioni) che citano il
+    numero richiesto, anche se la sola ricerca vettoriale non li avesse messi tra i
+    risultati migliori.
     """
     number = _extract_technique_number(query)
     if not number:
@@ -158,13 +217,14 @@ def _boost_named_technique(db: Session, query: str, chunks: list[RetrievedChunk]
     filtered = [c for c in chunks if (_extract_technique_number(c.source_title) or number) == number]
 
     matching_source_ids = [
-        s.id for s in db.query(Source).filter(Source.status == "active").all() if _extract_technique_number(s.title) == number
+        s.id
+        for s in db.query(Source).filter(Source.status == "active", Source.origin_kind != TRANSCRIPT_ORIGIN_KIND).all()
+        if _extract_technique_number(s.title) == number
     ]
     if not matching_source_ids:
         return filtered
 
     present_ids = {c.chunk_id for c in filtered}
-    query_embedding = embed_query(query)
     distance = Chunk.embedding.cosine_distance(query_embedding)
     stmt = _base_query().where(Source.id.in_(matching_source_ids)).add_columns(distance.label("distance")).order_by(distance).limit(3)
     rows = db.execute(stmt).all()
