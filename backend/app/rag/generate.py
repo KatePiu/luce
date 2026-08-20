@@ -27,10 +27,17 @@ INSUFFICIENT_MATERIALS_MESSAGE = (
     "inoltrare la richiesta a un tutor umano."
 )
 
-CONFLICT_MESSAGE = (
-    "Ho trovato indicazioni non coerenti tra loro nei materiali dell'Accademia per questo caso. "
-    "Per non darti un'indicazione sbagliata, preferisco non scegliere autonomamente: "
-    "posso inoltrare la richiesta a un tutor umano, che verificherà quale fonte è corretta."
+AMBIGUITY_NOTE = (
+    "ATTENZIONE — POSSIBILE AMBIGUITÀ NEI PASSAGGI RECUPERATI: due passaggi pertinenti a "
+    "questa domanda sembrano dare indicazioni diverse. Prima di rispondere, valuta se si "
+    "tratta in realtà di scenari/casi diversi (es. una condizione specifica della cliente "
+    "non ancora chiarita dalla domanda — come nel caso che ha portato a questa regola: "
+    "capelli bianchi concentrati in una zona vs sparsi su tutta la testa, con indicazioni "
+    "diverse sull'uso del pigmento). Se è così, fai la domanda di chiarimento necessaria "
+    "per capire quale caso si applica, invece di scegliere una delle due indicazioni a "
+    "caso o di dichiarare genericamente che le fonti sono in conflitto. Solo se, leggendo "
+    "con attenzione, le fonti risultano davvero in contraddizione sullo stesso identico "
+    "caso, dillo esplicitamente e proponi l'inoltro a un tutor umano.\n\n"
 )
 
 
@@ -128,17 +135,18 @@ def answer_question(
             retrieval_score=combined[0].score if combined else None,
         )
 
+    # Un punteggio vicino tra fonti diverse con contenuto diverso non significa sempre una
+    # vera contraddizione: spesso sono scenari/casi diversi nello stesso materiale (es. due
+    # pattern diversi di capelli bianchi, con indicazioni diverse). Invece di bloccare subito
+    # la risposta, si segnala l'ambiguità al modello e si lascia che ragioni — chiedendo un
+    # chiarimento se serve, spiegando la distinzione se i passaggi lo permettono, o dichiarando
+    # un conflitto reale solo se, leggendo il contesto, lo è davvero. Il controllo di
+    # groundedness dopo la generazione resta comunque la rete di sicurezza finale.
     conflicting = detect_conflict(combined)
-    if conflicting:
-        return AnswerResult(
-            text=CONFLICT_MESSAGE,
-            escalate=True,
-            escalation_reason="conflicting_sources",
-            retrieval_score=combined[0].score,
-            cited_sources=_resolve_cited_sources([combined[0].chunk_id, conflicting.chunk_id], combined),
-        )
 
     context_block = _build_context_block(priority, general, videos)
+    if conflicting:
+        context_block = AMBIGUITY_NOTE + context_block
     user_message = f"CONTESTO RECUPERATO DAI MATERIALI DELL'ACCADEMIA:\n\n{context_block}\n\nDOMANDA DEL PARRUCCHIERE:\n{question}"
 
     raw_response = call_claude(system=SYSTEM_PROMPT, user_message=user_message, history=history)
