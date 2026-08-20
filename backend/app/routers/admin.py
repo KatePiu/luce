@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile
 from sqlalchemy.orm import Session
 
-from app.db import get_db
+from app.db import engine, get_db
 from app.escalation import resolve_escalation
 from app.models import Escalation, Source, Technique, User, Video
+from app.schema_tools import apply_schema
 from app.rag.generate import answer_question
 from app.rag.ingest import SkippedJunkFile, ingest_file
 from app.schemas import (
@@ -173,6 +174,18 @@ def delete_source(source_id: str, admin: User = Depends(require_admin), db: Sess
         raise HTTPException(status_code=404, detail="Fonte non trovata")
     db.delete(source)
     db.commit()
+
+
+@router.post("/system/apply-schema")
+def apply_schema_endpoint(admin: User = Depends(require_admin)):
+    """Applica backend/db/schema.sql al database — stesso effetto di
+    'python -m scripts.init_db', richiamabile via API quando la Shell del
+    servizio non è comoda da usare. Idempotente: sicuro da rieseguire."""
+    try:
+        count = apply_schema(engine)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"{type(exc).__name__}: {exc}")
+    return {"status": "ok", "statements_applied": count}
 
 
 @router.get("/escalations", response_model=list[EscalationOut])
