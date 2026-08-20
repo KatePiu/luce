@@ -102,6 +102,35 @@ export const TECHNIQUE_OPTIONS = [
   { slug: "casi_particolari", label: "Casi particolari" },
 ];
 
+const ALTRI_PRODOTTI_NAMES = [
+  "AMO",
+  "COPPOLINO",
+  "MINERAL RELAX",
+  "MEDITERRANEAN",
+  "MR COPPOLA",
+  "MR. COPPOLA",
+  "NATURA_MAGICA",
+  "NATURA MAGICA",
+];
+
+/** Indovina la categoria dal nome file, seguendo gli stessi pattern osservati
+ * nei materiali reali dell'Accademia (es. "TAGLIO_MARIAM.csv",
+ * "Piega_Rita_guida_tecnica.docx", "04 - HENNE SHATUSH - CASTANO.csv").
+ * È solo un suggerimento pre-selezionato: resta sempre modificabile prima
+ * di confermare il caricamento. */
+export function guessTechnique(filename: string): string {
+  const name = filename.toUpperCase();
+  if (name.includes("CASO") || name.includes("CASI")) return "casi_particolari";
+  if (name.startsWith("TAGLIO") || name.includes("TAGLIO_")) return "tagli";
+  if (name.startsWith("PHON") || name.includes("PIEGA_")) return "pieghe";
+  if (name.startsWith("TECNICO") || name.includes("TECNICO_")) return "tecnico";
+  if (name.includes("HENNE") || name.includes("SHATUSH") || name.includes("COLOR_OIL")) return "shatush";
+  if (name.includes("INFUSION")) return "infusion";
+  if (name.includes("SCHEDA_PRODOTTO") || name.includes("GUIDA_PRODOTTI") || ALTRI_PRODOTTI_NAMES.some((p) => name.includes(p)))
+    return "altri_prodotti";
+  return TECHNIQUE_OPTIONS[0].slug;
+}
+
 export const api = {
   login: (email: string, password: string) =>
     request<{ access_token: string; token_type: string }>("/auth/login", {

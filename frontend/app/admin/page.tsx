@@ -1,16 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   api,
   getToken,
+  guessTechnique,
   TECHNIQUE_OPTIONS,
   type CurrentUser,
   type EscalationOut,
   type SourceOut,
 } from "@/lib/api";
+
+type QueueStatus = "pending" | "uploading" | "done" | "error";
+
+interface QueueItem {
+  key: string;
+  file: File;
+  technique: string;
+  status: QueueStatus;
+  message?: string;
+}
 
 export default function AdminPage() {
   const router = useRouter();
@@ -21,12 +32,10 @@ export default function AdminPage() {
   const [sources, setSources] = useState<SourceOut[]>([]);
   const [escalations, setEscalations] = useState<EscalationOut[]>([]);
 
-  const [file, setFile] = useState<File | null>(null);
-  const [technique, setTechnique] = useState(TECHNIQUE_OPTIONS[0].slug);
-  const [videoUrl, setVideoUrl] = useState("");
-  const [documentUrl, setDocumentUrl] = useState("");
-  const [uploadMsg, setUploadMsg] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const [queue, setQueue] = useState<QueueItem[]>([]);
+  const [dragOver, setDragOver] = useState(false);
+  const [uploadingAll, setUploadingAll] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [testQuestion, setTestQuestion] = useState("");
   const [testResult, setTestResult] = useState<string | null>(null);
@@ -55,26 +64,46 @@ export default function AdminPage() {
     api.listEscalations("open").then(setEscalations).catch((e) => setLoadError(e.message));
   }
 
-  async function handleUpload(e: React.FormEvent) {
-    e.preventDefault();
-    if (!file) return;
-    setUploading(true);
-    setUploadMsg(null);
-    try {
-      const source = await api.uploadSource(file, technique, {
-        video_url: videoUrl || undefined,
-        document_url: documentUrl || undefined,
-      });
-      setUploadMsg(`Caricato: ${source.title} (versione ${source.version})`);
-      setFile(null);
-      setVideoUrl("");
-      setDocumentUrl("");
-      refresh();
-    } catch (err) {
-      setUploadMsg(err instanceof Error ? err.message : "Caricamento non riuscito");
-    } finally {
-      setUploading(false);
+  function addFiles(files: FileList | File[]) {
+    const items: QueueItem[] = Array.from(files).map((file) => ({
+      key: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`,
+      file,
+      technique: guessTechnique(file.name),
+      status: "pending",
+    }));
+    setQueue((prev) => [...prev, ...items]);
+  }
+
+  function updateItem(key: string, patch: Partial<QueueItem>) {
+    setQueue((prev) => prev.map((it) => (it.key === key ? { ...it, ...patch } : it)));
+  }
+
+  function removeItem(key: string) {
+    setQueue((prev) => prev.filter((it) => it.key !== key));
+  }
+
+  async function uploadAll() {
+    setUploadingAll(true);
+    // Caricamento sequenziale, un file alla volta: più lento ma non sovraccarica
+    // il backend (ogni file calcola embedding per ciascun "pezzo" del testo).
+    for (const item of queue) {
+      if (item.status === "done") continue;
+      updateItem(item.key, { status: "uploading", message: undefined });
+      try {
+        const source = await api.uploadSource(item.file, item.technique, {});
+        updateItem(item.key, { status: "done", message: `Indicizzato come "${source.title}" (v${source.version})` });
+      } catch (err) {
+        updateItem(item.key, { status: "error", message: err instanceof Error ? err.message : "Caricamento non riuscito" });
+      }
     }
+    setUploadingAll(false);
+    refresh();
+  }
+
+  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setDragOver(false);
+    if (e.dataTransfer.files?.length) addFiles(e.dataTransfer.files);
   }
 
   async function toggleSource(source: SourceOut) {
@@ -127,27 +156,95 @@ export default function AdminPage() {
 
       <div style={{ padding: "1rem", display: "flex", flexDirection: "column", gap: "2rem" }}>
         <section>
-          <h2>Carica un nuovo materiale</h2>
-          <form onSubmit={handleUpload} style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-            <input type="file" accept=".csv,.docx,.md,.txt" onChange={(e) => setFile(e.target.files?.[0] || null)} required />
-            <select value={technique} onChange={(e) => setTechnique(e.target.value)}>
-              {TECHNIQUE_OPTIONS.map((t) => (
-                <option key={t.slug} value={t.slug}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-            <input placeholder="Link al video (facoltativo)" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} />
+          <h2>Carica nuovi materiali</h2>
+          <p style={{ color: "var(--ink-muted)", fontSize: "0.85rem", marginTop: "-0.4rem" }}>
+            Trascina anche più file insieme (CSV, .docx, .md, .txt). La categoria viene indovinata dal nome
+            del file — controllala prima di confermare, puoi cambiarla dal menu su ogni riga.
+          </p>
+
+          <div
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              border: `2px dashed ${dragOver ? "var(--accent-1)" : "var(--border)"}`,
+              borderRadius: 16,
+              padding: "1.5rem 1rem",
+              textAlign: "center",
+              cursor: "pointer",
+              color: "var(--ink-muted)",
+              background: dragOver ? "color-mix(in srgb, var(--accent-1) 8%, transparent)" : "transparent",
+              transition: "border-color 0.15s ease, background 0.15s ease",
+            }}
+          >
+            Trascina qui i file, oppure clicca per sceglierli
             <input
-              placeholder="Link al documento originale (facoltativo)"
-              value={documentUrl}
-              onChange={(e) => setDocumentUrl(e.target.value)}
+              ref={fileInputRef}
+              type="file"
+              accept=".csv,.docx,.md,.txt"
+              multiple
+              hidden
+              onChange={(e) => {
+                if (e.target.files?.length) addFiles(e.target.files);
+                e.target.value = "";
+              }}
             />
-            <button className="primary-btn" type="submit" disabled={uploading || !file}>
-              {uploading ? "Caricamento…" : "Carica e indicizza"}
-            </button>
-            {uploadMsg && <p>{uploadMsg}</p>}
-          </form>
+          </div>
+
+          {queue.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.9rem" }}>
+              {queue.map((item) => (
+                <div
+                  key={item.key}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    padding: "0.5rem 0",
+                    borderBottom: "1px solid var(--border)",
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.file.name}</div>
+                    {item.message && (
+                      <div style={{ color: item.status === "error" ? "var(--danger)" : "var(--ink-muted)" }}>{item.message}</div>
+                    )}
+                  </div>
+                  <select
+                    value={item.technique}
+                    onChange={(e) => updateItem(item.key, { technique: e.target.value })}
+                    disabled={item.status === "uploading" || item.status === "done"}
+                    style={{ fontSize: "0.8rem", padding: "0.4rem 0.5rem" }}
+                  >
+                    {TECHNIQUE_OPTIONS.map((t) => (
+                      <option key={t.slug} value={t.slug}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span style={{ width: "1.3rem", textAlign: "center" }}>
+                    {item.status === "uploading" && "…"}
+                    {item.status === "done" && "✓"}
+                    {item.status === "error" && "✕"}
+                  </span>
+                  {item.status !== "uploading" && (
+                    <button className="icon-btn" onClick={() => removeItem(item.key)} aria-label="Rimuovi">
+                      ×
+                    </button>
+                  )}
+                </div>
+              ))}
+
+              <button className="primary-btn" onClick={uploadAll} disabled={uploadingAll || queue.every((q) => q.status === "done")}>
+                {uploadingAll ? "Caricamento in corso…" : `Carica e indicizza (${queue.filter((q) => q.status !== "done").length})`}
+              </button>
+            </div>
+          )}
         </section>
 
         <section>
