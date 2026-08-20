@@ -5,7 +5,7 @@ interface IconProps {
 
 const GRADIENTS = {
   brand: { from: "#a78bfa", to: "#f472b6" },
-  danger: { from: "#fb7185", to: "#ef4444" },
+  danger: { from: "#f0abfc", to: "#e881f8" },
 };
 
 function GlossyCircle({
