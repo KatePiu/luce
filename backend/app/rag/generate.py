@@ -128,13 +128,14 @@ def answer_question(
             retrieval_score=combined[0].score if combined else None,
         )
 
-    if detect_conflict(combined):
+    conflicting = detect_conflict(combined)
+    if conflicting:
         return AnswerResult(
             text=CONFLICT_MESSAGE,
             escalate=True,
             escalation_reason="conflicting_sources",
             retrieval_score=combined[0].score,
-            cited_sources=_resolve_cited_sources([combined[0].chunk_id, combined[1].chunk_id], combined),
+            cited_sources=_resolve_cited_sources([combined[0].chunk_id, conflicting.chunk_id], combined),
         )
 
     context_block = _build_context_block(priority, general, videos)

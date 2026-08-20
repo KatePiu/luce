@@ -174,15 +174,25 @@ def is_sufficient(chunks: list[RetrievedChunk]) -> bool:
     return chunks[0].score >= settings.retrieval_min_score
 
 
-def detect_conflict(chunks: list[RetrievedChunk]) -> bool:
-    """Euristica minima per i conflitti tra fonti: se i chunk migliori provengono da fonti
-    diverse con priority diverse e punteggi molto vicini, segnaliamo un possibile conflitto
-    da lasciar decidere al controllo di groundedness / a un tutor umano, invece di scegliere
-    automaticamente quale fonte privilegiare."""
+def detect_conflict(chunks: list[RetrievedChunk]) -> RetrievedChunk | None:
+    """Euristica minima per i conflitti tra fonti: se il chunk migliore e un altro chunk da
+    una fonte diversa hanno punteggi molto vicini, segnaliamo un possibile conflitto da
+    lasciar decidere al controllo di groundedness / a un tutor umano, invece di scegliere
+    automaticamente quale fonte privilegiare. Restituisce il chunk in conflitto (per citarlo
+    correttamente), o None se non c'è conflitto.
+
+    Entrambi i chunk devono superare individualmente la soglia minima di affidabilità: se il
+    punteggio migliore è già al limite della soglia, un secondo risultato mediocre e solo
+    vagamente pertinente (rumore di fondo, non un'informazione realmente in disaccordo)
+    finirebbe altrimenti per essere interpretato come una fonte "in conflitto", bloccando
+    inutilmente domande su procedure già ben coperte da un'unica guida pertinente.
+    """
     if len(chunks) < 2:
-        return False
+        return None
     top = chunks[0]
-    close_but_different_source = [
-        c for c in chunks[1:3] if c.source_id != top.source_id and (top.score - c.score) < 0.03
-    ]
-    return len(close_but_different_source) > 0
+    if top.score < settings.retrieval_min_score:
+        return None
+    for c in chunks[1:3]:
+        if c.source_id != top.source_id and c.score >= settings.retrieval_min_score and (top.score - c.score) < 0.03:
+            return c
+    return None
