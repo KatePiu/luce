@@ -374,43 +374,30 @@ input[type="file"] {
   background: var(--surface-2);
 }
 
-.round-btn {
-  width: 2.6rem;
-  height: 2.6rem;
-  border-radius: 50%;
+.icon-round-btn {
+  background: none;
   border: none;
-  background: var(--accent-solid);
-  color: #fff;
-  font-size: 1.1rem;
+  padding: 0;
+  width: 2.75rem;
+  height: 2.75rem;
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-sm);
+  filter: drop-shadow(0 6px 16px color-mix(in srgb, var(--accent-1) 45%, transparent));
 }
 
-.round-btn.send {
-  background: var(--accent-gradient);
-  box-shadow: var(--shadow-glow);
+.icon-round-btn svg {
+  display: block;
 }
 
-.round-btn:hover:not(:disabled) {
-  filter: brightness(1.1);
+.icon-round-btn:hover:not(:disabled) {
+  filter: drop-shadow(0 6px 20px color-mix(in srgb, var(--accent-1) 60%, transparent)) brightness(1.06);
 }
 
-.round-btn:disabled {
-  opacity: 0.35;
-  box-shadow: none;
-}
-
-.round-btn.recording {
-  background: var(--danger);
-  animation: pulse 1.4s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger) 45%, transparent); }
-  50% { box-shadow: 0 0 0 9px color-mix(in srgb, var(--danger) 0%, transparent); }
+.icon-round-btn:disabled {
+  opacity: 0.4;
+  filter: none;
 }
 
 .tutor-btn {
