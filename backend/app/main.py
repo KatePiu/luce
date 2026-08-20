@@ -8,8 +8,8 @@ app = FastAPI(title="LUCE — Tutor AI Accademia Coppola")
 
 app.add_middleware(
     CORSMiddleware,
-    # FRONTEND_ORIGIN in produzione (es. https://luce.vercel.app), "*" solo in sviluppo.
-    allow_origins=[settings.frontend_origin],
+    # FRONTEND_ORIGIN in produzione (uno o più indirizzi separati da virgola), "*" solo in sviluppo.
+    allow_origins=settings.frontend_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

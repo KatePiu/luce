@@ -200,6 +200,61 @@ Da qui in avanti, ogni volta che il codice viene aggiornato su GitHub (anche
 da me, in una conversazione futura), Render e Vercel ripubblicano da soli la
 versione nuova — non c'è più nulla da "caricare" a mano.
 
+### 6.4 In alternativa: versione statica via FTP (demo per il cliente)
+
+Se preferisci mostrare la chat al cliente sul tuo hosting FTP esistente
+invece di (o in aggiunta a) Vercel, si può fare: la chat web di LUCE non usa
+funzioni che richiedono un server Next.js acceso, quindi il progetto è già
+configurato per essere esportato come sito statico (solo file HTML/CSS/JS),
+caricabile via FTP su un hosting condiviso qualsiasi.
+
+**Limite importante da capire prima**: questo vale solo per la parte
+*grafica* della chat. Il "cervello" del tutor (backend + database) non può
+girare su un hosting FTP condiviso — quello resta su Render, come nella
+sezione 6.2, sempre acceso e raggiungibile da internet. La versione FTP è
+solo la vetrina che il cliente vede nel browser; per funzionare deve
+comunque parlare con il backend su Render.
+
+Procedura:
+
+1. Assicurati che il backend sia già online su Render (sezione 6.2) — ti
+   serve il suo indirizzo, es. `https://luce-backend.onrender.com`.
+2. Nella cartella `frontend/`, crea un file chiamato `.env.production.local`
+   con questa riga (con il vero indirizzo del backend):
+   ```
+   NEXT_PUBLIC_API_BASE=https://luce-backend.onrender.com
+   ```
+3. Genera la versione statica:
+   ```bash
+   cd frontend
+   npm install
+   npm run build
+   ```
+   Viene creata una cartella `frontend/out/` con tutti i file pronti — è
+   quella da caricare, non l'intera cartella `frontend`.
+4. Con un client FTP (es. FileZilla, o quello del tuo pannello hosting),
+   collegati con le credenziali del tuo hosting e carica **tutto il
+   contenuto** di `frontend/out/` (non la cartella stessa, il suo contenuto)
+   nella cartella pubblica del sito (spesso chiamata `public_html`, `www` o
+   `htdocs`).
+5. **Importante**: la pagina va messa alla radice di un dominio o
+   sottodominio (es. `https://demo-luce.tuosito.it/`), non dentro una
+   sottocartella (es. `.../demo/luce/`) — i file generati si aspettano di
+   essere serviti dalla radice. Se hai un sottodominio libero, è la scelta
+   più semplice; se serve davvero una sottocartella, dimmelo e adeguo la
+   configurazione (`basePath` in `frontend/next.config.js`).
+6. Su Render, apri `luce-backend` → "Environment" → `FRONTEND_ORIGIN` e
+   aggiungi l'indirizzo della demo separato da virgola, es.:
+   ```
+   https://luce.vercel.app,https://demo-luce.tuosito.it
+   ```
+   Senza questo passaggio il backend rifiuta le richieste della demo per
+   sicurezza (CORS).
+
+Ogni volta che aggiorni il codice, va ripetuto solo il passo 3 (rigenerare
+`out/`) e il passo 4 (ricaricare via FTP) — a differenza di Render/Vercel,
+qui non c'è pubblicazione automatica.
+
 ## 7. Collegare Superchat (WhatsApp)
 
 1. Attiva l'account Superchat (vedi documento di architettura per il costo da

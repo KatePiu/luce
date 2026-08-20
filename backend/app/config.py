@@ -48,7 +48,16 @@ class Settings(BaseSettings):
 
     # Ambiente
     environment: str = "development"
-    frontend_origin: str = "*"  # es. https://luce.vercel.app — restringere in produzione
+    # Uno o più indirizzi del frontend, separati da virgola, es.
+    # "https://luce.vercel.app,https://demo-cliente.miohosting.it" — utile
+    # quando esistono sia la versione Vercel sia una demo statica via FTP.
+    # "*" (default) accetta richieste da qualsiasi origine: va bene in
+    # sviluppo, da restringere in produzione.
+    frontend_origin: str = "*"
+
+    @property
+    def frontend_origins(self) -> list[str]:
+        return [o.strip() for o in self.frontend_origin.split(",") if o.strip()]
 
 
 settings = Settings()
