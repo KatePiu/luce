@@ -14,13 +14,21 @@ from app.rag.embeddings import embed_query
 
 CASI_PARTICOLARI_SLUG = "casi_particolari"
 
-# Le trascrizioni video (CSV) non vanno mai usate come fonte di contenuto per
-# rispondere: solo le "ricostruzioni discorsive" (guide .docx, tabelle .txt) sono
-# fonte di verità per il merito della risposta. Il CSV serve esclusivamente a
-# individuare il timestamp del video sullo stesso argomento — vedi
-# `_attach_video_timestamps`. Richiesta esplicita dell'Accademia dopo un caso reale
-# in cui una trascrizione veniva citata come se fosse una fonte alternativa di fatti.
+# Nessun file .csv va mai usato come fonte di contenuto per rispondere: solo le
+# "ricostruzioni discorsive" (guide .docx, tabelle .txt) sono fonte di verità per il
+# merito della risposta. Questo vale sia per le trascrizioni video (origin_kind
+# "transcript_csv") sia per eventuali tabelle prodotto caricate in CSV invece che
+# come scheda Word (origin_kind "product_sheet" quando la fonte è un .csv) — un
+# controllo basato solo su "transcript_csv" lasciava passare queste ultime. Il CSV
+# di trascrizione serve esclusivamente a individuare il timestamp del video sullo
+# stesso argomento — vedi `_attach_video_timestamps`. Richiesta esplicita
+# dell'Accademia dopo un caso reale in cui una trascrizione veniva citata come se
+# fosse una fonte alternativa di fatti.
 TRANSCRIPT_ORIGIN_KIND = "transcript_csv"
+
+
+def _exclude_csv_sources(stmt):
+    return stmt.where(~Source.origin_filename.ilike("%.csv"))
 
 
 @dataclass
@@ -90,7 +98,7 @@ def retrieve(
     technique_slug: str | None = None,
     top_k: int | None = None,
     query_embedding: list[float] | None = None,
-    exclude_transcripts: bool = False,
+    exclude_csv: bool = False,
 ) -> list[RetrievedChunk]:
     """Ricerca semantica sui chunk attivi, opzionalmente filtrata per tecnica/categoria.
 
@@ -98,10 +106,11 @@ def retrieve(
     `<=>` come *distanza* coseno (0 = identico, 2 = opposto), quindi la
     similarità è `1 - distanza`.
 
-    `exclude_transcripts` esclude le fonti CSV (trascrizioni): usarlo per la ricerca
-    di CONTENUTO, dato che solo le guide scritte devono rispondere nel merito — vedi
-    `TRANSCRIPT_ORIGIN_KIND`. `query_embedding` evita di ricalcolare l'embedding
-    quando già disponibile (ogni chiamata all'API di embedding ha un costo).
+    `exclude_csv` esclude qualunque fonte caricata come file .csv (trascrizioni o
+    tabelle): usarlo per la ricerca di CONTENUTO, dato che solo le guide scritte
+    devono rispondere nel merito — vedi `_exclude_csv_sources`. `query_embedding`
+    evita di ricalcolare l'embedding quando già disponibile (ogni chiamata
+    all'API di embedding ha un costo).
     """
     top_k = top_k or settings.retrieval_top_k
     query_embedding = query_embedding or embed_query(query)
@@ -111,8 +120,8 @@ def retrieve(
 
     if technique_slug:
         stmt = stmt.join(Technique, Source.technique_id == Technique.id).where(Technique.slug == technique_slug)
-    if exclude_transcripts:
-        stmt = stmt.where(Source.origin_kind != TRANSCRIPT_ORIGIN_KIND)
+    if exclude_csv:
+        stmt = _exclude_csv_sources(stmt)
 
     stmt = stmt.add_columns(distance.label("distance")).order_by(distance).limit(top_k)
 
@@ -164,19 +173,17 @@ def retrieve_with_priority(
     """
     query_embedding = embed_query(query)
     priority = retrieve(
-        db, query, technique_slug=CASI_PARTICOLARI_SLUG, top_k=top_k, query_embedding=query_embedding, exclude_transcripts=True
+        db, query, technique_slug=CASI_PARTICOLARI_SLUG, top_k=top_k, query_embedding=query_embedding, exclude_csv=True
     )
 
     top_k = top_k or settings.retrieval_top_k
     distance = Chunk.embedding.cosine_distance(query_embedding)
-    stmt = (
+    stmt = _exclude_csv_sources(
         _base_query()
         .join(Technique, Source.technique_id == Technique.id)
-        .where(Technique.slug != CASI_PARTICOLARI_SLUG, Source.origin_kind != TRANSCRIPT_ORIGIN_KIND)
-        .add_columns(distance.label("distance"))
-        .order_by(distance)
-        .limit(top_k)
+        .where(Technique.slug != CASI_PARTICOLARI_SLUG)
     )
+    stmt = stmt.add_columns(distance.label("distance")).order_by(distance).limit(top_k)
     rows = db.execute(stmt).all()
     triples = [(r[0], r[1], r[2]) for r in rows]
     distances = [r[3] for r in rows]
@@ -218,8 +225,8 @@ def _boost_named_technique(db: Session, query: str, chunks: list[RetrievedChunk]
 
     matching_source_ids = [
         s.id
-        for s in db.query(Source).filter(Source.status == "active", Source.origin_kind != TRANSCRIPT_ORIGIN_KIND).all()
-        if _extract_technique_number(s.title) == number
+        for s in db.query(Source).filter(Source.status == "active").all()
+        if not s.origin_filename.lower().endswith(".csv") and _extract_technique_number(s.title) == number
     ]
     if not matching_source_ids:
         return filtered
