@@ -22,9 +22,9 @@ from app.rag.retrieval import (
 )
 
 INSUFFICIENT_MATERIALS_MESSAGE = (
-    "Nei materiali dell'Accademia non ho trovato informazioni sufficienti per "
-    "rispondere con sicurezza a questo caso. Posso raccogliere i dettagli e "
-    "inoltrare la richiesta a un tutor umano."
+    "Con i materiali disponibili non ho una procedura verificata sufficiente per "
+    "consigliarti il prossimo passo su questo caso. Ti passo al tutor umano con il "
+    "riepilogo di quello che mi hai già detto, così non devi rispiegare tutto da capo."
 )
 
 LOW_CONFIDENCE_NOTE = (

@@ -205,7 +205,9 @@ function ChatPageInner() {
       <div className="message-list">
         {messages.length === 0 && (
           <div className="empty-state">
-            Scrivi una domanda tecnica, oppure tieni premuto il microfono per un messaggio vocale.
+            Ciao, sono Luce, il tutor virtuale dell&apos;Accademia Coppola. Posso aiutarti a
+            ritrovare procedure e video oppure guidarti passo passo se hai un dubbio tecnico.
+            Dimmi cosa stai facendo o quale problema hai davanti.
           </div>
         )}
         {messages.map((m) =>

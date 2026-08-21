@@ -27,7 +27,7 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 
 HUMAN_TAKEOVER_NOTICE = (
     "Questa conversazione è stata presa in carico da un tutor umano: "
-    "il tutor AI non risponde più qui finché non viene richiusa."
+    "resto in pausa qui finché non viene richiusa, così non ricevi risposte doppie."
 )
 
 
@@ -156,7 +156,7 @@ def request_human_tutor(
     create_escalation(db, conversation, "user_requested", summary="L'utente ha chiesto di parlare con un tutor umano.")
     return ChatMessageResponse(
         conversation_id=str(conversation.id),
-        text="Ho inoltrato la richiesta a un tutor umano. Verrai ricontattato appena possibile.",
+        text="Ho passato la richiesta a un tutor umano con il riepilogo della conversazione: ti ricontatterà appena possibile.",
         escalated=True,
     )
 
