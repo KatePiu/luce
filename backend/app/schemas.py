@@ -39,6 +39,7 @@ class CitedSourceOut(BaseModel):
 
 class ChatMessageResponse(BaseModel):
     conversation_id: str
+    message_id: str | None = None  # id del messaggio outbound, per collegare un feedback — assente per notifiche senza un vero messaggio salvato
     text: str
     escalated: bool
     cited_sources: list[CitedSourceOut] = []
@@ -113,3 +114,27 @@ class EscalationOut(BaseModel):
 
 class ResolveEscalationRequest(BaseModel):
     notes: str
+
+
+# I 7 tipi di feedback della Specifica_Definitiva_Tutor_AI, punto 11.
+FEEDBACK_TYPES = (
+    "mi_e_stata_utile",
+    "non_ha_risolto_il_problema",
+    "problema_risolto",
+    "problema_parzialmente_risolto",
+    "problema_non_risolto",
+    "risposta_non_corretta",
+    "ho_dovuto_contattare_il_tutor",
+)
+
+
+class FeedbackRequest(BaseModel):
+    tipo: str
+    nota: str | None = None
+
+
+class FeedbackResponse(BaseModel):
+    id: str
+    tipo: str
+    case_stato: str | None = None
+    escalated: bool = False

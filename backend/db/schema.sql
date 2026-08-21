@@ -177,6 +177,25 @@ ALTER TABLE escalations ADD COLUMN IF NOT EXISTS case_snapshot JSONB;
 
 CREATE INDEX IF NOT EXISTS idx_escalations_status ON escalations(status);
 
+-- Sistema di feedback (Specifica_Definitiva_Tutor_AI, punto 11): un feedback per
+-- messaggio outbound del tutor AI. Il "tipo" determina la transizione di stato del caso
+-- collegato — vedi app/case_service.py.
+CREATE TABLE IF NOT EXISTS feedback (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    case_id UUID REFERENCES cases(id) ON DELETE CASCADE,
+    message_id UUID NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
+    tipo TEXT NOT NULL CHECK (tipo IN (
+        'mi_e_stata_utile', 'non_ha_risolto_il_problema', 'problema_risolto',
+        'problema_parzialmente_risolto', 'problema_non_risolto', 'risposta_non_corretta',
+        'ho_dovuto_contattare_il_tutor'
+    )),
+    nota TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_feedback_message ON feedback(message_id);
+CREATE INDEX IF NOT EXISTS idx_feedback_case ON feedback(case_id);
+
 CREATE TABLE IF NOT EXISTS audit_log (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     actor_id UUID REFERENCES users(id),

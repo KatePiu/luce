@@ -154,6 +154,20 @@ class Case(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class Feedback(Base):
+    """Feedback dell'utente su una risposta del tutor AI (Specifica_Definitiva_Tutor_AI,
+    punto 11) — determina la transizione di stato del `Case` collegato."""
+
+    __tablename__ = "feedback"
+
+    id: Mapped[uuid.UUID] = _uuid_col()
+    case_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("cases.id", ondelete="CASCADE"))
+    message_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("messages.id", ondelete="CASCADE"))
+    tipo: Mapped[str] = mapped_column(String, nullable=False)
+    nota: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
 class Escalation(Base):
     __tablename__ = "escalations"
 

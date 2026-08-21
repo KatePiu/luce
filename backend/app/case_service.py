@@ -9,11 +9,36 @@ import logging
 
 from sqlalchemy.orm import Session
 
-from app.models import Case, Conversation
+from app.models import Case, Conversation, Feedback, Message
 from app.rag.case_extraction import CASE_FIELDS, extract_case_fields
 from app.rag.generate import CitedSource
 
 logger = logging.getLogger(__name__)
+
+# Mappa tipo di feedback -> nuovo stato del caso (Specifica_Definitiva_Tutor_AI, tabella 4
+# e punto 14 "Flusso di apprendimento"). "mi_e_stata_utile" è un segnale leggero sulla
+# risposta, non una conferma di esito: non fa avanzare lo stato da solo. Il documento non
+# prevede uno stato dedicato per "parzialmente risolto": viene trattato come NON_RISOLTO ai
+# fini della macchina a stati, mantenendo la sfumatura nel campo `esito` in chiaro.
+FEEDBACK_STATE_MAP = {
+    "mi_e_stata_utile": None,
+    "non_ha_risolto_il_problema": "NON_RISOLTO",
+    "problema_risolto": "DA_VALIDARE",
+    "problema_parzialmente_risolto": "NON_RISOLTO",
+    "problema_non_risolto": "NON_RISOLTO",
+    "risposta_non_corretta": "NON_RISOLTO",
+    "ho_dovuto_contattare_il_tutor": "ESCALATION_TUTOR",
+}
+
+FEEDBACK_ESITO_MAP = {
+    "mi_e_stata_utile": "utile",
+    "non_ha_risolto_il_problema": "non risolto",
+    "problema_risolto": "risolto",
+    "problema_parzialmente_risolto": "parzialmente risolto",
+    "problema_non_risolto": "non risolto",
+    "risposta_non_corretta": "risposta non corretta",
+    "ho_dovuto_contattare_il_tutor": "richiesto tutor umano",
+}
 
 
 def _confidence_label(score: float | None) -> str | None:
@@ -62,6 +87,27 @@ def upsert_case_from_conversation(
     db.commit()
     db.refresh(case)
     return case
+
+
+def apply_feedback(db: Session, message: Message, tipo: str, nota: str | None) -> tuple[Feedback, Case | None]:
+    """Registra un feedback su un messaggio outbound del tutor AI e aggiorna lo stato del
+    caso collegato di conseguenza (tabella 4). Ritorna (feedback, caso_aggiornato_o_None)."""
+    case = db.query(Case).filter(Case.conversation_id == message.conversation_id).one_or_none()
+
+    feedback = Feedback(case_id=case.id if case else None, message_id=message.id, tipo=tipo, nota=nota)
+    db.add(feedback)
+
+    if case is not None:
+        case.esito = FEEDBACK_ESITO_MAP.get(tipo)
+        new_stato = FEEDBACK_STATE_MAP.get(tipo)
+        if new_stato:
+            case.stato = new_stato
+
+    db.commit()
+    db.refresh(feedback)
+    if case is not None:
+        db.refresh(case)
+    return feedback, case
 
 
 def case_to_diagnostic_dict(case: Case | None) -> dict:

@@ -5,13 +5,22 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
-from app.case_service import case_to_diagnostic_dict, upsert_case_from_conversation
+from app.case_service import apply_feedback, case_to_diagnostic_dict, upsert_case_from_conversation
 from app.db import get_db
 from app.escalation import create_escalation
 from app.integrations.stt import transcribe_audio
 from app.models import Conversation, Message, User
 from app.rag.generate import answer_question
-from app.schemas import ChatMessageRequest, ChatMessageResponse, CitedSourceOut, ConversationSummary, MessageOut
+from app.schemas import (
+    FEEDBACK_TYPES,
+    ChatMessageRequest,
+    ChatMessageResponse,
+    CitedSourceOut,
+    ConversationSummary,
+    FeedbackRequest,
+    FeedbackResponse,
+    MessageOut,
+)
 from app.security import get_current_user
 
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -68,16 +77,15 @@ def _handle_incoming_text(db: Session, conversation: Conversation, text: str, ki
 
     result = answer_question(db, question=text, history=history)
 
-    db.add(
-        Message(
-            conversation_id=conversation.id,
-            direction="outbound",
-            kind="text",
-            body=result.text,
-            retrieval_score=result.retrieval_score,
-            sources_cited=[s.__dict__ for s in result.cited_sources],
-        )
+    outbound_message = Message(
+        conversation_id=conversation.id,
+        direction="outbound",
+        kind="text",
+        body=result.text,
+        retrieval_score=result.retrieval_score,
+        sources_cited=[s.__dict__ for s in result.cited_sources],
     )
+    db.add(outbound_message)
     db.commit()
 
     # Aggiorna la scheda diagnostica strutturata della conversazione (Specifica_Definitiva_
@@ -105,6 +113,7 @@ def _handle_incoming_text(db: Session, conversation: Conversation, text: str, ki
 
     return ChatMessageResponse(
         conversation_id=str(conversation.id),
+        message_id=str(outbound_message.id),
         text=result.text,
         escalated=result.escalate,
         cited_sources=[CitedSourceOut(**s.__dict__) for s in result.cited_sources],
@@ -184,3 +193,39 @@ def list_messages(conversation_id: str, user: User = Depends(get_current_user), 
         )
         for m in messages
     ]
+
+
+@router.post("/messages/{message_id}/feedback", response_model=FeedbackResponse)
+def submit_feedback(
+    message_id: str, payload: FeedbackRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)
+) -> FeedbackResponse:
+    if payload.tipo not in FEEDBACK_TYPES:
+        raise HTTPException(status_code=422, detail=f"Tipo di feedback non valido: usare uno tra {FEEDBACK_TYPES}")
+
+    message = db.get(Message, message_id)
+    if not message:
+        raise HTTPException(status_code=404, detail="Messaggio non trovato")
+    conversation = db.get(Conversation, message.conversation_id)
+    if not conversation or conversation.user_id != user.id:
+        raise HTTPException(status_code=404, detail="Messaggio non trovato")
+    if message.direction != "outbound":
+        raise HTTPException(status_code=400, detail="Il feedback si applica solo alle risposte del tutor AI")
+
+    feedback, case = apply_feedback(db, message, payload.tipo, payload.nota)
+
+    escalated = False
+    if payload.tipo == "ho_dovuto_contattare_il_tutor" and conversation.status not in ("escalated", "human_active"):
+        # Il feedback stesso dichiara che l'utente ha già dovuto contattare il tutor:
+        # l'escalation va creata ora, non solo registrata come stato del caso.
+        create_escalation(
+            db,
+            conversation,
+            "user_requested",
+            summary="L'utente ha segnalato via feedback di aver dovuto contattare il tutor.",
+            case_snapshot=case_to_diagnostic_dict(case),
+        )
+        escalated = True
+
+    return FeedbackResponse(
+        id=str(feedback.id), tipo=feedback.tipo, case_stato=case.stato if case else None, escalated=escalated
+    )

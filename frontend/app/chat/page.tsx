@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { StopIcon } from "@/components/ActionIcons";
 import LuceMark from "@/components/LuceMark";
-import { api, clearToken, getToken, type CitedSource, type MessageOut } from "@/lib/api";
+import { FEEDBACK_OPTIONS, api, clearToken, getToken, type CitedSource, type MessageOut } from "@/lib/api";
 
 interface DisplayMessage {
   id: string;
@@ -13,6 +13,8 @@ interface DisplayMessage {
   text: string;
   sources?: CitedSource[];
   escalated?: boolean;
+  messageId?: string;
+  feedbackTipo?: string;
 }
 
 export default function ChatPage() {
@@ -63,6 +65,7 @@ function ChatPageInner() {
             direction: m.direction,
             text: m.body || m.voice_transcript || "",
             sources: m.sources_cited || undefined,
+            messageId: m.direction === "outbound" ? m.id : undefined,
           }))
         );
       })
@@ -94,6 +97,7 @@ function ChatPageInner() {
         text: res.text,
         sources: res.cited_sources,
         escalated: res.escalated,
+        messageId: res.message_id || undefined,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Invio non riuscito, riprova.");
@@ -140,11 +144,24 @@ function ChatPageInner() {
         text: res.text,
         sources: res.cited_sources,
         escalated: res.escalated,
+        messageId: res.message_id || undefined,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Invio del vocale non riuscito, riprova.");
     } finally {
       setSending(false);
+    }
+  }
+
+  async function handleFeedback(messageId: string, tipo: string) {
+    try {
+      const res = await api.sendFeedback(messageId, tipo);
+      setMessages((prev) => prev.map((m) => (m.messageId === messageId ? { ...m, feedbackTipo: tipo } : m)));
+      if (res.escalated) {
+        setEscalated(true);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Invio del feedback non riuscito, riprova.");
     }
   }
 
@@ -222,6 +239,20 @@ function ChatPageInner() {
                     ))}
                   </div>
                 )}
+                {m.messageId &&
+                  (m.feedbackTipo ? (
+                    <div className="feedback-box feedback-given">
+                      Grazie per il feedback: {FEEDBACK_OPTIONS.find((o) => o.tipo === m.feedbackTipo)?.label || m.feedbackTipo}
+                    </div>
+                  ) : (
+                    <div className="feedback-box">
+                      {FEEDBACK_OPTIONS.map((opt) => (
+                        <button key={opt.tipo} className="feedback-btn" onClick={() => handleFeedback(m.messageId!, opt.tipo)}>
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  ))}
               </div>
             </div>
           )

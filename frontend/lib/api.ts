@@ -42,10 +42,30 @@ export interface CitedSource {
 
 export interface ChatMessageResponse {
   conversation_id: string;
+  message_id?: string | null;
   text: string;
   escalated: boolean;
   cited_sources: CitedSource[];
   retrieval_score?: number | null;
+}
+
+// I 7 tipi di feedback della Specifica_Definitiva_Tutor_AI, punto 11, letterali — l'ordine
+// qui determina l'ordine dei bottoni in chat.
+export const FEEDBACK_OPTIONS: { tipo: string; label: string }[] = [
+  { tipo: "mi_e_stata_utile", label: "Mi è stata utile" },
+  { tipo: "non_ha_risolto_il_problema", label: "Non ha risolto il problema" },
+  { tipo: "problema_risolto", label: "Problema risolto" },
+  { tipo: "problema_parzialmente_risolto", label: "Problema parzialmente risolto" },
+  { tipo: "problema_non_risolto", label: "Problema non risolto" },
+  { tipo: "risposta_non_corretta", label: "Risposta non corretta" },
+  { tipo: "ho_dovuto_contattare_il_tutor", label: "Ho dovuto contattare il tutor" },
+];
+
+export interface FeedbackResponse {
+  id: string;
+  tipo: string;
+  case_stato: string | null;
+  escalated: boolean;
 }
 
 export interface ConversationSummary {
@@ -182,6 +202,12 @@ export const api = {
   listConversations: () => request<ConversationSummary[]>("/chat/conversations"),
 
   listMessages: (conversationId: string) => request<MessageOut[]>(`/chat/conversations/${conversationId}/messages`),
+
+  sendFeedback: (messageId: string, tipo: string, nota?: string) =>
+    request<FeedbackResponse>(`/chat/messages/${messageId}/feedback`, {
+      method: "POST",
+      body: JSON.stringify({ tipo, nota: nota ?? null }),
+    }),
 
   // --- Amministrazione ---
 
