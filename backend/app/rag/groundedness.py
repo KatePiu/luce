@@ -69,6 +69,23 @@ def check_structural(visible_text: str, cited_chunk_ids: list[str], retrieved: l
     return GroundednessResult(True, "Citazioni valide", cited_chunk_ids, visible_text)
 
 
+def _parse_verifier_json(raw: str) -> dict | None:
+    """Il verificatore a volte racchiude il JSON in un blocco ```json ... ``` o aggiunge una
+    frase intorno, nonostante l'istruzione di rispondere solo con l'oggetto: prima di
+    considerarlo un fallimento del formato, si prova a isolare il primo blocco {...}."""
+    try:
+        return json.loads(raw.strip())
+    except json.JSONDecodeError:
+        pass
+    match = re.search(r"\{.*\}", raw, re.DOTALL)
+    if not match:
+        return None
+    try:
+        return json.loads(match.group(0))
+    except json.JSONDecodeError:
+        return None
+
+
 def check_claims_with_model(visible_text: str, retrieved: list[RetrievedChunk]) -> GroundednessResult:
     """Seconda verifica, con un'altra chiamata al modello dedicata solo a controllare che
     ogni affermazione tecnica sia supportata dai passaggi forniti (si veda GROUNDEDNESS_VERIFIER_PROMPT)."""
@@ -79,11 +96,11 @@ def check_claims_with_model(visible_text: str, retrieved: list[RetrievedChunk]) 
     user_message = f"PASSAGGI SORGENTE:\n{sources_block}\n\nRISPOSTA:\n{visible_text}"
 
     raw = call_claude(system=GROUNDEDNESS_VERIFIER_PROMPT, user_message=user_message, max_tokens=1024)
-    try:
-        parsed = json.loads(raw.strip())
-    except json.JSONDecodeError:
-        # Se il verificatore non risponde in JSON valido, per prudenza si considera FAIL:
-        # meglio un'escalation in più che una risposta non verificata mostrata all'utente.
+    parsed = _parse_verifier_json(raw)
+    if parsed is None:
+        # Se il verificatore non risponde in JSON valido nemmeno provando a isolare il blocco
+        # {...} (es. testo extra intorno, capitato in produzione), per prudenza si considera
+        # FAIL: meglio un'escalation in più che una risposta non verificata mostrata all'utente.
         return GroundednessResult(False, "Verificatore non ha risposto in formato valido")
 
     if parsed.get("verdict") == "PASS":

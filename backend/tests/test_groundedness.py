@@ -1,4 +1,4 @@
-from app.rag.groundedness import check_structural, extract_cited_sources
+from app.rag.groundedness import _parse_verifier_json, check_structural, extract_cited_sources
 from app.rag.retrieval import RetrievedChunk
 
 
@@ -51,3 +51,26 @@ def test_structural_check_passes_with_valid_citation():
 def test_structural_check_passes_for_clarifying_question_without_citation():
     result = check_structural("Qual è il colore naturale della cliente?", [], [_chunk("c1")])
     assert result.passed
+
+
+def test_parse_verifier_json_handles_plain_json():
+    assert _parse_verifier_json('{"verdict": "PASS", "unsupported_claims": []}') == {
+        "verdict": "PASS",
+        "unsupported_claims": [],
+    }
+
+
+def test_parse_verifier_json_handles_markdown_code_fence():
+    # Bug reale: il verificatore a volte racchiude il JSON in ```json ... ``` nonostante
+    # l'istruzione di rispondere solo con l'oggetto, facendo fallire una risposta corretta.
+    raw = '```json\n{"verdict": "PASS", "unsupported_claims": []}\n```'
+    assert _parse_verifier_json(raw) == {"verdict": "PASS", "unsupported_claims": []}
+
+
+def test_parse_verifier_json_handles_leading_prose():
+    raw = 'Ecco il risultato:\n{"verdict": "FAIL", "unsupported_claims": ["tempo di posa"]}'
+    assert _parse_verifier_json(raw) == {"verdict": "FAIL", "unsupported_claims": ["tempo di posa"]}
+
+
+def test_parse_verifier_json_returns_none_for_garbage():
+    assert _parse_verifier_json("non sono riuscito a rispondere in JSON") is None
