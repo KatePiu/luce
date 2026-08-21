@@ -10,7 +10,7 @@ def test_matches_title_with_mp4_extension_stripped():
 
 
 def test_matches_title_with_double_extension_stripped():
-    # Caso reale trovato in produzione: file rinominato da una conversione .mov -> .mp4.
+    # Caso reale trovato in produzione: titolo con doppia estensione nel nome del file.
     assert match_preview_url("NATURA MAGICA.mov.mp4") == VIDEO_PREVIEW_MAP["NATURA MAGICA"]
 
 
