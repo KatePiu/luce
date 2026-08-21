@@ -14,6 +14,12 @@ from app.rag.embeddings import embed_query
 
 CASI_PARTICOLARI_SLUG = "casi_particolari"
 
+# Tecnica dedicata ai "casi utente validati" (Specifica_Definitiva_Tutor_AI, livello 4
+# della gerarchia fonti): precedenti reali confermati e approvati da un admin, promossi da
+# app/case_service.py. Corsia separata dalle guide del marchio, con un tetto basso di
+# risultati — sono un precedente per un caso analogo, mai una regola universale.
+VALIDATED_CASES_SLUG = "casi_validati"
+
 # Nessun file .csv va mai usato come fonte di contenuto per rispondere: solo le
 # "ricostruzioni discorsive" (guide .docx, tabelle .txt) sono fonte di verità per il
 # merito della risposta. Questo vale sia per le trascrizioni video (origin_kind
@@ -157,29 +163,33 @@ def _attach_video_timestamps(db: Session, chunks: list[RetrievedChunk], query_em
 
 def retrieve_with_priority(
     db: Session, query: str, top_k: int | None = None
-) -> tuple[list[RetrievedChunk], list[RetrievedChunk]]:
-    """Due corsie di recupero, come richiesto per i problemi di colorazione (brief,
-    punti 12-16 e 21): i "casi particolari" vengono cercati per primi e a parte,
-    così il prompt può dar loro priorità quando pertinenti, senza escludere le
-    fonti generali (guide, prodotti) che restano comunque disponibili come
-    contesto complementare per la procedura/i prodotti da usare.
+) -> tuple[list[RetrievedChunk], list[RetrievedChunk], list[RetrievedChunk]]:
+    """Tre corsie di recupero: i "casi particolari" vengono cercati per primi e a parte
+    (brief, punti 12-16 e 21), così il prompt può dar loro priorità quando pertinenti; i
+    "casi utente validati" (livello 4 della gerarchia — Specifica_Definitiva_Tutor_AI) sono
+    anch'essi separati, con un tetto basso di risultati, dato che sono un precedente da
+    valutare per compatibilità, non una fonte alla pari delle guide ufficiali. Le fonti
+    generali (guide, prodotti) restano comunque disponibili come contesto complementare.
 
-    Entrambe le corsie cercano solo tra le fonti di contenuto (guide scritte,
-    tabelle): le trascrizioni CSV vengono escluse dalla ricerca semantica e
-    consultate solo dopo, per attaccare un timestamp video pertinente — vedi
-    `_attach_video_timestamps`.
+    Tutte le corsie cercano solo tra le fonti di contenuto (guide scritte, tabelle): le
+    trascrizioni CSV vengono escluse dalla ricerca semantica e consultate solo dopo, per
+    attaccare un timestamp video pertinente — vedi `_attach_video_timestamps`.
 
-    Nota: le "fonti esterne verificate" (principi professionali generali non
-    specifici del marchio) sono state disattivate per aderire strettamente alla
-    "Specifica definitiva" del cliente, la cui gerarchia a 6 livelli non le
-    prevede — i documenti caricati restano in produzione ma disattivati
-    (`status=disabled`), recuperabili se la decisione cambiasse in futuro.
+    Nota: le "fonti esterne verificate" (principi professionali generali non specifici del
+    marchio) sono state disattivate per aderire strettamente alla "Specifica definitiva" del
+    cliente, la cui gerarchia a 6 livelli non le prevede — i documenti caricati restano in
+    produzione ma disattivati (`status=disabled`), recuperabili se la decisione cambiasse in
+    futuro.
 
-    Ritorna (chunk_prioritari_da_casi_particolari, chunk_generali_dalle_altre_fonti).
+    Ritorna (chunk_prioritari_da_casi_particolari, chunk_generali_dalle_altre_fonti,
+    chunk_da_casi_validati).
     """
     query_embedding = embed_query(query)
     priority = retrieve(
         db, query, technique_slug=CASI_PARTICOLARI_SLUG, top_k=top_k, query_embedding=query_embedding, exclude_csv=True
+    )
+    validated_cases = retrieve(
+        db, query, technique_slug=VALIDATED_CASES_SLUG, top_k=2, query_embedding=query_embedding, exclude_csv=True
     )
 
     top_k = top_k or settings.retrieval_top_k
@@ -187,7 +197,7 @@ def retrieve_with_priority(
     stmt = _exclude_csv_sources(
         _base_query()
         .join(Technique, Source.technique_id == Technique.id)
-        .where(Technique.slug != CASI_PARTICOLARI_SLUG)
+        .where(Technique.slug.notin_([CASI_PARTICOLARI_SLUG, VALIDATED_CASES_SLUG]))
     )
     stmt = stmt.add_columns(distance.label("distance")).order_by(distance).limit(top_k)
     rows = db.execute(stmt).all()
@@ -199,7 +209,7 @@ def retrieve_with_priority(
     priority = _attach_video_timestamps(db, priority, query_embedding)
     general = _attach_video_timestamps(db, general, query_embedding)
 
-    return priority, general
+    return priority, general, validated_cases
 
 
 _TECHNIQUE_NUMBER_RE = re.compile(r"tecnica[^\d]{0,20}?(\d+)", re.IGNORECASE)

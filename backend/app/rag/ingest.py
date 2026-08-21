@@ -39,7 +39,7 @@ def _guess_origin_kind(filename: str) -> str:
     return "other"
 
 
-def _get_or_create_technique(db: Session, slug: str, label: str | None = None) -> Technique:
+def get_or_create_technique(db: Session, slug: str, label: str | None = None) -> Technique:
     technique = db.query(Technique).filter(Technique.slug == slug).one_or_none()
     if technique:
         return technique
@@ -84,7 +84,7 @@ def ingest_file(
     if not drafts:
         raise ValueError(f"Nessun contenuto estratto da '{filename}' — file vuoto o formato inatteso.")
 
-    technique = _get_or_create_technique(db, technique_slug)
+    technique = get_or_create_technique(db, technique_slug)
 
     existing = (
         db.query(Source)

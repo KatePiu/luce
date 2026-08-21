@@ -84,7 +84,9 @@ def _format_chunk(c: RetrievedChunk) -> str:
     return f"{meta}\n{c.text}"
 
 
-def _build_context_block(priority: list[RetrievedChunk], general: list[RetrievedChunk], videos: list[VideoCandidate]) -> str:
+def _build_context_block(
+    priority: list[RetrievedChunk], general: list[RetrievedChunk], validated_cases: list[RetrievedChunk], videos: list[VideoCandidate]
+) -> str:
     sections = []
     if priority:
         sections.append(
@@ -96,6 +98,17 @@ def _build_context_block(priority: list[RetrievedChunk], general: list[Retrieved
         sections.append(
             "== ALTRE FONTI PERTINENTI (guide, prodotti, procedure) ==\n\n"
             + "\n\n---\n\n".join(_format_chunk(c) for c in general)
+        )
+    if validated_cases:
+        sections.append(
+            "== CASI VALIDATI (precedenti reali confermati e approvati da un tutor umano — "
+            "livello 4 della gerarchia, sotto casi particolari e procedure ufficiali: se un "
+            "caso validato sembra contraddire una fonte ufficiale, la fonte ufficiale prevale "
+            "sempre, senza bisogno di segnalarlo come conflitto. Usa un caso validato solo se "
+            "è DAVVERO compatibile — stessa tecnica, base, capelli bianchi, porosità, zona — "
+            "non solo perché la domanda \"suona simile\": una stessa frase come \"colore troppo "
+            "arancione\" può avere soluzioni completamente diverse) ==\n\n"
+            + "\n\n---\n\n".join(_format_chunk(c) for c in validated_cases)
         )
     if videos:
         video_lines = "\n".join(f'- video_id={v.video_id} | titolo="{v.title}" | link={v.url}' for v in videos)
@@ -135,8 +148,8 @@ def answer_question(
     question: str,
     history: list[dict] | None = None,
 ) -> AnswerResult:
-    priority, general = retrieve_with_priority(db, question)
-    combined = sort_by_relevance_then_richness(priority + general)
+    priority, general, validated_cases = retrieve_with_priority(db, question)
+    combined = sort_by_relevance_then_richness(priority + general + validated_cases)
 
     videos = find_candidate_videos(db, question)
 
@@ -168,7 +181,7 @@ def answer_question(
     # groundedness dopo la generazione resta comunque la rete di sicurezza finale.
     conflicting = None if low_confidence else detect_conflict(combined)
 
-    context_block = _build_context_block(priority, general, videos)
+    context_block = _build_context_block(priority, general, validated_cases, videos)
     if conflicting:
         context_block = AMBIGUITY_NOTE + context_block
     if low_confidence:
@@ -179,10 +192,14 @@ def answer_question(
 
     result = run_groundedness_checks(raw_response, combined)
     if not result.passed:
+        # Se il modello aveva un'ambiguità segnalata e, anche dopo averla valutata, non è
+        # riuscito a produrre una risposta ancorata, è più probabile un vero conflitto tra
+        # fonti che una semplice lacuna — la Specifica_Definitiva_Tutor_AI (punto 17) chiede
+        # di segnalarlo esplicitamente agli amministratori, non solo genericamente al tutor.
         return AnswerResult(
             text=INSUFFICIENT_MATERIALS_MESSAGE,
             escalate=True,
-            escalation_reason="insufficient_sources",
+            escalation_reason="conflicting_sources" if conflicting else "insufficient_sources",
             retrieval_score=combined[0].score if combined else None,
         )
 
@@ -199,8 +216,8 @@ def debug_answer_question(db: Session, question: str) -> dict:
     """Come `answer_question`, ma espone i passaggi interni (usato solo dall'endpoint
     diagnostico admin) — in particolare la risposta grezza del modello e il motivo esatto
     di un eventuale rifiuto del controllo di groundedness, altrimenti scartato."""
-    priority, general = retrieve_with_priority(db, question)
-    combined = sort_by_relevance_then_richness(priority + general)
+    priority, general, validated_cases = retrieve_with_priority(db, question)
+    combined = sort_by_relevance_then_richness(priority + general + validated_cases)
     videos = find_candidate_videos(db, question)
 
     if not combined and not videos:
@@ -208,7 +225,7 @@ def debug_answer_question(db: Session, question: str) -> dict:
 
     low_confidence = not is_sufficient(combined)
     conflicting = None if low_confidence else detect_conflict(combined)
-    context_block = _build_context_block(priority, general, videos)
+    context_block = _build_context_block(priority, general, validated_cases, videos)
     if conflicting:
         context_block = AMBIGUITY_NOTE + context_block
     if low_confidence:

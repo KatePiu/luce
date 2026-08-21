@@ -152,6 +152,10 @@ CREATE TABLE IF NOT EXISTS cases (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Fonte creata in knowledge quando il caso viene promosso (stato VALIDATO_PER_KNOWLEDGE):
+-- permette di disattivarla in modo pulito se il caso viene in seguito declassato/ritirato.
+ALTER TABLE cases ADD COLUMN IF NOT EXISTS promoted_source_id UUID REFERENCES sources(id) ON DELETE SET NULL;
+
 CREATE INDEX IF NOT EXISTS idx_cases_stato ON cases(stato);
 
 CREATE TABLE IF NOT EXISTS escalations (

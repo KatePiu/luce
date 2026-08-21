@@ -116,6 +116,30 @@ export interface VideoOut {
   updated_at: string;
 }
 
+export interface CaseOut {
+  id: string;
+  conversation_id: string;
+  area: string | null;
+  tecnica: string | null;
+  base_partenza: string | null;
+  capelli_bianchi: string | null;
+  storico_tecnico: string | null;
+  porosita: string | null;
+  servizio_eseguito: string | null;
+  formula_prodotti: string | null;
+  tempi_condizioni: string | null;
+  problema_osservato: string | null;
+  zona_coinvolta: string | null;
+  risultato_desiderato: string | null;
+  risultato_reale: string | null;
+  fonti_trovate: string[] | null;
+  livello_confidenza: string | null;
+  esito: string | null;
+  stato: string;
+  promoted_source_id: string | null;
+  updated_at: string;
+}
+
 export interface EscalationOut {
   id: string;
   conversation_id: string;
@@ -239,6 +263,13 @@ export const api = {
 
   testResponse: (question: string) =>
     request<ChatMessageResponse>(`/admin/test-response?question=${encodeURIComponent(question)}`, { method: "POST" }),
+
+  listCases: (stato?: string) => request<CaseOut[]>(`/admin/cases${stato ? `?stato=${stato}` : ""}`),
+
+  validateCase: (caseId: string) =>
+    request<{ case: CaseOut; promoted_source_id: string }>(`/admin/cases/${caseId}/validate`, { method: "POST" }),
+
+  declassifyCase: (caseId: string) => request<CaseOut>(`/admin/cases/${caseId}/declassify`, { method: "POST" }),
 
   // --- Gestione video (svincolata dalla piattaforma: oggi Drive, in futuro Vimeo o altro) ---
 

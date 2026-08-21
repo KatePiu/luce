@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile
 from sqlalchemy.orm import Session
 
+from app.case_service import declassify_case, promote_case_to_knowledge
 from app.db import engine, get_db
 from app.escalation import resolve_escalation
 from app.models import Case, Escalation, Source, Technique, User, Video
@@ -256,6 +257,7 @@ def _case_out(case: Case) -> dict:
         "livello_confidenza": case.livello_confidenza,
         "esito": case.esito,
         "stato": case.stato,
+        "promoted_source_id": str(case.promoted_source_id) if case.promoted_source_id else None,
         "updated_at": case.updated_at,
     }
 
@@ -277,6 +279,37 @@ def get_case(conversation_id: str, admin: User = Depends(require_admin), db: Ses
     case = db.query(Case).filter(Case.conversation_id == conversation_id).one_or_none()
     if not case:
         raise HTTPException(status_code=404, detail="Nessuna scheda diagnostica per questa conversazione")
+    return _case_out(case)
+
+
+@router.post("/cases/{case_id}/validate")
+def validate_case(case_id: str, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    """Promuove un caso a Knowledge riutilizzabile (Specifica_Definitiva_Tutor_AI, punto 13
+    "Regola di promozione"): mai automatico, richiede sempre questa azione esplicita di un
+    admin/tutor. Il caso deve avere un esito positivo confermato — non ha senso validare un
+    caso ancora aperto o con esito negativo."""
+    case = db.get(Case, case_id)
+    if not case:
+        raise HTTPException(status_code=404, detail="Caso non trovato")
+    if case.stato != "DA_VALIDARE":
+        raise HTTPException(status_code=400, detail=f"Il caso non è in stato DA_VALIDARE (stato attuale: {case.stato})")
+    try:
+        source = promote_case_to_knowledge(db, case, admin.id)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"{type(exc).__name__}: {exc}")
+    return {"case": _case_out(case), "promoted_source_id": str(source.id)}
+
+
+@router.post("/cases/{case_id}/declassify")
+def declassify_case_endpoint(case_id: str, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    """Rifiuta un candidato DA_VALIDARE, oppure ritira un caso già VALIDATO_PER_KNOWLEDGE che
+    risulta non più corretto — disattiva la fonte eventualmente promossa (mai cancellata)."""
+    case = db.get(Case, case_id)
+    if not case:
+        raise HTTPException(status_code=404, detail="Caso non trovato")
+    if case.stato not in ("DA_VALIDARE", "VALIDATO_PER_KNOWLEDGE"):
+        raise HTTPException(status_code=400, detail=f"Il caso non è candidato né validato (stato attuale: {case.stato})")
+    declassify_case(db, case)
     return _case_out(case)
 
 
@@ -317,11 +350,19 @@ def debug_retrieval(question: str, admin: User = Depends(require_admin), db: Ses
     """Diagnostica: mostra i punteggi grezzi di recupero per una domanda, senza passare
     dalla generazione/dai controlli di gruppo — utile per capire perché una fonte attesa
     non viene trovata o viene superata da un'altra meno pertinente."""
-    priority, general = retrieve_with_priority(db, question)
-    combined = sort_by_relevance_then_richness(priority + general)
+    priority, general, validated_cases = retrieve_with_priority(db, question)
+    combined = sort_by_relevance_then_richness(priority + general + validated_cases)
+
+    def _lane(c: RetrievedChunk) -> str:
+        if c in priority:
+            return "casi_particolari"
+        if c in validated_cases:
+            return "casi_validati"
+        return "generale"
 
     return {
         "priority": [_debug_chunk(c, "casi_particolari") for c in priority],
         "general": [_debug_chunk(c, "generale") for c in general],
-        "combined_order": [_debug_chunk(c, "priority" if c in priority else "generale") for c in combined],
+        "validated_cases": [_debug_chunk(c, "casi_validati") for c in validated_cases],
+        "combined_order": [_debug_chunk(c, _lane(c)) for c in combined],
     }

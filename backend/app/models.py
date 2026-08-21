@@ -150,6 +150,7 @@ class Case(Base):
     stato: Mapped[str] = mapped_column(String, default="RISPOSTA_AI")
     validated_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"))
     validated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    promoted_source_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("sources.id", ondelete="SET NULL"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

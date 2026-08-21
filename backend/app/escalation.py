@@ -55,9 +55,22 @@ def _notify_human_tutor(db: Session, conversation: Conversation, escalation: Esc
         if righe:
             scheda = f"\nScheda diagnostica:\n{righe}\n"
 
+    # Specifica_Definitiva_Tutor_AI, punto 17 "Regola sui conflitti": due fonti ufficiali
+    # (procedure/casi particolari) davvero incompatibili vanno segnalate esplicitamente agli
+    # amministratori, non trattate come una generica mancanza di informazioni.
+    avviso_conflitto = ""
+    if escalation.reason == "conflicting_sources":
+        avviso_conflitto = (
+            "\n⚠️ CONFLITTO TRA FONTI UFFICIALI: due fonti approvate dell'Accademia sembrano "
+            "dare indicazioni incompatibili sullo stesso caso. Richiede la revisione di un "
+            "amministratore prima di rispondere alla parrucchiera, non solo la verifica di un "
+            "tutor.\n"
+        )
+
     body = (
         f"Nuova escalation dal tutor AI LUCE.\n\n"
         f"Motivo: {escalation.reason}\n"
+        f"{avviso_conflitto}"
         f"Riepilogo: {escalation.summary}\n"
         f"{scheda}\n"
         f"Canale: {conversation.channel}\n"

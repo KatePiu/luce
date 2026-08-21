@@ -8,11 +8,18 @@ import {
   getToken,
   guessTechnique,
   TECHNIQUE_OPTIONS,
+  type CaseOut,
   type CurrentUser,
   type EscalationOut,
   type SourceOut,
   type VideoOut,
 } from "@/lib/api";
+
+const CASE_FILTERS: { stato: string; label: string }[] = [
+  { stato: "DA_VALIDARE", label: "Da validare" },
+  { stato: "VALIDATO_PER_KNOWLEDGE", label: "Validati (Knowledge)" },
+  { stato: "NON_RISOLTO", label: "Casi negativi" },
+];
 
 type QueueStatus = "pending" | "uploading" | "done" | "error";
 
@@ -41,6 +48,10 @@ export default function AdminPage() {
   const [sources, setSources] = useState<SourceOut[]>([]);
   const [videos, setVideos] = useState<VideoOut[]>([]);
   const [escalations, setEscalations] = useState<EscalationOut[]>([]);
+
+  const [cases, setCases] = useState<CaseOut[]>([]);
+  const [casesFilter, setCasesFilter] = useState(CASE_FILTERS[0].stato);
+  const [casesBusy, setCasesBusy] = useState<string | null>(null);
 
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [dragOver, setDragOver] = useState(false);
@@ -79,7 +90,15 @@ export default function AdminPage() {
     api.listSources().then(setSources).catch((e) => setLoadError(e.message));
     api.listVideos().then(setVideos).catch((e) => setLoadError(e.message));
     api.listEscalations("open").then(setEscalations).catch((e) => setLoadError(e.message));
+    api.listCases(casesFilter).then(setCases).catch((e) => setLoadError(e.message));
   }
+
+  useEffect(() => {
+    if (user?.role === "admin") {
+      api.listCases(casesFilter).then(setCases).catch((e) => setLoadError(e.message));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [casesFilter]);
 
   function addFiles(files: FileList | File[]) {
     const items: QueueItem[] = Array.from(files).map((file) => ({
@@ -181,6 +200,31 @@ export default function AdminPage() {
     const notes = window.prompt("Note sulla risoluzione (facoltative):") || "";
     await api.resolveEscalation(escalationId, notes);
     refresh();
+  }
+
+  async function handleValidateCase(caseId: string) {
+    setCasesBusy(caseId);
+    try {
+      await api.validateCase(caseId);
+      setCases((prev) => prev.filter((c) => c.id !== caseId));
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : "Validazione non riuscita");
+    } finally {
+      setCasesBusy(null);
+    }
+  }
+
+  async function handleDeclassifyCase(caseId: string) {
+    if (!window.confirm("Declassare questo caso? La fonte eventualmente promossa verrà disattivata.")) return;
+    setCasesBusy(caseId);
+    try {
+      await api.declassifyCase(caseId);
+      setCases((prev) => prev.filter((c) => c.id !== caseId));
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : "Operazione non riuscita");
+    } finally {
+      setCasesBusy(null);
+    }
   }
 
   async function handleTest(e: React.FormEvent) {
@@ -442,6 +486,59 @@ export default function AdminPage() {
               <button className="icon-btn" onClick={() => handleResolve(e.id)}>
                 Segna come risolta
               </button>
+            </div>
+          ))}
+        </section>
+
+        <section>
+          <h2>Casi</h2>
+          <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.7rem" }}>
+            {CASE_FILTERS.map((f) => (
+              <button
+                key={f.stato}
+                className="icon-btn"
+                style={casesFilter === f.stato ? { borderColor: "var(--accent-1)", color: "var(--accent-ink)" } : undefined}
+                onClick={() => setCasesFilter(f.stato)}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+          {cases.length === 0 && <p style={{ color: "var(--ink-muted)" }}>Nessun caso in questo stato.</p>}
+          {cases.map((c) => (
+            <div key={c.id} style={{ padding: "0.6rem 0", borderBottom: "1px solid var(--border)" }}>
+              <div>
+                <b>{c.problema_osservato || c.area || "Caso senza descrizione"}</b>
+                {c.tecnica && <> — {c.tecnica}</>}
+              </div>
+              <div style={{ color: "var(--ink-muted)", fontSize: "0.85rem" }}>
+                {[
+                  c.base_partenza && `Base: ${c.base_partenza}`,
+                  c.capelli_bianchi && `Bianchi: ${c.capelli_bianchi}`,
+                  c.porosita && `Porosità: ${c.porosita}`,
+                  c.zona_coinvolta && `Zona: ${c.zona_coinvolta}`,
+                  c.risultato_reale && `Risultato: ${c.risultato_reale}`,
+                ]
+                  .filter(Boolean)
+                  .join(" · ") || "Scheda diagnostica incompleta"}
+              </div>
+              <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.4rem" }}>
+                {c.stato === "DA_VALIDARE" && (
+                  <>
+                    <button className="icon-btn" disabled={casesBusy === c.id} onClick={() => handleValidateCase(c.id)}>
+                      Valida → Knowledge
+                    </button>
+                    <button className="icon-btn" disabled={casesBusy === c.id} onClick={() => handleDeclassifyCase(c.id)}>
+                      Rifiuta
+                    </button>
+                  </>
+                )}
+                {c.stato === "VALIDATO_PER_KNOWLEDGE" && (
+                  <button className="icon-btn" disabled={casesBusy === c.id} onClick={() => handleDeclassifyCase(c.id)}>
+                    Declassa/ritira
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </section>

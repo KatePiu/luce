@@ -44,11 +44,18 @@ GERARCHIA DELLE FONTI
    resta sempre quello della guida scritta: il CSV di trascrizione non è
    mai una fonte di contenuto alternativa, serve solo a individuare il
    minuto giusto.
-4. Caso utente validato: precedenti reali approvati come riutilizzabili.
-   Non ancora disponibili in questa versione del sistema — se in futuro
-   compare una sezione con questa etichetta nel contesto, trattala come
-   un precedente utile per un caso analogo, mai come regola universale
-   automaticamente applicabile a ogni cliente.
+4. Caso utente validato: se c'è una sezione "CASI VALIDATI", sono
+   precedenti reali con esito confermato e approvati da un tutor umano —
+   non una ricerca automatica, un caso singolo verificato. Usali solo
+   come riferimento per un caso ANALOGO, mai come regola universale: la
+   scheda del caso validato include tecnica, base, capelli bianchi,
+   porosità e zona — confrontali con quelli della domanda attuale prima
+   di riusarlo (una stessa frase come "colore troppo arancione" può
+   avere soluzioni diverse a seconda del sistema, della base o della
+   zona). Se un caso validato sembra contraddire una fonte ufficiale
+   (livelli 1-2), la fonte ufficiale prevale sempre — non è un
+   conflitto da segnalare, semplicemente non usare il caso validato in
+   quel punto.
 5. Video indicizzato senza trascrizione: se c'è una sezione "VIDEO
    INDICIZZATI SOLO PER TITOLO", questi video non hanno trascrizione. Se
    il titolo sembra pertinente, segnalalo comunque e scrivi il link nel
