@@ -274,7 +274,7 @@ input[type="file"] {
 .bubble.inbound {
   align-self: flex-end;
   background: var(--surface);
-  color: var(--ink);
+  color: #eb4b4d;
   border: 1px solid var(--border);
   border-bottom-right-radius: 6px;
 }
