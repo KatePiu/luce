@@ -166,6 +166,18 @@ def _resolve_cited_sources(cited_ids: list[str], retrieved: list[RetrievedChunk]
     return out
 
 
+def _exclude_already_covered_videos(videos: list[VideoCandidate], combined: list[RetrievedChunk]) -> list[VideoCandidate]:
+    """Un video che ha già un passaggio trascritto tra i chunk recuperati (quindi già
+    citabile con anteprima e timestamp reali via <cited_sources>) non va proposto ANCHE come
+    "video indicizzato solo per titolo": il modello lo vedrebbe in entrambe le sezioni del
+    contesto e poteva referenziarlo in entrambi i blocchi, producendo due card duplicate per
+    lo stesso video (trovato in test end-to-end — vedi Luce_Anteprime_Video_Cowork_Specifica,
+    criterio "click su anteprima e link aprono lo stesso video": due card sono comunque un
+    difetto di UX anche se puntano allo stesso posto)."""
+    covered_ids = {c.video_id for c in combined if c.video_id}
+    return [v for v in videos if v.video_id not in covered_ids]
+
+
 def _resolve_suggested_videos(suggested_ids: list[str], videos: list[VideoCandidate]) -> list[SuggestedVideo]:
     by_id = {v.video_id: v for v in videos}
     out: list[SuggestedVideo] = []
@@ -195,7 +207,7 @@ def answer_question(
     priority, general, validated_cases = retrieve_with_priority(db, question)
     combined = sort_by_relevance_then_richness(priority + general + validated_cases)
 
-    videos = find_candidate_videos(db, question)
+    videos = _exclude_already_covered_videos(find_candidate_videos(db, question), combined)
 
     # Nessun passaggio e nessun video: non c'è nulla su cui far ragionare il modello,
     # a prescindere da quanto la domanda sia vaga o precisa — unico caso in cui si
@@ -264,7 +276,7 @@ def debug_answer_question(db: Session, question: str) -> dict:
     di un eventuale rifiuto del controllo di groundedness, altrimenti scartato."""
     priority, general, validated_cases = retrieve_with_priority(db, question)
     combined = sort_by_relevance_then_richness(priority + general + validated_cases)
-    videos = find_candidate_videos(db, question)
+    videos = _exclude_already_covered_videos(find_candidate_videos(db, question), combined)
 
     if not combined and not videos:
         return {"stage": "no_sources_before_generation", "combined_top_score": None}
