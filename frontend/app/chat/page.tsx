@@ -7,6 +7,16 @@ import { StopIcon } from "@/components/ActionIcons";
 import LuceMark from "@/components/LuceMark";
 import { FEEDBACK_OPTIONS, api, clearToken, getToken, type CitedSource, type MessageOut } from "@/lib/api";
 
+// Luce genera occasionalmente markdown leggero (**grassetto**) nelle risposte: lo rendiamo
+// come <strong> invece di mostrare gli asterischi letterali. Nessun'altra sintassi markdown
+// è gestita di proposito — è l'unica che compare nei materiali/risposte reali.
+function renderAssistantText(text: string) {
+  return text.split(/(\*\*.+?\*\*)/g).map((part, i) => {
+    const match = part.match(/^\*\*(.+)\*\*$/);
+    return match ? <strong key={i}>{match[1]}</strong> : part;
+  });
+}
+
 interface DisplayMessage {
   id: string;
   direction: "inbound" | "outbound";
@@ -225,7 +235,7 @@ function ChatPageInner() {
                 <LuceMark size={14} />
               </div>
               <div className="assistant-content">
-                {m.text}
+                {renderAssistantText(m.text)}
                 {m.sources && m.sources.length > 0 && (
                   <div className="sources-box">
                     {m.sources.map((s) => (
