@@ -52,6 +52,7 @@ class ConversationSummary(BaseModel):
     channel: str
     status: str
     updated_at: datetime
+    preview: str | None = None  # testo del primo messaggio dell'utente, per distinguere le conversazioni in elenco
 
 
 class MessageOut(BaseModel):

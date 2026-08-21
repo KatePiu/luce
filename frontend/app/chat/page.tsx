@@ -7,15 +7,32 @@ import { StopIcon } from "@/components/ActionIcons";
 import LuceMark from "@/components/LuceMark";
 import { FEEDBACK_OPTIONS, api, clearToken, getToken, type CitedSource, type MessageOut } from "@/lib/api";
 
-// Luce genera occasionalmente markdown leggero (**grassetto**) nelle risposte: lo rendiamo
-// come <strong> invece di mostrare gli asterischi letterali. Nessun'altra sintassi markdown
-// è gestita di proposito — è l'unica che compare nei materiali/risposte reali.
+// Luce genera occasionalmente markdown leggero (**grassetto**) e link diretti ai video nelle
+// risposte (WhatsApp li interpreta nativamente). Nella chat web li rendiamo come <strong> e
+// <a> invece di mostrare asterischi/URL grezzi non cliccabili. Nessun'altra sintassi markdown
+// è gestita di proposito — sono le uniche che compaiono nei materiali/risposte reali.
 function renderAssistantText(text: string) {
-  return text.split(/(\*\*.+?\*\*)/g).map((part, i) => {
-    const match = part.match(/^\*\*(.+)\*\*$/);
-    return match ? <strong key={i}>{match[1]}</strong> : part;
+  return text.split(/(\*\*.+?\*\*|https?:\/\/\S+)/g).map((part, i) => {
+    const boldMatch = part.match(/^\*\*(.+)\*\*$/);
+    if (boldMatch) return <strong key={i}>{boldMatch[1]}</strong>;
+    if (/^https?:\/\/\S+$/.test(part)) {
+      return (
+        <a key={i} href={part} target="_blank" rel="noreferrer">
+          {part}
+        </a>
+      );
+    }
+    return part;
   });
 }
+
+// Domande di esempio per la schermata iniziale: aiutano il primo utilizzo (un tap invece di
+// dover capire cosa scrivere) e mostrano il tipo di domande a cui Luce sa rispondere bene.
+const EXAMPLE_QUESTIONS = [
+  "Tempo di posa dell'henné rosso su base 7",
+  "Come correggere un riflesso troppo arancione",
+  "Procedura del Taglio Mariam",
+];
 
 interface DisplayMessage {
   id: string;
@@ -25,6 +42,7 @@ interface DisplayMessage {
   escalated?: boolean;
   messageId?: string;
   feedbackTipo?: string;
+  feedbackExpanded?: boolean;
 }
 
 export default function ChatPage() {
@@ -52,6 +70,7 @@ function ChatPageInner() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const listEndRef = useRef<HTMLDivElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     if (!getToken()) {
@@ -86,12 +105,22 @@ function ChatPageInner() {
     listEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Il campo di scrittura cresce con il testo (fino al max-height definito in CSS, poi
+  // scrolla): senza questo, una domanda più lunga di una riga nasconde alla vista quanto
+  // già digitato, con il rischio di non accorgersi di un errore di battitura.
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [input]);
+
   function pushMessage(msg: DisplayMessage) {
     setMessages((prev) => [...prev, msg]);
   }
 
-  async function handleSend() {
-    const text = input.trim();
+  async function handleSend(overrideText?: string) {
+    const text = (overrideText ?? input).trim();
     if (!text || sending) return;
     setInput("");
     setError(null);
@@ -218,11 +247,20 @@ function ChatPageInner() {
 
       <div className="message-list">
         {messages.length === 0 && (
-          <div className="empty-state">
-            Ciao, sono Luce, il tutor virtuale dell&apos;Accademia Coppola. Posso aiutarti a
-            ritrovare procedure e video oppure guidarti passo passo se hai un dubbio tecnico.
-            Dimmi cosa stai facendo o quale problema hai davanti.
-          </div>
+          <>
+            <div className="empty-state">
+              Ciao, sono Luce, il tutor virtuale dell&apos;Accademia Coppola. Posso aiutarti a
+              ritrovare procedure e video oppure guidarti passo passo se hai un dubbio tecnico.
+              Dimmi cosa stai facendo o quale problema hai davanti.
+            </div>
+            <div className="example-chips">
+              {EXAMPLE_QUESTIONS.map((q) => (
+                <button key={q} className="example-chip" onClick={() => handleSend(q)} disabled={sending}>
+                  {q}
+                </button>
+              ))}
+            </div>
+          </>
         )}
         {messages.map((m) =>
           m.direction === "inbound" ? (
@@ -262,11 +300,33 @@ function ChatPageInner() {
                     </div>
                   ) : (
                     <div className="feedback-box">
-                      {FEEDBACK_OPTIONS.map((opt) => (
-                        <button key={opt.tipo} className="feedback-btn" onClick={() => handleFeedback(m.messageId!, opt.tipo)}>
-                          {opt.label}
+                      <div className="feedback-row">
+                        <button
+                          className="feedback-btn feedback-btn-primary"
+                          onClick={() => handleFeedback(m.messageId!, FEEDBACK_OPTIONS[0].tipo)}
+                        >
+                          {FEEDBACK_OPTIONS[0].label}
                         </button>
-                      ))}
+                        <button
+                          className="feedback-btn"
+                          onClick={() =>
+                            setMessages((prev) =>
+                              prev.map((msg) => (msg.id === m.id ? { ...msg, feedbackExpanded: !msg.feedbackExpanded } : msg))
+                            )
+                          }
+                        >
+                          Altro feedback
+                        </button>
+                      </div>
+                      {m.feedbackExpanded && (
+                        <div className="feedback-row feedback-row-secondary">
+                          {FEEDBACK_OPTIONS.slice(1).map((opt) => (
+                            <button key={opt.tipo} className="feedback-btn" onClick={() => handleFeedback(m.messageId!, opt.tipo)}>
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
               </div>
@@ -297,6 +357,7 @@ function ChatPageInner() {
 
       <div className="composer">
         <textarea
+          ref={textareaRef}
           rows={1}
           placeholder="Scrivi la tua domanda…"
           value={input}
@@ -324,7 +385,7 @@ function ChatPageInner() {
         </button>
         <button
           className="icon-round-btn"
-          onClick={handleSend}
+          onClick={() => handleSend()}
           disabled={sending || escalated || !input.trim()}
           aria-label="Invia"
         >

@@ -44,7 +44,9 @@ export default function HistoryPage() {
         {conversations.map((c) => (
           <li key={c.id}>
             <Link href={`/chat?c=${c.id}`}>
-              <div>{c.channel === "web" ? "Chat web" : "WhatsApp"}</div>
+              <div className="history-preview">
+                {c.preview ? (c.preview.length > 70 ? `${c.preview.slice(0, 70)}…` : c.preview) : c.channel === "web" ? "Chat web" : "WhatsApp"}
+              </div>
               <div className="status">
                 {statusLabel[c.status] || c.status} · {new Date(c.updated_at).toLocaleString("it-IT")}
               </div>

@@ -179,10 +179,21 @@ def list_conversations(user: User = Depends(get_current_user), db: Session = Dep
     conversations = (
         db.query(Conversation).filter(Conversation.user_id == user.id).order_by(Conversation.updated_at.desc()).all()
     )
-    return [
-        ConversationSummary(id=str(c.id), channel=c.channel, status=c.status, updated_at=c.updated_at)
-        for c in conversations
-    ]
+    result = []
+    for c in conversations:
+        # Primo messaggio dell'utente, per mostrare un'anteprima in elenco invece del solo
+        # canale/orario (altrimenti ogni conversazione web è indistinguibile dalle altre).
+        first_message = (
+            db.query(Message)
+            .filter(Message.conversation_id == c.id, Message.direction == "inbound")
+            .order_by(Message.created_at.asc())
+            .first()
+        )
+        preview = (first_message.body or first_message.voice_transcript) if first_message else None
+        result.append(
+            ConversationSummary(id=str(c.id), channel=c.channel, status=c.status, updated_at=c.updated_at, preview=preview)
+        )
+    return result
 
 
 @router.get("/conversations/{conversation_id}/messages", response_model=list[MessageOut])

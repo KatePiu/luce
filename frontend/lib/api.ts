@@ -74,6 +74,7 @@ export interface ConversationSummary {
   channel: string;
   status: string;
   updated_at: string;
+  preview: string | null;
 }
 
 export interface MessageOut {

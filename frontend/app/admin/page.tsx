@@ -275,14 +275,18 @@ export default function AdminPage() {
             <input placeholder="Titolo del video" value={newVideoTitle} onChange={(e) => setNewVideoTitle(e.target.value)} />
             <input placeholder="Link (Drive, Vimeo, ...)" value={newVideoUrl} onChange={(e) => setNewVideoUrl(e.target.value)} />
             <div style={{ display: "flex", gap: "0.5rem" }}>
-              <select value={newVideoPlatform} onChange={(e) => setNewVideoPlatform(e.target.value)} style={{ flex: 1 }}>
+              <select value={newVideoPlatform} onChange={(e) => setNewVideoPlatform(e.target.value)} style={{ flex: 1, minWidth: 0 }}>
                 {PLATFORM_OPTIONS.map((p) => (
                   <option key={p.slug} value={p.slug}>
                     {p.label}
                   </option>
                 ))}
               </select>
-              <select value={newVideoTechnique} onChange={(e) => setNewVideoTechnique(e.target.value)} style={{ flex: 1 }}>
+              <select
+                value={newVideoTechnique}
+                onChange={(e) => setNewVideoTechnique(e.target.value)}
+                style={{ flex: 1, minWidth: 0 }}
+              >
                 {TECHNIQUE_OPTIONS.map((t) => (
                   <option key={t.slug} value={t.slug}>
                     {t.label}
@@ -405,7 +409,7 @@ export default function AdminPage() {
                     value={item.technique}
                     onChange={(e) => updateItem(item.key, { technique: e.target.value })}
                     disabled={item.status === "uploading" || item.status === "done"}
-                    style={{ fontSize: "0.8rem", padding: "0.4rem 0.5rem" }}
+                    style={{ fontSize: "0.8rem", padding: "0.4rem 0.5rem", minWidth: 0 }}
                   >
                     {TECHNIQUE_OPTIONS.map((t) => (
                       <option key={t.slug} value={t.slug}>
