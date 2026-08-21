@@ -47,6 +47,7 @@ export interface ChatMessageResponse {
   escalated: boolean;
   cited_sources: CitedSource[];
   retrieval_score?: number | null;
+  transcript?: string | null;
 }
 
 // I 7 tipi di feedback della Specifica_Definitiva_Tutor_AI, punto 11, letterali — l'ordine

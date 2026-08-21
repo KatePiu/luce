@@ -131,13 +131,17 @@ function ChatPageInner() {
       recorder.stop();
     });
 
-    pushMessage({ id: `local-voice-${Date.now()}`, direction: "inbound", text: "🎤 Messaggio vocale…" });
+    const placeholderId = `local-voice-${Date.now()}`;
+    pushMessage({ id: placeholderId, direction: "inbound", text: "🎤 Trascrizione in corso…" });
     setSending(true);
     setError(null);
     try {
       const res = await api.sendVoice(audioBlob, conversationId);
       setConversationId(res.conversation_id);
       setEscalated(res.escalated);
+      if (res.transcript) {
+        setMessages((prev) => prev.map((m) => (m.id === placeholderId ? { ...m, text: res.transcript as string } : m)));
+      }
       pushMessage({
         id: `${res.conversation_id}-${Date.now()}`,
         direction: "outbound",

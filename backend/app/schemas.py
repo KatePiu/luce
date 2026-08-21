@@ -44,6 +44,7 @@ class ChatMessageResponse(BaseModel):
     escalated: bool
     cited_sources: list[CitedSourceOut] = []
     retrieval_score: float | None = None
+    transcript: str | None = None  # testo trascritto del messaggio in ingresso, solo per i vocali
 
 
 class ConversationSummary(BaseModel):

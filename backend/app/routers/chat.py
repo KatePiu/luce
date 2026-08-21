@@ -76,7 +76,9 @@ def _handle_incoming_text(db: Session, conversation: Conversation, text: str, ki
     db.commit()
 
     if conversation.status in ("escalated", "human_active"):
-        return ChatMessageResponse(conversation_id=str(conversation.id), text=HUMAN_TAKEOVER_NOTICE, escalated=True)
+        return ChatMessageResponse(
+            conversation_id=str(conversation.id), text=HUMAN_TAKEOVER_NOTICE, escalated=True, transcript=voice_transcript
+        )
 
     result = answer_question(db, question=text, history=history)
 
@@ -121,6 +123,7 @@ def _handle_incoming_text(db: Session, conversation: Conversation, text: str, ki
         escalated=result.escalate,
         cited_sources=[CitedSourceOut(**s.__dict__) for s in result.cited_sources],
         retrieval_score=result.retrieval_score,
+        transcript=voice_transcript,
     )
 
 
