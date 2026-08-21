@@ -271,13 +271,14 @@ input[type="file"] {
   line-height: 1.45;
   font-size: 0.95rem;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
   animation: messageIn 0.25s ease-out;
 }
 
 .bubble.inbound {
   align-self: flex-end;
   background: var(--surface);
-  color: #eb4b4d;
+  color: #cb44c0;
   border: 1px solid var(--border);
   border-bottom-right-radius: 6px;
 }
@@ -309,6 +310,7 @@ input[type="file"] {
   line-height: 1.5;
   font-size: 0.95rem;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
   color: var(--ink);
 }
 
