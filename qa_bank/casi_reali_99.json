@@ -1,0 +1,695 @@
+[
+  {
+    "id": 1,
+    "category": "A. Colorazione e diagnosi iniziale",
+    "situation": "La cliente chiede un colore visto in foto e non sai quale formula utilizzare sulla sua base reale.",
+    "expected_answer": "Non formulare dalla sola fotografia. Prima determina base di partenza, percentuale e distribuzione dei capelli bianchi, colore cosmetico precedente, eventuali schiariture, porosità e risultato desiderato. La stessa altezza di tono può richiedere costruzioni diverse in funzione della base e del bianco. Se la storia colore è incerta, valuta un test su ciocca prima di impegnarti in una correzione importante.",
+    "source_criterion": "Knowledge interna + verifica professionale esterna sulla consulenza colore e sul test su ciocca."
+  },
+  {
+    "id": 2,
+    "category": "A. Colorazione e diagnosi iniziale",
+    "situation": "La cliente ha una ricrescita diversa dalle lunghezze: devo usare la stessa formula?",
+    "expected_answer": "Non necessariamente. Tratta radice e lunghezze come basi differenti. Se le lunghezze sono precedentemente schiarite e più porose, possono assorbire più pigmento e richiedere una scelta più leggera rispetto alla radice. Chiedi sempre base della ricrescita, colore delle lunghezze, trattamenti precedenti, porosità e obiettivo.",
+    "source_criterion": "Knowledge interna: pigmenti e gestione differenziata radice/lunghezze."
+  },
+  {
+    "id": 3,
+    "category": "A. Colorazione e diagnosi iniziale",
+    "situation": "La cliente ha molti capelli bianchi ma non vuole un risultato troppo coprente o artificiale.",
+    "expected_answer": "Prima chiarisci se desidera copertura piena oppure riflessatura/blending. Nella knowledge, Infusion è descritto come sistema di riflessatura e non come colorazione di copertura tradizionale: modifica il riflesso senza creare la stessa ricrescita netta di una tinta coprente. Non partire quindi automaticamente da 'molto bianco = massima copertura'.",
+    "source_criterion": "Knowledge interna: filosofia Infusion."
+  },
+  {
+    "id": 4,
+    "category": "A. Colorazione e diagnosi iniziale",
+    "situation": "La cliente ha capelli bianchi soltanto sulle tempie.",
+    "expected_answer": "Diagnostica le tempie separatamente. Nell'Henné la peluria corta dell'attaccatura può prendere il riflesso più rapidamente; in presenza di capelli bianchi la gestione cambia e può richiedere pigmento o un ordine di applicazione diverso. Chiedi quanto bianco c'è nella zona frontale e quale risultato si vuole ottenere.",
+    "source_criterion": "Knowledge interna: attaccatura e capelli bianchi."
+  },
+  {
+    "id": 5,
+    "category": "A. Colorazione e diagnosi iniziale",
+    "situation": "Il colore precedente è molto più scuro del risultato che la cliente desidera oggi.",
+    "expected_answer": "Non trattare il colore cosmetico esistente come se fosse una base naturale. La knowledge caricata non contiene una procedura generale sufficiente per stabilire come schiarire qualsiasi tinta preesistente: l'AI deve quindi evitare formule inventate e chiedere altezza attuale, altezza desiderata, storia colore e condizione della fibra.",
+    "source_criterion": "Regola di non-allucinazione + knowledge interna."
+  },
+  {
+    "id": 6,
+    "category": "A. Colorazione e diagnosi iniziale",
+    "situation": "La cliente non ricorda quale colore le è stato applicato nel servizio precedente.",
+    "expected_answer": "Non formulare basandoti su un'ipotesi. Ricostruisci quando è stato fatto l'ultimo colore, se si trattava di colorazione, pigmento diretto, henné o altro, eventuali schiariture, differenze tra radice e lunghezze e porosità. Se l'incertezza rimane, il test su ciocca è una misura prudente.",
+    "source_criterion": "Knowledge interna + verifica professionale esterna."
+  },
+  {
+    "id": 7,
+    "category": "A. Colorazione e diagnosi iniziale",
+    "situation": "Non riesci a capire con certezza quale altezza di tono hai davanti.",
+    "expected_answer": "La knowledge usa le altezze di tono come parametro centrale ma non fornisce una procedura completa per determinarle visivamente. L'AI deve quindi distinguere almeno base naturale, colore cosmetico, schiariture e capelli bianchi e, se manca una valutazione certa, non deve inventare una classificazione.",
+    "source_criterion": "Knowledge interna; informazione metodologica incompleta."
+  },
+  {
+    "id": 8,
+    "category": "A. Colorazione e diagnosi iniziale",
+    "situation": "Non è chiaro se il riflesso presente sia rosso, rame, arancio o dorato.",
+    "expected_answer": "Non correggere finché non identifichi il riflesso. La knowledge distingue chiaramente rosso, arancio/dorato-rame e dorato, e associa correttori diversi a sistemi diversi. Il tutor deve chiedere anche dove compare il riflesso e su quale altezza di tono.",
+    "source_criterion": "Knowledge interna: colorimetria, Henné e Infusion."
+  },
+  {
+    "id": 9,
+    "category": "A. Colorazione e diagnosi iniziale",
+    "situation": "La cliente vuole un colore più freddo rispetto all'ultima volta.",
+    "expected_answer": "Nel caso Color Oil, la guida indica di ridurre la quantità di dorato nella miscela. Questa regola è specifica del sistema Color Oil e non va estesa automaticamente a qualsiasi colorazione.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 10,
+    "category": "A. Colorazione e diagnosi iniziale",
+    "situation": "La cliente vuole mantenere lo stesso colore ma renderlo leggermente più caldo.",
+    "expected_answer": "Nel caso Color Oil, la guida indica che la quota di dorato può essere aumentata. Confronta sempre il risultato precedente con l'obiettivo e modifica la formula in modo controllato.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 11,
+    "category": "A. Colorazione e diagnosi iniziale",
+    "situation": "La cliente porta una foto e chiede se il risultato è realizzabile in una sola seduta.",
+    "expected_answer": "La foto del risultato finale non basta. Devi conoscere base attuale, storico chimico, presenza di colore artificiale, livello di schiaritura necessario e integrità/porosità della fibra. Se la knowledge non consente di stabilirlo, l'AI deve dichiarare l'incertezza e non promettere un risultato in una sola seduta.",
+    "source_criterion": "Regola di non-allucinazione + verifica professionale generale."
+  },
+  {
+    "id": 12,
+    "category": "A. Colorazione e diagnosi iniziale",
+    "situation": "Devi capire se lavorare sulla base naturale o sul colore cosmetico già presente.",
+    "expected_answer": "Considera entrambi separatamente. I pigmenti diretti, secondo la knowledge, si sommano alla base esistente e lavorano con micro-trasparenza; non sostituiscono completamente il pigmento sottostante come una colorazione tradizionale. Ciò che è già presente sul capello modifica quindi il risultato.",
+    "source_criterion": "Knowledge interna: pigmenti diretti."
+  },
+  {
+    "id": 13,
+    "category": "A. Colorazione e diagnosi iniziale",
+    "situation": "La cliente presenta percentuali differenti di capelli bianchi nelle varie zone.",
+    "expected_answer": "Non trattare la testa come uniforme. La percentuale di bianco è una variabile fondamentale soprattutto nelle miscele Henné Biondo. Il tutor deve chiedere dove sono concentrati i bianchi e in quale percentuale approssimativa, poi valutare se servono strategie diverse per zona.",
+    "source_criterion": "Knowledge interna: Henné Biondo."
+  },
+  {
+    "id": 14,
+    "category": "A. Colorazione e diagnosi iniziale",
+    "situation": "La zona frontale prende il colore più velocemente rispetto alla parte posteriore.",
+    "expected_answer": "Nell'Henné questo comportamento è previsto: i capelli corti e fini dell'attaccatura possono prendere il riflesso rapidamente e diventare eccessivamente aranciati. In assenza di bianchi può essere opportuno applicare la zona per ultima; in presenza di bianchi la strategia può cambiare.",
+    "source_criterion": "Knowledge interna: attaccatura Henné."
+  },
+  {
+    "id": 15,
+    "category": "A. Colorazione e diagnosi iniziale",
+    "situation": "Le lunghezze sono più porose della radice e rischiano di assorbire troppo pigmento.",
+    "expected_answer": "Gestiscile con maggiore cautela. La knowledge afferma che un capello più poroso assorbe più pigmento e può risultare più intenso o scuro. Valuta quindi formule o carichi pigmentari differenti tra radice e lunghezze.",
+    "source_criterion": "Knowledge interna + verifica professionale esterna sulla porosità."
+  },
+  {
+    "id": 16,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Il colore è venuto troppo caldo.",
+    "expected_answer": "Prima identifica quale caldo: rosso, arancio o dorato. Non esiste un correttore universale. In Color Oil puoi modificare la quota di dorato; per una schiaritura troppo dorata la knowledge cita 11.12, 11.10 o 9.01 in specifiche diluizioni; in Infusion Everest interviene su rosso/arancio ma può virare al verde sui biondi.",
+    "source_criterion": "Knowledge interna + principio professionale di neutralizzazione."
+  },
+  {
+    "id": 17,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Il colore è venuto troppo freddo.",
+    "expected_answer": "Nel caso Color Oil puoi aumentare la componente calda/dorata secondo la guida. Per altri sistemi la knowledge non fornisce una regola universale: identifica prodotto usato, base e riflesso prima di correggere.",
+    "source_criterion": "Knowledge interna: Color Oil + non-allucinazione."
+  },
+  {
+    "id": 18,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Il risultato è troppo rosso.",
+    "expected_answer": "Dipende dal sistema. In Henné Shatush il mallo di noce serve a smorzare rosso, ramato o dorato grazie alla componente tendente al verde. In Infusion Namibia aiuta a spegnere i riflessi rossi e Everest contrasta rosso/arancio. Non confondere i prodotti delle due gamme.",
+    "source_criterion": "Knowledge interna: Henné Shatush e Infusion."
+  },
+  {
+    "id": 19,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Il risultato è troppo aranciato.",
+    "expected_answer": "In Infusion, Everest è descritto come efficace contro rosso e arancio, ma sulle basi bionde può produrre verde/salvia. Prima di usarlo devi sapere su quale altezza di tono e in quali zone compare l'arancio.",
+    "source_criterion": "Knowledge interna: Infusion Everest."
+  },
+  {
+    "id": 20,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Il risultato è troppo dorato.",
+    "expected_answer": "Per una schiaritura rimasta troppo dorata, la guida cita 11.12 o 11.10 diluiti 1:2 o 1:3 con ossigeno, oppure 9.01 anch'esso 1:2 o 1:3. Nel sistema Henné, il mallo di noce può essere usato come correttore del caldo. Usa solo la procedura coerente con il sistema effettivamente utilizzato.",
+    "source_criterion": "Knowledge interna: Color Oil/tonalizzazione e Henné."
+  },
+  {
+    "id": 21,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Il colore presenta un riflesso verdognolo.",
+    "expected_answer": "Verifica prima cosa è stato applicato. La knowledge identifica almeno due rischi: 5.01 usato da solo sui capelli bianchi può lasciare trasparenza o percezione verdognola; Everest puro su biondo può generare verde/salvia. La correzione universale non è documentata: non inventare una formula.",
+    "source_criterion": "Knowledge interna + non-allucinazione."
+  },
+  {
+    "id": 22,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Il colore è risultato più scuro del previsto.",
+    "expected_answer": "Controlla porosità, base iniziale, pigmenti utilizzati e differenze tra radice e lunghezze. Un capello più poroso può assorbire maggiormente il pigmento e risultare più intenso/scuro. La knowledge non fornisce una procedura universale di scarico: il tutor deve evitare ricette non supportate.",
+    "source_criterion": "Knowledge interna: porosità + non-allucinazione."
+  },
+  {
+    "id": 23,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Il colore è risultato più chiaro del previsto.",
+    "expected_answer": "Se parliamo di Color Oil, la guida spiega che con l'8 volumi il colore tende a leggere più alto; per questo generalmente la formula viene costruita un tono più basso rispetto al risultato finale desiderato. Per altri sistemi serve una diagnosi separata.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 24,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "La radice è più chiara delle lunghezze.",
+    "expected_answer": "Tratta radice e lunghezze come basi differenti. Verifica colore precedente sulle lunghezze, porosità, formula applicata, quantità di bianco e differenza di altezza iniziale. La knowledge non dà una formula universale per questo problema.",
+    "source_criterion": "Knowledge interna + non-allucinazione."
+  },
+  {
+    "id": 25,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "La radice è più scura delle lunghezze.",
+    "expected_answer": "Non correggere uniformemente tutta la testa. La knowledge contempla, in presenza di lunghezze schiarite, un pigmento più scuro in radice e progressivamente più chiaro su lunghezze e punte per evitare di appesantirle.",
+    "source_criterion": "Knowledge interna: pigmenti."
+  },
+  {
+    "id": 26,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Le punte hanno assorbito troppo colore.",
+    "expected_answer": "Considera per prima cosa la porosità. Nel sistema Henné Biondo, per esempio, su capelli molto chiari o porosi la miscela diventa progressivamente più povera di rosso e più ricca di neutro/emolliente. In generale evita di trattare le punte porose come la radice integra.",
+    "source_criterion": "Knowledge interna: Henné Biondo e porosità."
+  },
+  {
+    "id": 27,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Le punte non hanno preso sufficientemente il colore.",
+    "expected_answer": "Non attribuire automaticamente il problema alla porosità. Verifica base, prodotto, quantità applicata, tempo, precedenti trattamenti e condizione della fibra. La knowledge non contiene una soluzione universale per questo scenario.",
+    "source_criterion": "Non-allucinazione."
+  },
+  {
+    "id": 28,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "I capelli bianchi sono rimasti trasparenti.",
+    "expected_answer": "Con Color Oil verifica la componente calda necessaria alla copertura. La knowledge dice che usare solo 5.01 può lasciare il bianco trasparente o con percezione verdognola; la componente dorata aiuta la copertura.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 29,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Alcuni capelli bianchi sono coperti e altri no.",
+    "expected_answer": "Verifica distribuzione dei bianchi, zone più resistenti, formula e applicazione. Attaccatura e percentuale di bianco possono richiedere gestione differenziata. Se la knowledge non contiene una formula specifica per quel caso, il tutor deve guidare la diagnosi senza inventare.",
+    "source_criterion": "Knowledge interna + non-allucinazione."
+  },
+  {
+    "id": 30,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Il risultato è corretto in salone ma alla luce naturale appare troppo caldo.",
+    "expected_answer": "Prima di correggere identifica il riflesso in una luce il più neutra possibile e distingui rosso, arancio e dorato. Solo dopo seleziona la logica correttiva coerente con il sistema usato.",
+    "source_criterion": "Principio diagnostico coerente con la knowledge."
+  },
+  {
+    "id": 31,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Dopo alcuni lavaggi il riflesso desiderato è scomparso rapidamente.",
+    "expected_answer": "Analizza tipo di sistema, porosità e mantenimento. I pigmenti diretti lavorano con micro-trasparenza e si sommano alla base; nell'Henné aumentare di 5-10 minuti la posa aumenta soprattutto l'intensità della riflessatura, non necessariamente la durata nel tempo.",
+    "source_criterion": "Knowledge interna: pigmenti e Henné."
+  },
+  {
+    "id": 32,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Dopo alcuni lavaggi emerge un riflesso indesiderato.",
+    "expected_answer": "Ricostruisci quale base e quali pigmenti erano presenti e quale riflesso è rimasto visibile quando il cosmetico si è attenuato. Chiedi: base iniziale, prodotto applicato, riflesso attuale e zone interessate. Poi cerca nella knowledge la neutralizzazione appropriata.",
+    "source_criterion": "Logica diagnostica derivata dalla knowledge."
+  },
+  {
+    "id": 33,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "La cliente torna in salone insoddisfatta e devi capire cosa correggere senza peggiorare.",
+    "expected_answer": "Non iniziare subito una correzione. Ricostruisci obiettivo, servizio eseguito, formula/prodotto, risultato ottenuto, zone problematiche, evoluzione dopo i lavaggi e condizione attuale della fibra. Correggi la causa, non soltanto il sintomo.",
+    "source_criterion": "Knowledge interna + verifica professionale esterna sulla correzione colore."
+  },
+  {
+    "id": 34,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Devi correggere il colore senza rifare completamente il servizio.",
+    "expected_answer": "Localizza il problema. La knowledge contiene un esempio molto chiaro: radice aranciata e lunghezze bionde/dorate non devono essere trattate uniformemente con Everest. Il principio è correggere le zone interessate e non automaticamente tutta la testa.",
+    "source_criterion": "Knowledge interna: caso Everest."
+  },
+  {
+    "id": 35,
+    "category": "B. Problemi dopo la colorazione",
+    "situation": "Non sai se intervenire subito o aspettare prima di una nuova colorazione.",
+    "expected_answer": "La knowledge non contiene una regola generale valida per ogni servizio. Valuta servizio appena eseguito, condizione della fibra, prodotto usato, entità del problema e tipo di correzione prevista. Se i materiali non supportano la decisione, dichiaralo e non inventare un intervallo temporale.",
+    "source_criterion": "Non-allucinazione."
+  },
+  {
+    "id": 36,
+    "category": "C. Color Oil",
+    "situation": "Perché con Color Oil si utilizza ossigeno a 8 volumi?",
+    "expected_answer": "Perché, secondo la guida, l'8 volumi non ha una forza ossidante sufficiente a decolorare significativamente il capello durante la colorazione. Favorisce il deposito del colore, preserva maggiormente la struttura e sostiene la persistenza della riflessatura.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 37,
+    "category": "C. Color Oil",
+    "situation": "Qual è il rapporto tra colore e rivelatore?",
+    "expected_answer": "1:1. Nell'esempio della guida: 100 g di colore + 100 g di rivelatore a 8 volumi.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 38,
+    "category": "C. Color Oil",
+    "situation": "Voglio ottenere un tono 6 sui capelli bianchi: da quale altezza costruisco?",
+    "expected_answer": "Secondo la logica della guida, dal tono 5, quindi generalmente un tono più basso rispetto al risultato desiderato.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 39,
+    "category": "C. Color Oil",
+    "situation": "Quanto naturale devo inserire nella miscela?",
+    "expected_answer": "Non esiste nel documento una percentuale universale. Nell'esempio del 6 naturale freddo la formula è 50 g di 6.01 + 25 g di 6.0 + 25 g di 5.3. Non trasformare l'esempio in una regola valida per ogni caso.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 40,
+    "category": "C. Color Oil",
+    "situation": "Quanto dorato devo utilizzare per garantire la copertura?",
+    "expected_answer": "La knowledge stabilisce che la base dorata fornisce la componente calda necessaria alla copertura del bianco, ma non fornisce una percentuale universale per qualsiasi risultato. Usa le formule documentate come esempi, non come regole assolute.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 41,
+    "category": "C. Color Oil",
+    "situation": "Troppo dorato può rendere il risultato troppo caldo?",
+    "expected_answer": "Sì. La guida dice che, se al servizio successivo la cliente vuole un risultato più freddo, si riduce la quantità di dorato nella miscela.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 42,
+    "category": "C. Color Oil",
+    "situation": "Quanto .01 devo inserire per raffreddare il risultato?",
+    "expected_answer": "Non esiste una quantità unica. Il .01 è la componente ultra-cenere/fredda che, insieme a naturale e dorato, permette di ottenere risultati più neutri. La quantità va bilanciata in base alla formula documentata e al caso.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 43,
+    "category": "C. Color Oil",
+    "situation": "La cliente ha già fatto Color Oil ma questa volta vuole un risultato più freddo.",
+    "expected_answer": "Riduci la quota di dorato rispetto alla formula precedente, secondo la guida.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 44,
+    "category": "C. Color Oil",
+    "situation": "La cliente vuole mantenere la copertura ma ottenere maggiore naturalezza.",
+    "expected_answer": "Bilancia le tre funzioni descritte dalla guida: dorato per supportare la copertura, naturale per l'equilibrio e .01 per raffreddare/ridurre la percezione del caldo. Non eliminare una componente senza considerare cosa apporta alla formula.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 45,
+    "category": "C. Color Oil",
+    "situation": "Il servizio precedente era leggermente troppo caldo: cosa modifico?",
+    "expected_answer": "Riduci la quota di dorato rispetto alla formula precedente.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 46,
+    "category": "C. Color Oil",
+    "situation": "Il servizio precedente era troppo freddo: cosa modifico?",
+    "expected_answer": "La guida indica che, se vuoi più calore, puoi aumentare la quota di dorato.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 47,
+    "category": "C. Color Oil",
+    "situation": "Quando si usa b.phase?",
+    "expected_answer": "Prima della colorazione, per preparare e dare comfort alla cute, nutrendola e aiutando a lenire lievi stati di irritazione senza interferire con la colorazione.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 48,
+    "category": "C. Color Oil",
+    "situation": "La cliente presenta una cute leggermente sensibile prima della colorazione.",
+    "expected_answer": "La knowledge indica b.phase come trattamento preparatorio per comfort e nutrimento della cute e lievi stati di irritazione. Se sono presenti sintomi importanti o sospetti, non trattarli come un semplice problema tecnico di colorazione: serve una valutazione appropriata.",
+    "source_criterion": "Knowledge interna + prudenza professionale."
+  },
+  {
+    "id": 49,
+    "category": "C. Color Oil",
+    "situation": "Devo scegliere tra b.phase e perle.",
+    "expected_answer": "La guida presenta le perle ricche di omega 3-6 come alternativa al b.phase. Nell'esempio da 100 g di colore vengono aggiunte due perle per aumentare il comfort della cute. Attieniti alle quantità documentate.",
+    "source_criterion": "Knowledge interna: Color Oil."
+  },
+  {
+    "id": 50,
+    "category": "C. Color Oil",
+    "situation": "Una schiaritura è rimasta troppo dorata: quale prodotto uso?",
+    "expected_answer": "Secondo la guida: 11.12 o 11.10 diluiti 1:2 o 1:3 con ossigeno, oppure 9.01 anch'esso diluito 1:2 o 1:3. È un'indicazione specifica della knowledge e va mantenuta nel suo contesto.",
+    "source_criterion": "Knowledge interna: Color Oil/tonalizzazione."
+  },
+  {
+    "id": 51,
+    "category": "D. Henné / Shatush",
+    "situation": "La cliente chiede di schiarire i capelli con l'henné: è possibile?",
+    "expected_answer": "No. Nella knowledge il principio è esplicito: l'henné non schiarisce mai il capello; lavora esclusivamente per riflessatura sulla base già esistente.",
+    "source_criterion": "Knowledge interna: Henné Shatush."
+  },
+  {
+    "id": 52,
+    "category": "D. Henné / Shatush",
+    "situation": "Quale polvere utilizzo per ottenere un rosso più intenso?",
+    "expected_answer": "Rosso Profondo, che produce un riflesso più intensamente rosso/ramato rispetto al Rosso Normale.",
+    "source_criterion": "Knowledge interna: Henné Shatush."
+  },
+  {
+    "id": 53,
+    "category": "D. Henné / Shatush",
+    "situation": "Quale polvere produce un risultato più aranciato?",
+    "expected_answer": "Rosso Normale, che su una base chiara tende maggiormente verso arancio o dorato-rame.",
+    "source_criterion": "Knowledge interna: Henné Shatush."
+  },
+  {
+    "id": 54,
+    "category": "D. Henné / Shatush",
+    "situation": "La miscela è diventata troppo rossa: come la correggo?",
+    "expected_answer": "Il mallo di noce è il correttore indicato nella knowledge per smorzare eccessi di rosso, ramato o dorato grazie alla componente tendente al verde.",
+    "source_criterion": "Knowledge interna: Henné Shatush."
+  },
+  {
+    "id": 55,
+    "category": "D. Henné / Shatush",
+    "situation": "Quando è utile il mallo di noce?",
+    "expected_answer": "Quando vuoi smorzare rosso/ramato/dorato; nella miscela Henné Biondo viene citato anche quando ci sono molti capelli bianchi o quando temi un risultato troppo dorato.",
+    "source_criterion": "Knowledge interna: Henné Shatush/Biondo."
+  },
+  {
+    "id": 56,
+    "category": "D. Henné / Shatush",
+    "situation": "Il mallo di noce può far diventare verdi i capelli?",
+    "expected_answer": "Nelle proporzioni correttive suggerite dalla guida non dovrebbe generare un vero verde dominante: il verde serve a neutralizzare parte del rosso/dorato. L'AI non deve però inventare quantità non documentate.",
+    "source_criterion": "Knowledge interna + non-allucinazione."
+  },
+  {
+    "id": 57,
+    "category": "D. Henné / Shatush",
+    "situation": "Qual è la consistenza corretta della miscela di henné?",
+    "expected_answer": "Né troppo liquida né troppo grumosa: deve essere cremosa e lavorabile, facile da distribuire e non deve colare.",
+    "source_criterion": "Knowledge interna: Henné."
+  },
+  {
+    "id": 58,
+    "category": "D. Henné / Shatush",
+    "situation": "La miscela è troppo liquida.",
+    "expected_answer": "Rischia di scivolare dai capelli e colare sul viso. Riportala alla consistenza prevista dalla preparazione della guida, senza inventare proporzioni non documentate.",
+    "source_criterion": "Knowledge interna: Henné."
+  },
+  {
+    "id": 59,
+    "category": "D. Henné / Shatush",
+    "situation": "La miscela è troppo densa o grumosa.",
+    "expected_answer": "Diventa difficile da distribuire in modo uniforme. La consistenza deve essere resa più cremosa/lavorabile secondo le indicazioni della guida.",
+    "source_criterion": "Knowledge interna: Henné."
+  },
+  {
+    "id": 60,
+    "category": "D. Henné / Shatush",
+    "situation": "Quali materiali posso usare per ciotole e strumenti?",
+    "expected_answer": "Vetro, plastica o legno.",
+    "source_criterion": "Knowledge interna: Henné."
+  },
+  {
+    "id": 61,
+    "category": "D. Henné / Shatush",
+    "situation": "Posso usare strumenti o ciotole metalliche?",
+    "expected_answer": "No, secondo la guida, perché il metallo può provocare una reazione di ossidazione nel prodotto.",
+    "source_criterion": "Knowledge interna: Henné."
+  },
+  {
+    "id": 62,
+    "category": "D. Henné / Shatush",
+    "situation": "Qual è il tempo minimo di posa del Rosso Profondo?",
+    "expected_answer": "Almeno 30 minuti.",
+    "source_criterion": "Knowledge interna: Henné Rosso Profondo."
+  },
+  {
+    "id": 63,
+    "category": "D. Henné / Shatush",
+    "situation": "Perché durante la posa si avvolgono i capelli con pellicola?",
+    "expected_answer": "Per trattenere calore e umidità ed evitare che la miscela si secchi durante la posa.",
+    "source_criterion": "Knowledge interna: Henné."
+  },
+  {
+    "id": 64,
+    "category": "D. Henné / Shatush",
+    "situation": "Ci sono capelli bianchi all'attaccatura: applico il prodotto per ultima?",
+    "expected_answer": "Non necessariamente. La regola di lasciare per ultima la peluria corta dell'attaccatura cambia quando sono presenti capelli bianchi: può essere necessario usare preventivamente il pigmento e assicurare una riflessatura adeguata della zona.",
+    "source_criterion": "Knowledge interna: Henné e attaccatura."
+  },
+  {
+    "id": 65,
+    "category": "D. Henné / Shatush",
+    "situation": "Le tempie stanno prendendo rapidamente un riflesso aranciato.",
+    "expected_answer": "I capelli corti e fini dell'attaccatura possono prendere il riflesso più rapidamente. Se non c'è una necessità specifica legata ai bianchi, la guida suggerisce di applicare la zona per ultima.",
+    "source_criterion": "Knowledge interna: Henné."
+  },
+  {
+    "id": 66,
+    "category": "D. Henné / Shatush",
+    "situation": "La cliente vuole Henné Biondo ma ha molti capelli bianchi.",
+    "expected_answer": "La percentuale di bianchi è la variabile principale. Con molti bianchi bisogna diminuire la quantità di rosso per evitare riflessi troppo dorati o aranciati.",
+    "source_criterion": "Knowledge interna: Henné Biondo."
+  },
+  {
+    "id": 67,
+    "category": "D. Henné / Shatush",
+    "situation": "Quanto rosso inserisco in una miscela Henné Biondo?",
+    "expected_answer": "Non c'è una dose unica: dipende soprattutto dalla percentuale di bianco e dalla porosità. Nei casi molto bianchi o molto schiariti la guida arriva indicativamente fino a circa 6-7 parti di neutro per una parte di rosso.",
+    "source_criterion": "Knowledge interna: Henné Biondo."
+  },
+  {
+    "id": 68,
+    "category": "D. Henné / Shatush",
+    "situation": "Il capello è molto chiaro e molto poroso.",
+    "expected_answer": "La miscela deve diventare progressivamente più povera di rosso e più ricca di neutro/emolliente, perché il capello poroso assorbe più facilmente il pigmento.",
+    "source_criterion": "Knowledge interna: Henné Biondo."
+  },
+  {
+    "id": 69,
+    "category": "D. Henné / Shatush",
+    "situation": "Ho appena eseguito una schiaritura: applico l'henné su asciutto o umido?",
+    "expected_answer": "La guida consiglia capello umido per rallentare l'assorbimento del pigmento da parte di un capello molto poroso e aumentare il controllo. Non deve essere eccessivamente bagnato.",
+    "source_criterion": "Knowledge interna: Henné Biondo."
+  },
+  {
+    "id": 70,
+    "category": "D. Henné / Shatush",
+    "situation": "Sono lenta nell'applicazione e temo differenze di posa.",
+    "expected_answer": "La guida suggerisce che un operatore lento può iniziare dalla parte posteriore per gestire meglio i tempi e poter avviare il risciacquo nelle prime zone applicate senza creare squilibri eccessivi.",
+    "source_criterion": "Knowledge interna: Henné Biondo."
+  },
+  {
+    "id": 71,
+    "category": "E. Pigmenti e passaggio da biondo a castano",
+    "situation": "Una cliente molto bionda vuole tornare castana.",
+    "expected_answer": "La knowledge prevede l'uso del pigmento quando bisogna ricreare un'altezza di tono mancante o riportare una base schiarita verso un risultato più naturale. La scelta concreta dipende da base, porosità, quantità di bianco e obiettivo.",
+    "source_criterion": "Knowledge interna: pigmenti Henné."
+  },
+  {
+    "id": 72,
+    "category": "E. Pigmenti e passaggio da biondo a castano",
+    "situation": "Le lunghezze sono molto schiarite: quale pigmento scelgo?",
+    "expected_answer": "Non esiste un numero universale. La guida indica che sulle lunghezze/punte precedentemente schiarite si può lavorare con un pigmento progressivamente più chiaro rispetto alla radice per evitare di appesantirle.",
+    "source_criterion": "Knowledge interna: pigmenti."
+  },
+  {
+    "id": 73,
+    "category": "E. Pigmenti e passaggio da biondo a castano",
+    "situation": "Radice e lunghezze hanno porosità completamente differenti.",
+    "expected_answer": "Diagnosticale e, se necessario, formulale separatamente. Un capello più poroso assorbe maggiormente il pigmento e può risultare più intenso o scuro.",
+    "source_criterion": "Knowledge interna: porosità e pigmenti."
+  },
+  {
+    "id": 74,
+    "category": "E. Pigmenti e passaggio da biondo a castano",
+    "situation": "Temo che il pigmento diventi troppo scuro sulle punte.",
+    "expected_answer": "È un rischio coerente con la knowledge se le punte sono molto porose o schiarite. Per questo la guida contempla pigmenti progressivamente più chiari sulle lunghezze e punte rispetto alla radice.",
+    "source_criterion": "Knowledge interna: pigmenti."
+  },
+  {
+    "id": 75,
+    "category": "E. Pigmenti e passaggio da biondo a castano",
+    "situation": "Posso utilizzare lo stesso pigmento su radice e lunghezze?",
+    "expected_answer": "Non necessariamente. La knowledge contempla esplicitamente un pigmento più scuro in radice e progressivamente più chiaro sulle lunghezze schiarite.",
+    "source_criterion": "Knowledge interna: pigmenti."
+  },
+  {
+    "id": 76,
+    "category": "E. Pigmenti e passaggio da biondo a castano",
+    "situation": "Devo applicare prima il pigmento e poi l'henné?",
+    "expected_answer": "È una delle tre modalità descritte dalla guida: solo polveri; pigmento applicato prima e successivamente henné; pigmento inserito direttamente nella miscela di henné. Scegli in base all'intensità necessaria e al caso documentato.",
+    "source_criterion": "Knowledge interna: pigmenti + Henné."
+  },
+  {
+    "id": 77,
+    "category": "E. Pigmenti e passaggio da biondo a castano",
+    "situation": "Posso inserire il pigmento direttamente nella miscela di henné?",
+    "expected_answer": "Sì. È una modalità prevista, ma il pigmento inserito direttamente nell'henné viene notevolmente alleggerito rispetto all'applicazione pura.",
+    "source_criterion": "Knowledge interna: pigmenti + Henné."
+  },
+  {
+    "id": 78,
+    "category": "E. Pigmenti e passaggio da biondo a castano",
+    "situation": "Che differenza c'è tra pigmento puro e pigmento miscelato nell'henné?",
+    "expected_answer": "Applicato puro sviluppa maggiormente il proprio potere colorante; miscelato direttamente nell'henné viene notevolmente alleggerito.",
+    "source_criterion": "Knowledge interna: pigmenti + Henné."
+  },
+  {
+    "id": 79,
+    "category": "E. Pigmenti e passaggio da biondo a castano",
+    "situation": "Ci sono moltissimi capelli bianchi e devo ricostruire una base naturale.",
+    "expected_answer": "È una delle situazioni principali in cui la guida suggerisce l'uso del pigmento. In alcuni casi con molti bianchi può essere necessario un pigmento molto scuro, per esempio tono 2, concentrato sulla radice o inserito nella miscela. La scelta finale dipende dal caso.",
+    "source_criterion": "Knowledge interna: pigmenti."
+  },
+  {
+    "id": 80,
+    "category": "E. Pigmenti e passaggio da biondo a castano",
+    "situation": "Una cliente già tinta di nero vuole sostituire il ritocco con un pigmento diretto.",
+    "expected_answer": "La guida lo sconsiglia se l'obiettivo è ricreare la stessa pienezza e intensità del nero chimico presente sulle lunghezze. Il pigmento diretto lavora con micro-trasparenza e non produce necessariamente lo stesso effetto pieno e opaco.",
+    "source_criterion": "Knowledge interna: pigmenti diretti."
+  },
+  {
+    "id": 81,
+    "category": "F. Infusion",
+    "situation": "La cliente vuole cambiare riflesso senza avere una ricrescita netta.",
+    "expected_answer": "È coerente con la filosofia Infusion descritta nella knowledge: un sistema di riflessatura che valorizza e modifica il riflesso senza comportarsi come una colorazione tradizionale di copertura.",
+    "source_criterion": "Knowledge interna: Infusion."
+  },
+  {
+    "id": 82,
+    "category": "F. Infusion",
+    "situation": "Qual è la differenza tra Red Fire e Love Red?",
+    "expected_answer": "Red Fire è il rosso più intenso e brillante della gamma; Love Red tende maggiormente al giallo-arancione e produce un riflesso più dorato-ramato.",
+    "source_criterion": "Knowledge interna: Infusion."
+  },
+  {
+    "id": 83,
+    "category": "F. Infusion",
+    "situation": "Voglio rendere Love Red più delicato: cosa faccio?",
+    "expected_answer": "Aumenta la quantità di Tibet, che è l'erba neutra e serve a ridurre la capacità colorante delle erbe rosse. La guida afferma esplicitamente che aumentando Tibet si riduce il potere colorante di Love Red.",
+    "source_criterion": "Knowledge interna: Infusion."
+  },
+  {
+    "id": 84,
+    "category": "F. Infusion",
+    "situation": "Il risultato presenta troppo rosso: posso usare Namibia?",
+    "expected_answer": "Sì, nella linea Infusion Namibia aiuta a spegnere riflessi rossi indesiderati, ottenere riflessi più marroni e compensare un eccesso di doratura.",
+    "source_criterion": "Knowledge interna: Infusion."
+  },
+  {
+    "id": 85,
+    "category": "F. Infusion",
+    "situation": "Ci sono riflessi aranciati su una base scura: Everest può essere utile?",
+    "expected_answer": "Sì, può essere coerente. Everest è tendenzialmente verde e contrasta rosso e arancio; la guida indica che può essere usato anche da solo soprattutto su basi castane o molto scure con riflessi caldi.",
+    "source_criterion": "Knowledge interna: Infusion Everest."
+  },
+  {
+    "id": 86,
+    "category": "F. Infusion",
+    "situation": "La cliente è bionda: posso usare Everest?",
+    "expected_answer": "Con grande cautela. Everest puro sui biondi può portare a un risultato verde/salvia. L'AI deve segnalare chiaramente questo rischio.",
+    "source_criterion": "Knowledge interna: Infusion Everest."
+  },
+  {
+    "id": 87,
+    "category": "F. Infusion",
+    "situation": "La radice è aranciata ma le lunghezze sono dorate: tratto tutta la testa allo stesso modo?",
+    "expected_answer": "No. La knowledge contiene esattamente questo scenario: Everest può funzionare sulle zone aranciate, ma sulle lunghezze bionde/dorate rischia di produrre verde. Sui capelli chiari va usato con cautela e, secondo il caso riportato, preferibilmente in piccola percentuale insieme a erbe come Tibet.",
+    "source_criterion": "Knowledge interna: caso particolare Infusion."
+  },
+  {
+    "id": 88,
+    "category": "F. Infusion",
+    "situation": "Qual è la differenza tra erbe Infusion e pigmenti Infusion?",
+    "expected_answer": "Le erbe enfatizzano e correggono riflessi già presenti; i pigmenti possono ricreare un'altezza di tono mancante o rendere il risultato più scuro.",
+    "source_criterion": "Knowledge interna: Infusion."
+  },
+  {
+    "id": 89,
+    "category": "F. Infusion",
+    "situation": "I pigmenti Infusion devono essere attivati con ossigeno?",
+    "expected_answer": "No. Sono colorazioni dirette già pronte e non devono essere attivate con ossigeno.",
+    "source_criterion": "Knowledge interna: Infusion."
+  },
+  {
+    "id": 90,
+    "category": "F. Infusion",
+    "situation": "Devo soltanto riflessare vecchie schiariture: quanto lascio in posa?",
+    "expected_answer": "Se l'obiettivo è soltanto riflessare vecchie schiariture, la guida indica che la miscela Infusion può essere lasciata sotto una fonte di calore fino a circa 30 minuti.",
+    "source_criterion": "Knowledge interna: Infusion."
+  },
+  {
+    "id": 91,
+    "category": "G. Fibra, trattamenti e mantenimento",
+    "situation": "I capelli sono molto secchi dopo diversi servizi tecnici: quale trattamento considero?",
+    "expected_answer": "Nella knowledge è presente Infusion Mousse Repair, descritto come trattamento riparatore profondo per capelli secchi e sfibrati, finalizzato a nutrire la fibra e uniformarne/livellarne la porosità.",
+    "source_criterion": "Knowledge interna: Infusion Mousse Repair."
+  },
+  {
+    "id": 92,
+    "category": "G. Fibra, trattamenti e mantenimento",
+    "situation": "Le lunghezze presentano porosità irregolare.",
+    "expected_answer": "La porosità è rilevante perché modifica l'assorbimento del pigmento. Infusion Mousse Repair è indicato nella knowledge per aiutare a uniformare/livellare la porosità della fibra. Anche fonti professionali esterne confermano l'importanza dell'equalizzazione della porosità nei servizi colore.",
+    "source_criterion": "Knowledge interna + verifica professionale esterna."
+  },
+  {
+    "id": 93,
+    "category": "G. Fibra, trattamenti e mantenimento",
+    "situation": "Devo fare prima un trattamento riparatore o il servizio colore?",
+    "expected_answer": "La knowledge disponibile non stabilisce una regola generale 'sempre prima' o 'sempre dopo'. Sappiamo però che Infusion Mousse Repair può essere utilizzato anche durante alcuni servizi tecnici. Il tutor deve quindi identificare il servizio, il prodotto e la condizione della fibra prima di rispondere.",
+    "source_criterion": "Knowledge interna + non-allucinazione."
+  },
+  {
+    "id": 94,
+    "category": "G. Fibra, trattamenti e mantenimento",
+    "situation": "Posso aggiungere un trattamento alla miscela colore?",
+    "expected_answer": "Per Infusion Mousse Repair durante una colorazione a ossidazione, sì: la knowledge indica una noce di prodotto nella miscela colore per un'azione rigenerante e per rendere il servizio meno aggressivo sulla fibra. Non generalizzare questa indicazione ad altri trattamenti.",
+    "source_criterion": "Knowledge interna: Infusion Mousse Repair."
+  },
+  {
+    "id": 95,
+    "category": "G. Fibra, trattamenti e mantenimento",
+    "situation": "Sto facendo una decolorazione su capelli sensibilizzati e voglio proteggere la fibra.",
+    "expected_answer": "La knowledge indica Infusion Mousse Repair come protezione intensa durante la decolorazione, per mantenere la fibra più idratata e protetta. Il documento non stabilisce però quando un capello sia troppo compromesso per procedere: in quel caso il tutor non deve inventare una soglia.",
+    "source_criterion": "Knowledge interna + non-allucinazione."
+  },
+  {
+    "id": 96,
+    "category": "G. Fibra, trattamenti e mantenimento",
+    "situation": "La cliente chiede quali prodotti usare a casa per mantenere il risultato.",
+    "expected_answer": "La knowledge attualmente caricata non consente una routine domestica completa prodotto-per-prodotto. L'AI deve dichiararlo e consultare, quando disponibile, la guida prodotti generale Word dedicata a beauty routine, trattamenti specifici e mantenimento.",
+    "source_criterion": "Knowledge incompleta; rinvio alla futura guida prodotti generale."
+  },
+  {
+    "id": 97,
+    "category": "G. Fibra, trattamenti e mantenimento",
+    "situation": "La cliente usa prodotti a casa che sembrano modificare velocemente il riflesso.",
+    "expected_answer": "Chiedi quali shampoo, conditioner/maschere, prodotti pigmentati e trattamenti usa, con quale frequenza lava i capelli e quale servizio colore è stato eseguito. Non attribuire il problema a un prodotto specifico senza una fonte nella knowledge; usa la guida prodotti generale quando disponibile.",
+    "source_criterion": "Regola diagnostica + non-allucinazione."
+  },
+  {
+    "id": 98,
+    "category": "G. Fibra, trattamenti e mantenimento",
+    "situation": "Devo consigliare una beauty routine diversa tra radice, lunghezze e punte.",
+    "expected_answer": "La logica è plausibile quando le condizioni della fibra sono diverse, ma la knowledge caricata non contiene ancora una routine completa per zona. La porosità è sicuramente rilevante; per raccomandazioni precise serve la guida prodotti generale.",
+    "source_criterion": "Knowledge parziale + verifica professionale esterna sulla porosità."
+  },
+  {
+    "id": 99,
+    "category": "G. Fibra, trattamenti e mantenimento",
+    "situation": "Dopo alcune settimane la cliente torna con capelli molto più secchi e porosi.",
+    "expected_answer": "Distingui problema cosmetico della fibra e problema colore. La knowledge indica Infusion Mousse Repair per capelli secchi/sfibrati e per uniformare la porosità. Prima di concludere la causa, chiedi servizi tecnici effettuati, frequenza, prodotti domiciliari, eventuali decolorazioni, zone più porose e condizione precedente. Non attribuire automaticamente il problema all'ultimo servizio.",
+    "source_criterion": "Knowledge interna + logica diagnostica."
+  }
+]

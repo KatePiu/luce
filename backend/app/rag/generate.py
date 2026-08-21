@@ -83,7 +83,9 @@ def _format_chunk(c: RetrievedChunk) -> str:
     return f"{meta}\n{c.text}"
 
 
-def _build_context_block(priority: list[RetrievedChunk], general: list[RetrievedChunk], videos: list[VideoCandidate]) -> str:
+def _build_context_block(
+    priority: list[RetrievedChunk], general: list[RetrievedChunk], external: list[RetrievedChunk], videos: list[VideoCandidate]
+) -> str:
     sections = []
     if priority:
         sections.append(
@@ -95,6 +97,15 @@ def _build_context_block(priority: list[RetrievedChunk], general: list[Retrieved
         sections.append(
             "== ALTRE FONTI PERTINENTI (guide, prodotti, procedure) ==\n\n"
             + "\n\n---\n\n".join(_format_chunk(c) for c in general)
+        )
+    if external:
+        sections.append(
+            "== FONTI ESTERNE VERIFICATE (principi professionali generali, selezionati "
+            "dall'Accademia — NON specifici del marchio: usale solo per principi generali di "
+            "consulenza, diagnosi o porosità quando la knowledge interna non basta. Non usarle "
+            "MAI per formule, quantità o procedure di Color Oil, Henné/Shatush o Infusion: quelle "
+            "restano esclusivamente dalla knowledge interna) ==\n\n"
+            + "\n\n---\n\n".join(_format_chunk(c) for c in external)
         )
     if videos:
         video_lines = "\n".join(f'- video_id={v.video_id} | titolo="{v.title}" | link={v.url}' for v in videos)
@@ -134,8 +145,8 @@ def answer_question(
     question: str,
     history: list[dict] | None = None,
 ) -> AnswerResult:
-    priority, general = retrieve_with_priority(db, question)
-    combined = sort_by_relevance_then_richness(priority + general)
+    priority, general, external = retrieve_with_priority(db, question)
+    combined = sort_by_relevance_then_richness(priority + general + external)
 
     videos = find_candidate_videos(db, question)
 
@@ -167,7 +178,7 @@ def answer_question(
     # groundedness dopo la generazione resta comunque la rete di sicurezza finale.
     conflicting = None if low_confidence else detect_conflict(combined)
 
-    context_block = _build_context_block(priority, general, videos)
+    context_block = _build_context_block(priority, general, external, videos)
     if conflicting:
         context_block = AMBIGUITY_NOTE + context_block
     if low_confidence:
@@ -198,8 +209,8 @@ def debug_answer_question(db: Session, question: str) -> dict:
     """Come `answer_question`, ma espone i passaggi interni (usato solo dall'endpoint
     diagnostico admin) — in particolare la risposta grezza del modello e il motivo esatto
     di un eventuale rifiuto del controllo di groundedness, altrimenti scartato."""
-    priority, general = retrieve_with_priority(db, question)
-    combined = sort_by_relevance_then_richness(priority + general)
+    priority, general, external = retrieve_with_priority(db, question)
+    combined = sort_by_relevance_then_richness(priority + general + external)
     videos = find_candidate_videos(db, question)
 
     if not combined and not videos:
@@ -207,7 +218,7 @@ def debug_answer_question(db: Session, question: str) -> dict:
 
     low_confidence = not is_sufficient(combined)
     conflicting = None if low_confidence else detect_conflict(combined)
-    context_block = _build_context_block(priority, general, videos)
+    context_block = _build_context_block(priority, general, external, videos)
     if conflicting:
         context_block = AMBIGUITY_NOTE + context_block
     if low_confidence:

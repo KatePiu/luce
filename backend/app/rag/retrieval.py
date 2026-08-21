@@ -14,6 +14,12 @@ from app.rag.embeddings import embed_query
 
 CASI_PARTICOLARI_SLUG = "casi_particolari"
 
+# Le fonti esterne (principi professionali generali, verificati e selezionati
+# dall'Accademia — non ricerca web libera) vivono in una tecnica dedicata, separata
+# dalle guide del marchio: usarle è un'eccezione stretta e vanno recuperate con un
+# tetto basso di risultati, mai come sostituto delle formule/procedure Coppola.
+EXTERNAL_SOURCES_SLUG = "fonti_esterne"
+
 # Nessun file .csv va mai usato come fonte di contenuto per rispondere: solo le
 # "ricostruzioni discorsive" (guide .docx, tabelle .txt) sono fonte di verità per il
 # merito della risposta. Questo vale sia per le trascrizioni video (origin_kind
@@ -157,23 +163,30 @@ def _attach_video_timestamps(db: Session, chunks: list[RetrievedChunk], query_em
 
 def retrieve_with_priority(
     db: Session, query: str, top_k: int | None = None
-) -> tuple[list[RetrievedChunk], list[RetrievedChunk]]:
-    """Due corsie di recupero, come richiesto per i problemi di colorazione (brief,
-    punti 12-16 e 21): i "casi particolari" vengono cercati per primi e a parte,
-    così il prompt può dar loro priorità quando pertinenti, senza escludere le
-    fonti generali (guide, prodotti) che restano comunque disponibili come
-    contesto complementare per la procedura/i prodotti da usare.
+) -> tuple[list[RetrievedChunk], list[RetrievedChunk], list[RetrievedChunk]]:
+    """Tre corsie di recupero, come richiesto per i problemi di colorazione (brief,
+    punti 12-16 e 21) e per le fonti esterne verificate: i "casi particolari" vengono
+    cercati per primi e a parte, così il prompt può dar loro priorità quando
+    pertinenti, senza escludere le fonti generali (guide, prodotti) che restano
+    comunque disponibili come contesto complementare per la procedura/i prodotti da
+    usare. Le fonti esterne verificate vengono cercate separatamente, con un tetto
+    basso di risultati: sono un supporto per principi generali, non una fonte alla
+    pari delle guide del marchio.
 
-    Entrambe le corsie cercano solo tra le fonti di contenuto (guide scritte,
+    Tutte e tre le corsie cercano solo tra le fonti di contenuto (guide scritte,
     tabelle): le trascrizioni CSV vengono escluse dalla ricerca semantica e
     consultate solo dopo, per attaccare un timestamp video pertinente — vedi
     `_attach_video_timestamps`.
 
-    Ritorna (chunk_prioritari_da_casi_particolari, chunk_generali_dalle_altre_fonti).
+    Ritorna (chunk_prioritari_da_casi_particolari, chunk_generali_dalle_altre_fonti,
+    chunk_da_fonti_esterne_verificate).
     """
     query_embedding = embed_query(query)
     priority = retrieve(
         db, query, technique_slug=CASI_PARTICOLARI_SLUG, top_k=top_k, query_embedding=query_embedding, exclude_csv=True
+    )
+    external = retrieve(
+        db, query, technique_slug=EXTERNAL_SOURCES_SLUG, top_k=2, query_embedding=query_embedding, exclude_csv=True
     )
 
     top_k = top_k or settings.retrieval_top_k
@@ -181,7 +194,7 @@ def retrieve_with_priority(
     stmt = _exclude_csv_sources(
         _base_query()
         .join(Technique, Source.technique_id == Technique.id)
-        .where(Technique.slug != CASI_PARTICOLARI_SLUG)
+        .where(Technique.slug.notin_([CASI_PARTICOLARI_SLUG, EXTERNAL_SOURCES_SLUG]))
     )
     stmt = stmt.add_columns(distance.label("distance")).order_by(distance).limit(top_k)
     rows = db.execute(stmt).all()
@@ -193,7 +206,7 @@ def retrieve_with_priority(
     priority = _attach_video_timestamps(db, priority, query_embedding)
     general = _attach_video_timestamps(db, general, query_embedding)
 
-    return priority, general
+    return priority, general, external
 
 
 _TECHNIQUE_NUMBER_RE = re.compile(r"tecnica[^\d]{0,20}?(\d+)", re.IGNORECASE)
