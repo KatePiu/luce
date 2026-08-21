@@ -52,7 +52,14 @@ _EXTENSION_RE = re.compile(r"\.(mp4|mov|mkv|avi|webm)$", re.IGNORECASE)
 
 
 def _normalize(title: str) -> str:
-    stripped = _EXTENSION_RE.sub("", title.strip())
+    stripped = title.strip()
+    # Alcuni file hanno doppia estensione (es. "NATURA MAGICA.mov.mp4" da una conversione):
+    # rimuove tutte le estensioni finali concatenate, non solo l'ultima.
+    while True:
+        new_stripped = _EXTENSION_RE.sub("", stripped)
+        if new_stripped == stripped:
+            break
+        stripped = new_stripped
     return re.sub(r"\s+", " ", stripped).strip().lower()
 
 

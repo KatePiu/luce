@@ -9,6 +9,11 @@ def test_matches_title_with_mp4_extension_stripped():
     assert match_preview_url("VIDEO LINEA SHATUSH COMPLETA.mp4") == VIDEO_PREVIEW_MAP["VIDEO LINEA SHATUSH COMPLETA"]
 
 
+def test_matches_title_with_double_extension_stripped():
+    # Caso reale trovato in produzione: file rinominato da una conversione .mov -> .mp4.
+    assert match_preview_url("NATURA MAGICA.mov.mp4") == VIDEO_PREVIEW_MAP["NATURA MAGICA"]
+
+
 def test_matches_case_insensitive_and_trims_whitespace():
     assert match_preview_url("  taglio mariam  ") == VIDEO_PREVIEW_MAP["TAGLIO MARIAM"]
 
