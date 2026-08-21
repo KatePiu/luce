@@ -80,7 +80,11 @@ def _handle_incoming_text(db: Session, conversation: Conversation, text: str, ki
     db.commit()
 
     if result.escalate:
-        create_escalation(db, conversation, result.escalation_reason or "insufficient_sources", summary=text)
+        # `result.text` è la risposta del tutor AI: quando arriva a un'escalation dopo aver
+        # provato a chiarire la richiesta, contiene il report strutturato per il tutor (area,
+        # prodotto/tecnica, fase, domanda precisa, contesto raccolto, informazione mancante) —
+        # molto più utile del solo ultimo messaggio grezzo dell'utente.
+        create_escalation(db, conversation, result.escalation_reason or "insufficient_sources", summary=result.text)
 
     return ChatMessageResponse(
         conversation_id=str(conversation.id),

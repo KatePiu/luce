@@ -27,6 +27,18 @@ INSUFFICIENT_MATERIALS_MESSAGE = (
     "inoltrare la richiesta a un tutor umano."
 )
 
+LOW_CONFIDENCE_NOTE = (
+    "ATTENZIONE — PERTINENZA BASSA: i passaggi qui sotto hanno un punteggio di somiglianza "
+    "con la domanda piuttosto basso. Questo capita spesso quando la domanda è troppo "
+    "generica per essere confrontata efficacemente con i materiali (es. \"quanto ne devo "
+    "mettere?\" senza dire di quale prodotto). NON dichiarare subito i materiali "
+    "insufficienti: prima valuta se la domanda manca di un elemento preciso (area, "
+    "prodotto/tecnica, fase) e, se sì, fai la domanda di chiarimento mirata prevista dalle "
+    "istruzioni generali, invece di rispondere con questi passaggi deboli o di inoltrare "
+    "subito la richiesta a un tutor. Solo se la domanda è già precisa e questi passaggi "
+    "restano comunque non pertinenti, componi il report per il tutor come da istruzioni.\n\n"
+)
+
 AMBIGUITY_NOTE = (
     "ATTENZIONE — POSSIBILE AMBIGUITÀ NEI PASSAGGI RECUPERATI: due passaggi pertinenti a "
     "questa domanda sembrano dare indicazioni diverse. Prima di rispondere, valuta se si "
@@ -127,13 +139,24 @@ def answer_question(
 
     videos = find_candidate_videos(db, question)
 
-    if not is_sufficient(combined) and not videos:
+    # Nessun passaggio e nessun video: non c'è nulla su cui far ragionare il modello,
+    # a prescindere da quanto la domanda sia vaga o precisa — unico caso in cui si
+    # rinuncia a generare senza nemmeno provare.
+    if not combined and not videos:
         return AnswerResult(
             text=INSUFFICIENT_MATERIALS_MESSAGE,
             escalate=True,
-            escalation_reason="no_sources" if not combined else "insufficient_sources",
-            retrieval_score=combined[0].score if combined else None,
+            escalation_reason="no_sources",
+            retrieval_score=None,
         )
+
+    # Un punteggio basso spesso significa solo che la domanda è troppo generica per essere
+    # confrontata bene con i materiali (es. "quanto ne devo mettere?" senza dire il prodotto)
+    # — non che l'argomento sia davvero scoperto. Bloccare qui, prima ancora di chiamare il
+    # modello, impedirebbe al tutor AI di fare la cosa giusta in questi casi: fare una
+    # domanda di chiarimento mirata invece di arrendersi subito. Si segnala quindi la bassa
+    # pertinenza al modello e si lascia che segua il protocollo (chiarisci, poi ricontrolla).
+    low_confidence = not is_sufficient(combined)
 
     # Un punteggio vicino tra fonti diverse con contenuto diverso non significa sempre una
     # vera contraddizione: spesso sono scenari/casi diversi nello stesso materiale (es. due
@@ -142,11 +165,13 @@ def answer_question(
     # chiarimento se serve, spiegando la distinzione se i passaggi lo permettono, o dichiarando
     # un conflitto reale solo se, leggendo il contesto, lo è davvero. Il controllo di
     # groundedness dopo la generazione resta comunque la rete di sicurezza finale.
-    conflicting = detect_conflict(combined)
+    conflicting = None if low_confidence else detect_conflict(combined)
 
     context_block = _build_context_block(priority, general, videos)
     if conflicting:
         context_block = AMBIGUITY_NOTE + context_block
+    if low_confidence:
+        context_block = LOW_CONFIDENCE_NOTE + context_block
     user_message = f"CONTESTO RECUPERATO DAI MATERIALI DELL'ACCADEMIA:\n\n{context_block}\n\nDOMANDA DEL PARRUCCHIERE:\n{question}"
 
     raw_response = call_claude(system=SYSTEM_PROMPT, user_message=user_message, history=history)
@@ -177,13 +202,16 @@ def debug_answer_question(db: Session, question: str) -> dict:
     combined = sort_by_relevance_then_richness(priority + general)
     videos = find_candidate_videos(db, question)
 
-    if not is_sufficient(combined) and not videos:
-        return {"stage": "insufficient_before_generation", "combined_top_score": combined[0].score if combined else None}
+    if not combined and not videos:
+        return {"stage": "no_sources_before_generation", "combined_top_score": None}
 
-    conflicting = detect_conflict(combined)
+    low_confidence = not is_sufficient(combined)
+    conflicting = None if low_confidence else detect_conflict(combined)
     context_block = _build_context_block(priority, general, videos)
     if conflicting:
         context_block = AMBIGUITY_NOTE + context_block
+    if low_confidence:
+        context_block = LOW_CONFIDENCE_NOTE + context_block
 
     user_message = f"CONTESTO RECUPERATO DAI MATERIALI DELL'ACCADEMIA:\n\n{context_block}\n\nDOMANDA DEL PARRUCCHIERE:\n{question}"
     raw_response = call_claude(system=SYSTEM_PROMPT, user_message=user_message)
@@ -191,6 +219,7 @@ def debug_answer_question(db: Session, question: str) -> dict:
 
     return {
         "stage": "generated",
+        "low_confidence": low_confidence,
         "ambiguity_flagged": bool(conflicting),
         "conflicting_with": conflicting.source_title if conflicting else None,
         "raw_response": raw_response,
