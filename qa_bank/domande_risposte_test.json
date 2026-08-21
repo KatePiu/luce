@@ -1,0 +1,1675 @@
+[
+  {
+    "id": 1,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 1,
+    "question": "Perché con Color Oil si utilizza esclusivamente ossigeno a 8 volumi?",
+    "expected_answer": "Perché l’8 volumi non ha una forza ossidante sufficiente a decolorare il capello durante la colorazione. Permette quindi di depositare il colore mantenendo maggiormente integra la struttura del capello e favorendo una maggiore persistenza della riflessatura."
+  },
+  {
+    "id": 2,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 2,
+    "question": "Qual è la differenza, secondo la guida, tra usare un ossigeno a 8 volumi e uno a 20 volumi?",
+    "expected_answer": "L’8 volumi non decolora significativamente il capello; un ossigeno più forte, come il 20 volumi, apre maggiormente le squame e rimuove parte dei pigmenti naturali, sostituendoli con pigmenti artificiali."
+  },
+  {
+    "id": 3,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 3,
+    "question": "Perché con Color Oil bisogna lavorare generalmente un tono più basso rispetto al risultato finale desiderato?",
+    "expected_answer": "Perché l’8 volumi ha un basso potere ossidante e il colore tende a leggere più alto. Per ottenere una copertura corretta si compensa quindi costruendo la formula un tono più basso."
+  },
+  {
+    "id": 4,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 4,
+    "question": "Se voglio ottenere un tono 6 su capelli bianchi, da quale altezza di tono devo costruire la formula?",
+    "expected_answer": "Da un tono 5."
+  },
+  {
+    "id": 5,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 5,
+    "question": "Qual è il ruolo delle basi dorate .3 nella copertura del capello bianco?",
+    "expected_answer": "Forniscono la componente calda necessaria perché il capello bianco accetti bene il colore e permettono di ottenere una buona copertura."
+  },
+  {
+    "id": 6,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 6,
+    "question": "Che tipo di risultato producono le basi naturali Color Oil?",
+    "expected_answer": "Un risultato naturale e lucido, con una riflessatura leggermente calda."
+  },
+  {
+    "id": 7,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 7,
+    "question": "Qual è la funzione del riflesso .01?",
+    "expected_answer": "È la componente ultra cenere/fredda del sistema. In combinazione con naturali e dorati permette di ottenere risultati neutri, naturali e molto lucidi, riducendo la percezione del caldo."
+  },
+  {
+    "id": 8,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 8,
+    "question": "Perché dorato, naturale e .01 vengono utilizzati insieme nelle formule Color Oil?",
+    "expected_answer": "Per bilanciare copertura, naturalezza e neutralizzazione del caldo: il dorato aiuta la copertura, il naturale dà equilibrio e il .01 raffredda il risultato."
+  },
+  {
+    "id": 9,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 9,
+    "question": "Quale riflesso tende a emergere per primo quando si schiarisce un capello scuro?",
+    "expected_answer": "Il rosso."
+  },
+  {
+    "id": 10,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 10,
+    "question": "Qual è la formula indicata nella guida per ottenere un 5 naturale neutro in presenza di capelli bianchi?",
+    "expected_answer": "1/2 di 5.01 + 1/4 di 5.3 + 1/4 di 4.0."
+  },
+  {
+    "id": 11,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 11,
+    "question": "Perché utilizzare soltanto il 5.01 potrebbe dare problemi sui capelli bianchi?",
+    "expected_answer": "Perché mancherebbe la componente calda necessaria alla copertura e il bianco potrebbe risultare trasparente o con una percezione verdognola."
+  },
+  {
+    "id": 12,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 12,
+    "question": "Che funzione ha il 5.3 nella formula 1/2 5.01 + 1/4 5.3 + 1/4 4.0?",
+    "expected_answer": "Introduce la base calda/dorata necessaria alla copertura del capello bianco."
+  },
+  {
+    "id": 13,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 13,
+    "question": "Che funzione ha il 4.0 nella stessa formula?",
+    "expected_answer": "Serve ad abbassare l’altezza di tono e compensare il fatto che con l’8 volumi il risultato tende a leggere più alto."
+  },
+  {
+    "id": 14,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 14,
+    "question": "Come deve essere modificata una formula Color Oil se al servizio successivo la cliente desidera un risultato più freddo?",
+    "expected_answer": "Si riduce la quantità di dorato nella miscela. Se desidera più calore, al contrario, la quota di dorato può essere aumentata."
+  },
+  {
+    "id": 15,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 15,
+    "question": "Qual è la formula in grammi indicata per ottenere una copertura totale con tonalità 6 naturale fredda?",
+    "expected_answer": "50 g di 6.01 + 25 g di 6.0 + 25 g di 5.3, per un totale di 100 g di colore."
+  },
+  {
+    "id": 16,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 16,
+    "question": "Quanti grammi di rivelatore vengono utilizzati con 100 g di colore nella formula del 6 naturale freddo?",
+    "expected_answer": "100 g di rivelatore a 8 volumi, quindi una pari dose rispetto al colore."
+  },
+  {
+    "id": 17,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 17,
+    "question": "Quante perle vengono aggiunte alla miscela da 100 g descritta nella guida e perché?",
+    "expected_answer": "Due perle, per aumentare il comfort della cute e ridurre lo stress cutaneo grazie alla presenza di omega 3-6."
+  },
+  {
+    "id": 18,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 18,
+    "question": "Qual è la funzione del trattamento b.phase prima della colorazione?",
+    "expected_answer": "Preparare e dare comfort alla cute, nutrendola e aiutando a lenire eventuali lievi stati di irritazione senza interferire con la colorazione."
+  },
+  {
+    "id": 19,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 19,
+    "question": "Qual è l’alternativa al b.phase indicata nella guida e che cosa contiene?",
+    "expected_answer": "Le perle, ricche di omega 3-6."
+  },
+  {
+    "id": 20,
+    "category": "Color Oil — Colorimetria",
+    "local_n": 20,
+    "question": "Quali prodotti vengono suggeriti per raffreddare una schiaritura rimasta troppo dorata?",
+    "expected_answer": "11.12 o 11.10, diluiti 1:2 o 1:3 con ossigeno, oppure 9.01, anch’esso diluito 1:2 o 1:3."
+  },
+  {
+    "id": 21,
+    "category": "Henné Shatush — Principi generali",
+    "local_n": 21,
+    "question": "Qual è il principio fondamentale da ricordare riguardo alla capacità schiarente dell’henné?",
+    "expected_answer": "L’henné non schiarisce mai il capello; lavora esclusivamente per riflessatura su una base già esistente."
+  },
+  {
+    "id": 22,
+    "category": "Henné Shatush — Principi generali",
+    "local_n": 22,
+    "question": "Che cosa fa l’henné sul colore naturale se non può schiarire il capello?",
+    "expected_answer": "Riflette ed enfatizza il colore o l’altezza di tono che trova, aggiungendo brillantezza e riflessatura."
+  },
+  {
+    "id": 23,
+    "category": "Henné Shatush — Principi generali",
+    "local_n": 23,
+    "question": "Quali sono le due polveri rosse principali della gamma Henné Shatush?",
+    "expected_answer": "Rosso Profondo e Rosso Normale."
+  },
+  {
+    "id": 24,
+    "category": "Henné Shatush — Principi generali",
+    "local_n": 24,
+    "question": "Qual è la differenza cromatica tra Rosso Profondo e Rosso Normale?",
+    "expected_answer": "Il Rosso Profondo produce un riflesso più intensamente rosso/ramato, mentre il Rosso Normale tende maggiormente all’arancio."
+  },
+  {
+    "id": 25,
+    "category": "Henné Shatush — Principi generali",
+    "local_n": 25,
+    "question": "Qual è la funzione dell’emolliente nella gamma Henné Shatush?",
+    "expected_answer": "Non colora; diluisce o alleggerisce l’intensità delle polveri coloranti e svolge anche una funzione cosmetica sul capello e sulla cute."
+  },
+  {
+    "id": 26,
+    "category": "Henné Shatush — Principi generali",
+    "local_n": 26,
+    "question": "Qual è la funzione del mallo di noce?",
+    "expected_answer": "Correggere e smorzare un eccesso di rosso, ramato o dorato grazie alla sua componente tendente al verde."
+  },
+  {
+    "id": 27,
+    "category": "Henné Shatush — Principi generali",
+    "local_n": 27,
+    "question": "Perché il mallo di noce può essere utilizzato per ridurre un eccesso di rosso?",
+    "expected_answer": "Perché il suo riflesso tendente al verde agisce cromaticamente in opposizione al rosso."
+  },
+  {
+    "id": 28,
+    "category": "Henné Shatush — Principi generali",
+    "local_n": 28,
+    "question": "Che cosa attiva il potere colorante delle polveri di henné?",
+    "expected_answer": "Il calore dell’acqua."
+  },
+  {
+    "id": 29,
+    "category": "Henné Shatush — Principi generali",
+    "local_n": 29,
+    "question": "Nella preparazione dell’henné si utilizzano acqua ossigenata o ammoniaca?",
+    "expected_answer": "No. Il colore delle erbe viene sviluppato con acqua calda, senza ossigeno né ammoniaca."
+  },
+  {
+    "id": 30,
+    "category": "Henné Shatush — Principi generali",
+    "local_n": 30,
+    "question": "Qual è la funzione dell’emulsione acidificante nella miscela?",
+    "expected_answer": "Aiuta a mantenere il pH ottimale di cute e capelli e rende la miscela più cremosa e lavorabile."
+  },
+  {
+    "id": 31,
+    "category": "Henné Shatush — Principi generali",
+    "local_n": 31,
+    "question": "In quali situazioni diventano particolarmente utili i pigmenti Shatush?",
+    "expected_answer": "Quando bisogna ricreare un’altezza di tono mancante o aumentare la durata del risultato, soprattutto su capelli bianchi, molto schiariti o precedentemente trattati."
+  },
+  {
+    "id": 32,
+    "category": "Henné Shatush — Principi generali",
+    "local_n": 32,
+    "question": "Quali altezze di tono copre indicativamente la gamma dei pigmenti Shatush?",
+    "expected_answer": "Dal tono 2, bruno, fino al biondo."
+  },
+  {
+    "id": 33,
+    "category": "Henné Shatush — Principi generali",
+    "local_n": 33,
+    "question": "Quali sono i due pigmenti riflessanti citati nella guida introduttiva?",
+    "expected_answer": "08.04 e 08.34."
+  },
+  {
+    "id": 34,
+    "category": "Henné Shatush — Principi generali",
+    "local_n": 34,
+    "question": "Che cos’è una “colata alla testa”?",
+    "expected_answer": "Un’applicazione delle erbe, eventualmente accompagnate dal pigmento, usata come un bagno di colore uniforme su tutta la testa."
+  },
+  {
+    "id": 35,
+    "category": "Henné Shatush — Principi generali",
+    "local_n": 35,
+    "question": "Su capello bagnato, quanto dura indicativamente una colata alla testa consigliata a chi inizia a usare l’henné?",
+    "expected_answer": "Circa 10-15 minuti."
+  },
+  {
+    "id": 36,
+    "category": "Henné — Rosso Profondo e Rosso Normale",
+    "local_n": 36,
+    "question": "Quanti misurini di polvere sono indicati per una testa media nella preparazione del Rosso Profondo?",
+    "expected_answer": "Circa quattro misurini."
+  },
+  {
+    "id": 37,
+    "category": "Henné — Rosso Profondo e Rosso Normale",
+    "local_n": 37,
+    "question": "Quanto acidificante viene aggiunto ogni quattro misurini di henné?",
+    "expected_answer": "Un tappino di emulsione acidificante."
+  },
+  {
+    "id": 38,
+    "category": "Henné — Rosso Profondo e Rosso Normale",
+    "local_n": 38,
+    "question": "Perché nella preparazione dell’henné è importante ottenere una consistenza né troppo liquida né troppo grumosa?",
+    "expected_answer": "Perché una miscela troppo grumosa è difficile da distribuire, mentre una troppo liquida può scivolare dai capelli e colare sul viso."
+  },
+  {
+    "id": 39,
+    "category": "Henné — Rosso Profondo e Rosso Normale",
+    "local_n": 39,
+    "question": "Perché gli strumenti metallici non devono essere utilizzati con l’henné?",
+    "expected_answer": "Perché il metallo può provocare una reazione di ossidazione nel prodotto."
+  },
+  {
+    "id": 40,
+    "category": "Henné — Rosso Profondo e Rosso Normale",
+    "local_n": 40,
+    "question": "Quali materiali sono invece indicati per ciotole e strumenti?",
+    "expected_answer": "Vetro, plastica o legno."
+  },
+  {
+    "id": 41,
+    "category": "Henné — Rosso Profondo e Rosso Normale",
+    "local_n": 41,
+    "question": "Perché viene consigliata una crema protettiva sul contorno del viso?",
+    "expected_answer": "Per evitare che le miscele, soprattutto quelle rosse, colorino la pelle, la peluria e l’attaccatura."
+  },
+  {
+    "id": 42,
+    "category": "Henné — Rosso Profondo e Rosso Normale",
+    "local_n": 42,
+    "question": "Qual è il tempo minimo di posa del Rosso Profondo?",
+    "expected_answer": "Almeno 30 minuti."
+  },
+  {
+    "id": 43,
+    "category": "Henné — Rosso Profondo e Rosso Normale",
+    "local_n": 43,
+    "question": "Perché durante la posa si avvolgono i capelli con una pellicola trasparente?",
+    "expected_answer": "Per trattenere calore e umidità ed evitare che la miscela si secchi durante la posa."
+  },
+  {
+    "id": 44,
+    "category": "Henné — Rosso Profondo e Rosso Normale",
+    "local_n": 44,
+    "question": "Perché il capello non deve essere pettinato dopo che la miscela di henné è stata applicata?",
+    "expected_answer": "Perché il prodotto è composto da granuli e pettinare il capello dopo l’applicazione renderebbe molto difficile la lavorazione."
+  },
+  {
+    "id": 45,
+    "category": "Henné — Rosso Profondo e Rosso Normale",
+    "local_n": 45,
+    "question": "Che effetto produce il Rosso Normale rispetto al Rosso Profondo su una base 7?",
+    "expected_answer": "Produce un risultato più aranciato/dorato-rame, mentre il Rosso Profondo porta maggiormente verso il rosso."
+  },
+  {
+    "id": 46,
+    "category": "Henné — Rosso Profondo e Rosso Normale",
+    "local_n": 46,
+    "question": "Su una base chiara, verso quale tipo di riflesso tende maggiormente il Rosso Normale?",
+    "expected_answer": "Verso un riflesso aranciato o dorato-rame."
+  },
+  {
+    "id": 47,
+    "category": "Henné — Rosso Profondo e Rosso Normale",
+    "local_n": 47,
+    "question": "Perché sulla peluria corta dell’attaccatura frontale può essere opportuno applicare il prodotto per ultimo?",
+    "expected_answer": "Perché i capelli più corti e fini dell’attaccatura possono prendere il riflesso più rapidamente e diventare eccessivamente aranciati."
+  },
+  {
+    "id": 48,
+    "category": "Henné — Rosso Profondo e Rosso Normale",
+    "local_n": 48,
+    "question": "Che cosa cambia nell’applicazione se proprio sull’attaccatura sono presenti capelli bianchi?",
+    "expected_answer": "La gestione può richiedere l’uso preventivo del pigmento e l’attaccatura non viene necessariamente lasciata per ultima, perché i capelli bianchi devono essere adeguatamente riflessati."
+  },
+  {
+    "id": 49,
+    "category": "Henné — Rosso Profondo e Rosso Normale",
+    "local_n": 49,
+    "question": "Lasciare l’henné 5-10 minuti in più aumenta la durata del risultato o soltanto l’intensità della riflessatura?",
+    "expected_answer": "Aumenta soprattutto l’intensità della riflessatura, non la durata del risultato nel tempo."
+  },
+  {
+    "id": 50,
+    "category": "Henné — Rosso Profondo e Rosso Normale",
+    "local_n": 50,
+    "question": "Perché la guida suggerisce di iniziare con meno rosso e aumentarlo eventualmente nei servizi successivi?",
+    "expected_answer": "Perché è relativamente facile intensificare il rosso successivamente, mentre correggere una miscela inizialmente troppo rossa è molto più difficile."
+  },
+  {
+    "id": 51,
+    "category": "Henné Biondo",
+    "local_n": 51,
+    "question": "Qual è la variabile principale da valutare nella costruzione di una miscela Henné Biondo?",
+    "expected_answer": "La quantità o percentuale di capelli bianchi presenti."
+  },
+  {
+    "id": 52,
+    "category": "Henné Biondo",
+    "local_n": 52,
+    "question": "In presenza di molti capelli bianchi bisogna aumentare o diminuire la quantità di rosso?",
+    "expected_answer": "Diminuirla."
+  },
+  {
+    "id": 53,
+    "category": "Henné Biondo",
+    "local_n": 53,
+    "question": "Perché troppo rosso può essere problematico su capelli molto bianchi?",
+    "expected_answer": "Perché può portarli verso riflessi troppo dorati o addirittura aranciati."
+  },
+  {
+    "id": 54,
+    "category": "Henné Biondo",
+    "local_n": 54,
+    "question": "Quali sono i due componenti fondamentali di una miscela Henné Biondo?",
+    "expected_answer": "Henné rosso e polvere neutra/emolliente."
+  },
+  {
+    "id": 55,
+    "category": "Henné Biondo",
+    "local_n": 55,
+    "question": "Qual è una quantità di partenza tipica di prodotto neutro/emolliente citata nella guida?",
+    "expected_answer": "Circa tre misurini."
+  },
+  {
+    "id": 56,
+    "category": "Henné Biondo",
+    "local_n": 56,
+    "question": "Quando può essere aggiunto un misurino di mallo di noce alla miscela bionda?",
+    "expected_answer": "Quando ci sono molti capelli bianchi o quando si teme che la miscela possa risultare troppo dorata."
+  },
+  {
+    "id": 57,
+    "category": "Henné Biondo",
+    "local_n": 57,
+    "question": "Perché il mallo di noce non dovrebbe generare un vero colore verde quando viene utilizzato nella proporzione suggerita?",
+    "expected_answer": "Perché viene usato in quantità limitata con funzione correttiva: il suo verde neutralizza parte del rosso/dorato senza diventare il riflesso dominante."
+  },
+  {
+    "id": 58,
+    "category": "Henné Biondo",
+    "local_n": 58,
+    "question": "Come cambia la miscela quando il capello è molto chiaro o molto poroso?",
+    "expected_answer": "Deve diventare progressivamente più povera di rosso e più ricca di neutro/emolliente."
+  },
+  {
+    "id": 59,
+    "category": "Henné Biondo",
+    "local_n": 59,
+    "question": "Fino a quale rapporto neutro/rosso si può arrivare nei casi di capelli molto bianchi o molto schiariti?",
+    "expected_answer": "Fino a circa 6-7 parti di neutro per una parte di rosso."
+  },
+  {
+    "id": 60,
+    "category": "Henné Biondo",
+    "local_n": 60,
+    "question": "Perché dopo una schiaritura fatta nello stesso giorno viene consigliato di applicare l’henné su capello umido?",
+    "expected_answer": "Per rallentare l’assorbimento del pigmento da parte di un capello molto poroso e avere maggiore controllo sul risultato."
+  },
+  {
+    "id": 61,
+    "category": "Henné Biondo",
+    "local_n": 61,
+    "question": "Qual è la differenza tra capello umido e capello eccessivamente bagnato nella gestione dell’assorbimento dell’henné?",
+    "expected_answer": "Il capello umido rallenta l’assorbimento in modo controllabile; se è troppo bagnato, l’eccesso d’acqua riduce ulteriormente l’assorbimento e rende meno controllabile la lavorazione."
+  },
+  {
+    "id": 62,
+    "category": "Henné Biondo",
+    "local_n": 62,
+    "question": "Qual è lo schema generale di applicazione della miscela Henné Biondo?",
+    "expected_answer": "Radice, lunghezze e punte."
+  },
+  {
+    "id": 63,
+    "category": "Henné Biondo",
+    "local_n": 63,
+    "question": "Come cambia la consistenza della miscela quando viene utilizzata come “colata”?",
+    "expected_answer": "Viene preparata più morbida e fluida, con una quantità maggiore d’acqua."
+  },
+  {
+    "id": 64,
+    "category": "Henné Biondo",
+    "local_n": 64,
+    "question": "Quanto dura indicativamente la posa della versione “colata” dell’Henné Biondo?",
+    "expected_answer": "Circa 10-15 minuti."
+  },
+  {
+    "id": 65,
+    "category": "Henné Biondo",
+    "local_n": 65,
+    "question": "Perché un operatore lento può essere avvantaggiato iniziando l’applicazione dalla parte posteriore?",
+    "expected_answer": "Per gestire meglio i diversi tempi di posa e poter iniziare il risciacquo nelle prime zone applicate senza creare squilibri tra le varie aree della testa."
+  },
+  {
+    "id": 66,
+    "category": "Henné Castano e pigmenti",
+    "local_n": 66,
+    "question": "In quali due situazioni principali la guida suggerisce di utilizzare il pigmento insieme all’henné?",
+    "expected_answer": "Quando sono presenti moltissimi capelli bianchi e si deve ricreare una base naturale, oppure quando si vuole scurire una tinta monocolore esistente riportandola verso una base più naturale."
+  },
+  {
+    "id": 67,
+    "category": "Henné Castano e pigmenti",
+    "local_n": 67,
+    "question": "Perché la porosità del capello deve essere valutata prima di scegliere il pigmento?",
+    "expected_answer": "Perché un capello più poroso assorbe maggiormente il pigmento e può quindi produrre un risultato più intenso o scuro rispetto a un capello meno poroso."
+  },
+  {
+    "id": 68,
+    "category": "Henné Castano e pigmenti",
+    "local_n": 68,
+    "question": "Perché un pigmento diretto bruno applicato su una base 7 non produce necessariamente un bruno pieno come una tintura tradizionale?",
+    "expected_answer": "Perché i colori diretti si sommano alla base esistente e lavorano con una micro-trasparenza; non sostituiscono completamente il pigmento naturale come può fare una colorazione chimica tradizionale."
+  },
+  {
+    "id": 69,
+    "category": "Henné Castano e pigmenti",
+    "local_n": 69,
+    "question": "Che cosa significa “micro-trasparenza” parlando di pigmenti diretti?",
+    "expected_answer": "Significa che il colore non risulta completamente pieno e opaco, ma lascia percepire parte della base sottostante."
+  },
+  {
+    "id": 70,
+    "category": "Henné Castano e pigmenti",
+    "local_n": 70,
+    "question": "Perché questa micro-trasparenza viene considerata un vantaggio estetico?",
+    "expected_answer": "Perché crea un risultato più naturale, soprattutto alla luce, evitando l’effetto troppo pieno e monocolore."
+  },
+  {
+    "id": 71,
+    "category": "Henné Castano e pigmenti",
+    "local_n": 71,
+    "question": "Perché l’approccio con pigmento diretto viene sconsigliato su una cliente già tinta di nero che deve soltanto ritoccare la ricrescita?",
+    "expected_answer": "Perché un pigmento diretto non riesce a ricreare la stessa pienezza e intensità di riflesso di una tintura chimica nera già presente sulle lunghezze."
+  },
+  {
+    "id": 72,
+    "category": "Henné Castano e pigmenti",
+    "local_n": 72,
+    "question": "In presenza di lunghezze precedentemente schiarite, come dovrebbe cambiare la scelta del pigmento tra radice e punte?",
+    "expected_answer": "Si può lavorare con un pigmento più scuro sulla radice e progressivamente più chiaro sulle lunghezze e punte schiarite, per evitare di appesantirle."
+  },
+  {
+    "id": 73,
+    "category": "Henné Castano e pigmenti",
+    "local_n": 73,
+    "question": "Nella dimostrazione da biondo a castano, quanto viene lasciato in posa il pigmento prima di applicare l’henné?",
+    "expected_answer": "Circa 20 minuti."
+  },
+  {
+    "id": 74,
+    "category": "Henné Castano e pigmenti",
+    "local_n": 74,
+    "question": "Perché sopra un pigmento bruno viene utilizzata una miscela di henné più carica di rosso?",
+    "expected_answer": "Perché il pigmento bruno sottostante smorza il rosso; una miscela apparentemente più rossa può quindi produrre un risultato finale castano."
+  },
+  {
+    "id": 75,
+    "category": "Henné Castano e pigmenti",
+    "local_n": 75,
+    "question": "Perché un pigmento più scuro tende a rendere meno evidente il riflesso rosso finale?",
+    "expected_answer": "Perché contiene una componente maggiore di blu, che contribuisce a spegnere i riflessi caldi giallo/arancio e fa percepire maggiormente un castano naturale."
+  },
+  {
+    "id": 76,
+    "category": "Henné Castano e pigmenti",
+    "local_n": 76,
+    "question": "Quali sono i tre modi descritti per combinare pigmenti e polveri di henné?",
+    "expected_answer": "Solo polveri; pigmento applicato prima e successivamente henné; pigmento inserito direttamente nella miscela di henné."
+  },
+  {
+    "id": 77,
+    "category": "Henné Castano e pigmenti",
+    "local_n": 77,
+    "question": "Qual è la differenza d’intensità tra applicare il pigmento puro prima dell’henné e inserirlo direttamente nella miscela?",
+    "expected_answer": "Applicato puro sviluppa maggiormente il proprio potere colorante; miscelato direttamente nell’henné viene notevolmente alleggerito."
+  },
+  {
+    "id": 78,
+    "category": "Henné Castano e pigmenti",
+    "local_n": 78,
+    "question": "Come può cambiare il trattamento della radice quando sono presenti molti capelli bianchi?",
+    "expected_answer": "Può essere necessario utilizzare direttamente un pigmento molto scuro, ad esempio tono 2, concentrandolo sulla radice oppure inserendolo nella miscela di henné."
+  },
+  {
+    "id": 79,
+    "category": "Infusion",
+    "local_n": 79,
+    "question": "Qual è la differenza concettuale tra “copertura” e “riflesso” nella filosofia Infusion?",
+    "expected_answer": "Infusion viene presentato come sistema di riflessatura, non come colorazione di copertura tradizionale. Il risultato valorizza e modifica il riflesso senza creare una ricrescita netta come una tinta coprente."
+  },
+  {
+    "id": 80,
+    "category": "Infusion",
+    "local_n": 80,
+    "question": "Quali sono le cinque erbe principali della gamma Infusion citate nei materiali?",
+    "expected_answer": "Red Fire, Love Red, Tibet, Namibia ed Everest."
+  },
+  {
+    "id": 81,
+    "category": "Infusion",
+    "local_n": 81,
+    "question": "Qual è la differenza tra Red Fire e Love Red?",
+    "expected_answer": "Red Fire è il rosso più intenso e brillante della gamma; Love Red tende invece al giallo-arancione e dà un riflesso più dorato-ramato."
+  },
+  {
+    "id": 82,
+    "category": "Infusion",
+    "local_n": 82,
+    "question": "Quale funzione svolge Tibet?",
+    "expected_answer": "È l’erba neutra: non ha potere colorante e viene utilizzata per alleggerire la capacità colorante delle erbe rosse."
+  },
+  {
+    "id": 83,
+    "category": "Infusion",
+    "local_n": 83,
+    "question": "Quale tipo di risultato si cerca utilizzando una parte prevalente di Tibet e una piccola quantità di Love Red?",
+    "expected_answer": "Un biondo dorato più delicato e controllato."
+  },
+  {
+    "id": 84,
+    "category": "Infusion",
+    "local_n": 84,
+    "question": "Qual è la funzione di Namibia nei toni castani?",
+    "expected_answer": "Aiuta a spegnere i riflessi rossi indesiderati, ottenere riflessi più marroni e compensare un eccesso di doratura."
+  },
+  {
+    "id": 85,
+    "category": "Infusion",
+    "local_n": 85,
+    "question": "Qual è la caratteristica cromatica principale di Everest?",
+    "expected_answer": "È un’erba tendenzialmente verde, utilizzata per contrastare rosso e arancio."
+  },
+  {
+    "id": 86,
+    "category": "Infusion",
+    "local_n": 86,
+    "question": "In quale situazione Everest può essere utilizzato anche da solo?",
+    "expected_answer": "Soprattutto su basi castane o molto scure con riflessi caldi, rossi o ramati da compensare."
+  },
+  {
+    "id": 87,
+    "category": "Infusion",
+    "local_n": 87,
+    "question": "Perché Everest puro rappresenta un rischio sui capelli biondi?",
+    "expected_answer": "Perché la sua componente verde può diventare visibile su una base molto chiara."
+  },
+  {
+    "id": 88,
+    "category": "Infusion",
+    "local_n": 88,
+    "question": "Quale colore potrebbero assumere capelli biondi trattati con Everest puro?",
+    "expected_answer": "Un colore tendente al verde/salvia."
+  },
+  {
+    "id": 89,
+    "category": "Infusion",
+    "local_n": 89,
+    "question": "Qual è il ruolo del Vitamin Oil nella linea Infusion?",
+    "expected_answer": "Preservare le proprietà cosmetiche e coloranti delle erbe e aiutare a mantenere l’acidità, l’idratazione, la brillantezza e la lucentezza di cute e capelli."
+  },
+  {
+    "id": 90,
+    "category": "Infusion",
+    "local_n": 90,
+    "question": "Qual è la differenza funzionale tra erbe Infusion e pigmenti Infusion?",
+    "expected_answer": "Le erbe enfatizzano e correggono riflessi già presenti; i pigmenti possono ricreare un’altezza di tono mancante o rendere il risultato più scuro."
+  },
+  {
+    "id": 91,
+    "category": "Infusion",
+    "local_n": 91,
+    "question": "I pigmenti Infusion devono essere attivati con ossigeno?",
+    "expected_answer": "No. Sono colorazioni dirette già pronte e non devono essere attivate con ossigeno."
+  },
+  {
+    "id": 92,
+    "category": "Infusion",
+    "local_n": 92,
+    "question": "Su una base 7, quale risultato dà una miscela in parti uguali di Love Red e Tibet?",
+    "expected_answer": "Un dorato intenso ma non eccessivamente aranciato."
+  },
+  {
+    "id": 93,
+    "category": "Infusion",
+    "local_n": 93,
+    "question": "Quali dosi indicative di Love Red e Tibet vengono utilizzate nella Tecnica Infusion n°1?",
+    "expected_answer": "Circa tre misurini di Love Red e tre misurini di Tibet, più un’erogazione di acidificante e una di emolliente."
+  },
+  {
+    "id": 94,
+    "category": "Infusion",
+    "local_n": 94,
+    "question": "Come si riduce il potere colorante di Love Red?",
+    "expected_answer": "Aumentando la quantità di Tibet nella miscela."
+  },
+  {
+    "id": 95,
+    "category": "Infusion",
+    "local_n": 95,
+    "question": "Se l’obiettivo è soltanto riflessare vecchie schiariture, per quanto tempo può essere lasciata in posa la miscela Infusion sotto una fonte di calore?",
+    "expected_answer": "Fino a circa 30 minuti."
+  },
+  {
+    "id": 96,
+    "category": "Infusion",
+    "local_n": 96,
+    "question": "Che cos’è Infusion Mousse Repair e quale problema della fibra mira a correggere?",
+    "expected_answer": "È un trattamento riparatore profondo per capelli secchi e sfibrati. Mira a nutrire la fibra e uniformarne/livellarne la porosità."
+  },
+  {
+    "id": 97,
+    "category": "Infusion",
+    "local_n": 97,
+    "question": "Quali ingredienti chiave vengono citati nella scheda di Infusion Mousse Repair?",
+    "expected_answer": "Estratto di alga rossa, proteine della seta, aminoacidi vegetali, olio di Argan e olio di Macadamia."
+  },
+  {
+    "id": 98,
+    "category": "Infusion",
+    "local_n": 98,
+    "question": "Come viene utilizzata Infusion Mousse Repair durante una colorazione a ossidazione?",
+    "expected_answer": "Si aggiunge una noce di prodotto alla miscela colore per svolgere un’azione rigenerante e rendere il servizio meno aggressivo sulla fibra."
+  },
+  {
+    "id": 99,
+    "category": "Infusion",
+    "local_n": 99,
+    "question": "Come viene utilizzata Infusion Mousse Repair durante una decolorazione?",
+    "expected_answer": "Come protezione intensa della fibra, per mantenerla più idratata e protetta durante il processo di decolorazione."
+  },
+  {
+    "id": 100,
+    "category": "Infusion",
+    "local_n": 100,
+    "question": "Una cliente bionda presenta riflessi dorati sulle lunghezze e aranciati vicino alla radice. Sarebbe corretto applicare Everest puro uniformemente su tutta la testa?",
+    "expected_answer": "No. Everest può funzionare bene sulle zone aranciate, ma sulle lunghezze bionde/dorate rischierebbe di produrre una riflessatura verde. Sui capelli chiari deve essere usato con grande cautela e preferibilmente in piccola percentuale, miscelato con altre erbe come Tibet."
+  },
+  {
+    "id": 101,
+    "category": "Stress-test comparativi",
+    "local_n": 101,
+    "question": "Qual è la differenza principale tra il Taglio Mariam e il Taglio Sophie nell’uso dell’intreccio e della guida “Shangai”?",
+    "expected_answer": "Entrambi utilizzano fil rouge, intreccio e guida “Shangai”, ma nel Mariam questi elementi vengono organizzati in maniera molto sistematica e simmetrica, alternando continuamente un lato e l’altro per ottenere la stessa tensione. Nel Sophie la guida “Shangai” viene utilizzata sia nella parte posteriore sia frontale insieme a un lavoro di destrutturazione delle sezioni con forbici Lux/Kataweb. L’AI non deve quindi trattare Mariam e Sophie come lo stesso identico taglio."
+  },
+  {
+    "id": 102,
+    "category": "Stress-test comparativi",
+    "local_n": 102,
+    "question": "Qual è una differenza fondamentale tra il Taglio Matilda e il Taglio Rita?",
+    "expected_answer": "Matilda è costruito come un carré con perimetro a metà collo e scalatura sviluppata attraverso sezioni orizzontali, fil rouge e controlli sul CPT. Rita utilizza invece anche il rasoio per costruire il perimetro e presenta una struttura diversa, comprendente una frangia inizialmente impostata a metà naso e un successivo lavoro sulla parte superiore. Matilda viene esplicitamente definito come carré con scalatura."
+  },
+  {
+    "id": 103,
+    "category": "Stress-test comparativi",
+    "local_n": 103,
+    "question": "Qual è la differenza tecnica principale tra la Piega Mariam e la Piega Sophie nell’uso del ferro da 26 mm?",
+    "expected_answer": "Nella Piega Mariam il ferro viene mantenuto orizzontale e il movimento cambia alternativamente direzione; questa posizione serve a togliere rotondità e mantenere il movimento aderente. Nella Piega Sophie il ferro viene invece inserito a metà lunghezza, compie mezzo giro lasciando libera la punta e rimane perpendicolare all’attaccatura seguendo il disegno dei bigodini velcro."
+  },
+  {
+    "id": 104,
+    "category": "Stress-test comparativi",
+    "local_n": 104,
+    "question": "Che cosa accomuna e che cosa distingue Piega Mariam e Piega Sophie?",
+    "expected_answer": "Entrambe utilizzano mousse, fluido modellante, spazzola da 32 mm, ferro da 26 mm, spazzola ragno e bigodini velcro, puntando a volumi contenuti e texture leggere. La differenza principale è nella costruzione del movimento con il ferro: orizzontale e alternato nella Mariam; perpendicolare all’attaccatura e collegato al disegno dei bigodini nella Sophie. Il risultato della Mariam viene descritto come compatto e “da spiaggia”, mentre Sophie punta a una texture estiva morbida e non rigida."
+  },
+  {
+    "id": 105,
+    "category": "Stress-test comparativi",
+    "local_n": 105,
+    "question": "Qual è la differenza tra la Piega Rita e le pieghe Mariam/Sophie per quanto riguarda gli strumenti?",
+    "expected_answer": "Rita è più semplice nella dotazione descritta: utilizza Mousse Amo, fluido modellante e una spazzola tonda da 37 mm. Nei materiali non viene indicato l’uso del ferro da 26 mm né dei bigodini velcro come in Mariam e Sophie. Rita costruisce invece un movimento “a corda” nella parte inferiore e una punta “a virgola” nella parte superiore."
+  },
+  {
+    "id": 106,
+    "category": "Stress-test comparativi",
+    "local_n": 106,
+    "question": "Qual è la differenza concettuale tra Tecnico Mariam e Tecnico Sophie nel posizionamento dei punti luce?",
+    "expected_answer": "Nel Tecnico Mariam i punti luce sono concentrati soprattutto sul perimetro e la zona interna/radice resta maggiormente in ombra, con un alleggerimento progressivo verso la radice. Nel Tecnico Sophie l’attenzione si sposta sulle zone tra l’orecchio e l’attaccatura, normalmente più scure, con interventi mirati di dettaglio."
+  },
+  {
+    "id": 107,
+    "category": "Stress-test comparativi",
+    "local_n": 107,
+    "question": "Qual è la differenza nell’uso degli strumenti di raccordo tra Tecnico Mariam e Tecnico Sophie?",
+    "expected_answer": "Nel Mariam il raccordo della sezione superiore isolata viene realizzato mediante la tecnica indicata nella trascrizione come “Air Tips”, termine segnalato come non completamente certo. Nel Sophie viene invece utilizzato fisicamente l’accessorio “Shangai” come base su cui adagiare le sezioni laterali, insieme alla carta shatush per separare le sezioni."
+  },
+  {
+    "id": 108,
+    "category": "Stress-test comparativi",
+    "local_n": 108,
+    "question": "Qual è la differenza tra mallo di noce nella linea Henné Shatush ed Everest nella linea Infusion?",
+    "expected_answer": "Entrambi vengono utilizzati per controllare riflessi caldi grazie a una componente tendente al verde, ma appartengono a sistemi differenti e non devono essere trattati come lo stesso prodotto. Il mallo di noce è una polvere correttiva della gamma Henné Shatush, usata per smorzare rosso/dorato; Everest appartiene alla linea Infusion ed è descritto come una polvere verde particolarmente efficace contro rosso e arancio, con un rischio importante di viraggio verde sui biondi."
+  },
+  {
+    "id": 109,
+    "category": "Stress-test comparativi",
+    "local_n": 109,
+    "question": "Qual è la differenza tra l’emolliente della gamma Henné Shatush e Tibet della gamma Infusion?",
+    "expected_answer": "Hanno una funzione simile di alleggerimento della componente colorante, ma appartengono a gamme diverse. L’emolliente è la polvere neutra utilizzata nel sistema Henné Shatush; Tibet è la polvere neutra della linea Infusion, non ha potere colorante e riduce l’intensità delle erbe rosse come Love Red. L’AI non deve scambiare i due nomi."
+  },
+  {
+    "id": 110,
+    "category": "Stress-test comparativi",
+    "local_n": 110,
+    "question": "Qual è la differenza tra pigmenti diretti e polveri vegetali nei sistemi Henné/Infusion?",
+    "expected_answer": "Le polveri vegetali lavorano principalmente sul riflesso, enfatizzando o correggendo ciò che è già presente e senza avere un vero potere schiarente. I pigmenti diretti servono invece a ricreare o rinforzare un’altezza di tono quando la base manca, ad esempio sui capelli bianchi o molto schiariti. Sono colori diretti e non devono essere confusi con una colorazione a ossidazione tradizionale."
+  },
+  {
+    "id": 111,
+    "category": "Stress-test anti-allucinazione",
+    "local_n": 111,
+    "question": "“Kataweb” è sicuramente il nome ufficiale della tecnica utilizzata nel Taglio Sophie?",
+    "expected_answer": "No. Nei materiali il termine compare nella trascrizione, ma viene esplicitamente indicato come possibile errore di trascrizione e da confermare. Un’AI corretta deve riportare questa incertezza e non presentarlo come nome ufficiale certo."
+  },
+  {
+    "id": 112,
+    "category": "Stress-test anti-allucinazione",
+    "local_n": 112,
+    "question": "Nel Tecnico Mariam è certo che “Air Tips” significhi Airtouch?",
+    "expected_answer": "No. La guida segnala che potrebbe essere riconducibile a una tecnica di tipo Airtouch, ma il nome esatto non è chiaro e dovrebbe essere verificato sul video o sull’audio originale."
+  },
+  {
+    "id": 113,
+    "category": "Stress-test anti-allucinazione",
+    "local_n": 113,
+    "question": "È corretto affermare che l’henné può schiarire di due toni un capello naturale?",
+    "expected_answer": "No. È contrario ai materiali: l’henné non ha potere schiarente."
+  },
+  {
+    "id": 114,
+    "category": "Stress-test anti-allucinazione",
+    "local_n": 114,
+    "question": "È corretto affermare che Everest puro è una scelta sicura per neutralizzare qualsiasi biondo dorato?",
+    "expected_answer": "No. Sui capelli biondi può produrre una riflessatura verde/salvia e deve quindi essere usato con estrema cautela."
+  },
+  {
+    "id": 115,
+    "category": "Stress-test anti-allucinazione",
+    "local_n": 115,
+    "question": "È corretto dire che Color Oil utilizza normalmente ossigeno a 20 volumi per coprire meglio i capelli bianchi?",
+    "expected_answer": "No. Nei materiali viene specificato che Color Oil viene lavorato esclusivamente con ossigeno a 8 volumi."
+  },
+  {
+    "id": 116,
+    "category": "Stress-test anti-allucinazione",
+    "local_n": 116,
+    "question": "Se una domanda chiede il nome esatto di un prodotto indicato nella trascrizione Mariam come “net/netto”, l’AI dovrebbe inventare il nome commerciale corretto?",
+    "expected_answer": "No. Deve dichiarare che il nome esatto non è confermato dai materiali."
+  },
+  {
+    "id": 117,
+    "category": "Stress-test anti-allucinazione",
+    "local_n": 117,
+    "question": "È corretto dire che Infusion Mousse Repair è una colorazione?",
+    "expected_answer": "No. È un trattamento riparatore profondo utilizzabile anche durante servizi tecnici come colorazione e decolorazione."
+  },
+  {
+    "id": 118,
+    "category": "Stress-test anti-allucinazione",
+    "local_n": 118,
+    "question": "È corretto dire che Tibet e Love Red hanno entrambi un forte potere colorante?",
+    "expected_answer": "No. Love Red è colorante, mentre Tibet è neutro e viene utilizzato proprio per ridurre l’intensità del colore."
+  },
+  {
+    "id": 119,
+    "category": "Stress-test anti-allucinazione",
+    "local_n": 119,
+    "question": "Un’AI può concludere dai materiali che “CPT” significhi sicuramente “Centro Punto Testa”?",
+    "expected_answer": "No. Nei materiali questa interpretazione viene indicata come probabile, non come definizione certa. L’AI dovrebbe conservare tale livello di incertezza."
+  },
+  {
+    "id": 120,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 1,
+    "question": "Che cosa significa il concept “A.M.O. — Comes from Within”?",
+    "expected_answer": "Esprime una visione della bellezza che nasce dal benessere profondo dei capelli e non soltanto dal loro aspetto esteriore."
+  },
+  {
+    "id": 121,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 2,
+    "question": "Qual è l’obiettivo generale della linea A.M.O.?",
+    "expected_answer": "Creare un rituale hair beauty dedicato al reale benessere dei capelli e alla femminilità."
+  },
+  {
+    "id": 122,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 3,
+    "question": "Qual è la tecnologia esclusiva citata nella linea A.M.O.?",
+    "expected_answer": "Le Microproteine Vegetali Cheratiniche."
+  },
+  {
+    "id": 123,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 4,
+    "question": "Qual è una caratteristica particolare delle Microproteine Vegetali Cheratiniche?",
+    "expected_answer": "Hanno una micro-dimensione particolarmente ridotta."
+  },
+  {
+    "id": 124,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 5,
+    "question": "Che cosa fanno le microproteine sulla superficie del capello?",
+    "expected_answer": "Aiutano a riparare le fibre capillari danneggiate da stress ambientali e chimici."
+  },
+  {
+    "id": 125,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 6,
+    "question": "Che cosa fanno le microproteine all’interno della fibra?",
+    "expected_answer": "Contribuiscono alla ricostruzione dall’interno e restituiscono spessore ai capelli stressati e fini."
+  },
+  {
+    "id": 126,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 7,
+    "question": "Le Microproteine Vegetali Cheratiniche sono descritte come scientificamente testate?",
+    "expected_answer": "Sì."
+  },
+  {
+    "id": 127,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 8,
+    "question": "Quali benefici generali vengono attribuiti agli ingredienti attivi naturali?",
+    "expected_answer": "Equilibrio, benessere, nuova forza e resistenza dei capelli."
+  },
+  {
+    "id": 128,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 9,
+    "question": "Qual è il beneficio del Complesso Bio cosmetico di Alga Bruna?",
+    "expected_answer": "Elasticità e idratazione."
+  },
+  {
+    "id": 129,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 10,
+    "question": "Qual è il beneficio dell’Olio di Camelina?",
+    "expected_answer": "Morbidezza e nutrimento."
+  },
+  {
+    "id": 130,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 11,
+    "question": "Qual è il beneficio dell’Acqua Bio di Arance Rosse del Mediterraneo?",
+    "expected_answer": "Protezione e luminosità."
+  },
+  {
+    "id": 131,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 12,
+    "question": "A quali capelli è destinata principalmente la linea Rebuild?",
+    "expected_answer": "A capelli fini e devitalizzati."
+  },
+  {
+    "id": 132,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 13,
+    "question": "Qual è la funzione principale del Rebuild Shampoo?",
+    "expected_answer": "Detergere delicatamente, migliorando pettinabilità e luminosità."
+  },
+  {
+    "id": 133,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 14,
+    "question": "Che cosa fa la Rebuild Mask?",
+    "expected_answer": "Riduce i danni superficiali, rinforza la fibra, protegge dagli stress ambientali e rende il capello più resistente alla rottura."
+  },
+  {
+    "id": 134,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 15,
+    "question": "Che cosa distingue il Rebuild Treatment?",
+    "expected_answer": "È un trattamento professionale da salone per la ricostruzione profonda, che agisce sulle strutture cheratiniche interne e protegge esternamente la cuticola."
+  },
+  {
+    "id": 135,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 16,
+    "question": "Quali prodotti Rebuild esistono anche in formato refill da 500 ml?",
+    "expected_answer": "Shampoo e Mask."
+  },
+  {
+    "id": 136,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 17,
+    "question": "Qual è la funzione principale della Volume Mousse?",
+    "expected_answer": "Creare volume con un’azione plasmante, proteggendo i capelli e mantenendo una tenuta elastica."
+  },
+  {
+    "id": 137,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 18,
+    "question": "Quale ingrediente della Volume Mousse è associato a un’azione plasmante naturale?",
+    "expected_answer": "L’amido di riso."
+  },
+  {
+    "id": 138,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 19,
+    "question": "Che cos’è Snow Styler?",
+    "expected_answer": "Una crema modellante impalpabile che plasma le forme con morbidezza e lascia un finish delicato ed emolliente."
+  },
+  {
+    "id": 139,
+    "category": "A.M.O. by Aldo Coppola",
+    "local_n": 20,
+    "question": "Quale materiale viene utilizzato per il packaging A.M.O. e perché?",
+    "expected_answer": "Alluminio, perché è considerato sicuro, eco-compatibile, riciclabile al 100% e capace di conservare bene il contenuto."
+  },
+  {
+    "id": 140,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 21,
+    "question": "A chi è dedicata la linea Coppolino?",
+    "expected_answer": "Ai bambini."
+  },
+  {
+    "id": 141,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 22,
+    "question": "Dove vengono testate le formule Coppolino secondo il materiale?",
+    "expected_answer": "Presso cliniche dermatologiche."
+  },
+  {
+    "id": 142,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 23,
+    "question": "Qual è l’obiettivo dei test dermatologici citati?",
+    "expected_answer": "Garantire la massima efficacia e sicurezza d’uso."
+  },
+  {
+    "id": 143,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 24,
+    "question": "Quali sono i due principali estratti vegetali presenti nella linea?",
+    "expected_answer": "Cotone e avena."
+  },
+  {
+    "id": 144,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 25,
+    "question": "Quale funzione svolgono gli zuccheri rilasciati da cotone e avena?",
+    "expected_answer": "Favoriscono idratazione immediata, protezione e nutrimento della fibra capillare."
+  },
+  {
+    "id": 145,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 26,
+    "question": "Come viene descritto lo Shampoo Coppolino?",
+    "expected_answer": "Come un detergente ultra delicato, nutriente e idratante."
+  },
+  {
+    "id": 146,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 27,
+    "question": "Quale olio essenziale è presente nello Shampoo?",
+    "expected_answer": "Olio essenziale di melaleuca, o tea tree."
+  },
+  {
+    "id": 147,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 28,
+    "question": "Quale funzione specifica viene attribuita alla melaleuca nello Shampoo?",
+    "expected_answer": "Un’azione preventiva contro i pidocchi."
+  },
+  {
+    "id": 148,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 29,
+    "question": "Quali sono le tre parole chiave associate allo Shampoo Coppolino?",
+    "expected_answer": "Idratazione, delicatezza e protezione."
+  },
+  {
+    "id": 149,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 30,
+    "question": "Qual è la funzione della Maschera Coppolino?",
+    "expected_answer": "Idratare in profondità, proteggere, nutrire e rigenerare la fibra capillare."
+  },
+  {
+    "id": 150,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 31,
+    "question": "Quanto tempo deve essere lasciata in posa la Maschera?",
+    "expected_answer": "3 minuti."
+  },
+  {
+    "id": 151,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 32,
+    "question": "Come viene distribuita la Maschera?",
+    "expected_answer": "Massaggiandola delicatamente e aiutandosi con mani e pettine."
+  },
+  {
+    "id": 152,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 33,
+    "question": "Quali sono le parole chiave associate alla Maschera?",
+    "expected_answer": "Ristrutturazione, idratazione e volume."
+  },
+  {
+    "id": 153,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 34,
+    "question": "Che cos’è Hair Milk?",
+    "expected_answer": "Un latte extra dolce per capelli dedicato ai più piccoli."
+  },
+  {
+    "id": 154,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 35,
+    "question": "Qual è l’obiettivo di Hair Milk?",
+    "expected_answer": "Nutrire e rinforzare i capelli, idratando cute e fibra e donando volume in leggerezza."
+  },
+  {
+    "id": 155,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 36,
+    "question": "Hair Milk va risciacquato?",
+    "expected_answer": "Il testo descrive l’applicazione prima dell’asciugatura e non indica un risciacquo."
+  },
+  {
+    "id": 156,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 37,
+    "question": "Dove viene nebulizzato Hair Milk?",
+    "expected_answer": "Su cute e capelli."
+  },
+  {
+    "id": 157,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 38,
+    "question": "Quali sono le parole chiave associate a Hair Milk?",
+    "expected_answer": "Leggerezza, lucentezza e ristrutturazione."
+  },
+  {
+    "id": 158,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 39,
+    "question": "Che cos’è il Body Wash Coppolino?",
+    "expected_answer": "Un detergente idratante e nutriente per la pelle dei bambini."
+  },
+  {
+    "id": 159,
+    "category": "Coppolino — Linea bambini",
+    "local_n": 40,
+    "question": "Qual è una funzione importante del Body Wash sulla pelle?",
+    "expected_answer": "Detergere mantenendo inalterato il film idrolipidico e contribuendo al mantenimento dell’equilibrio fisiologico dell’epidermide."
+  },
+  {
+    "id": 160,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 41,
+    "question": "Che cos’è Hair Mineral Relax Plus?",
+    "expected_answer": "Un trattamento ristrutturante in fiala monodose a base di oligoelementi."
+  },
+  {
+    "id": 161,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 42,
+    "question": "A quali tipi di capelli è indicato?",
+    "expected_answer": "Capelli trattati, colorati o decolorati, anche fini."
+  },
+  {
+    "id": 162,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 43,
+    "question": "Quali oligoelementi sono citati?",
+    "expected_answer": "Rame, manganese e zinco."
+  },
+  {
+    "id": 163,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 44,
+    "question": "Perché rame, manganese e zinco sono importanti secondo la scheda?",
+    "expected_answer": "Perché sono fondamentali per la struttura del capello e contribuiscono a mantenerlo corposo ed elastico."
+  },
+  {
+    "id": 164,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 45,
+    "question": "Che cosa succede quando il prodotto viene miscelato con acqua?",
+    "expected_answer": "Si trasforma in un gel delicatamente profumato."
+  },
+  {
+    "id": 165,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 46,
+    "question": "Come viene descritta l’applicazione del gel?",
+    "expected_answer": "Facile e veloce."
+  },
+  {
+    "id": 166,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 47,
+    "question": "Il tempo di posa è lungo?",
+    "expected_answer": "No, la scheda parla di pochi minuti di posa."
+  },
+  {
+    "id": 167,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 48,
+    "question": "Qual è la caratteristica del pH del prodotto?",
+    "expected_answer": "È acido."
+  },
+  {
+    "id": 168,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 49,
+    "question": "Quale ingrediente contribuisce a generare il pH acido?",
+    "expected_answer": "L’acido citrico."
+  },
+  {
+    "id": 169,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 50,
+    "question": "Che effetto ha il pH acido sulle squame del capello?",
+    "expected_answer": "Aiuta a chiuderle o ridurle."
+  },
+  {
+    "id": 170,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 51,
+    "question": "Qual è l’effetto visivo associato alla chiusura delle squame?",
+    "expected_answer": "Una maggiore luminosità."
+  },
+  {
+    "id": 171,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 52,
+    "question": "Hair Mineral Relax Plus contiene siliconi?",
+    "expected_answer": "No."
+  },
+  {
+    "id": 172,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 53,
+    "question": "Come risultano i capelli dopo il trattamento?",
+    "expected_answer": "Lucidi, condizionati, pettinabili e più gestibili."
+  },
+  {
+    "id": 173,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 54,
+    "question": "In quale fase si nota già una migliore gestibilità?",
+    "expected_answer": "Durante l’asciugatura."
+  },
+  {
+    "id": 174,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 55,
+    "question": "Su quali capelli il risultato immediato è particolarmente evidente?",
+    "expected_answer": "Su capelli trattati e molto devitalizzati."
+  },
+  {
+    "id": 175,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 56,
+    "question": "Che cosa restituisce il trattamento alla fibra?",
+    "expected_answer": "Preziosi oligoelementi."
+  },
+  {
+    "id": 176,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 57,
+    "question": "Quali caratteristiche della fibra vengono migliorate?",
+    "expected_answer": "Condizione generale ed elasticità."
+  },
+  {
+    "id": 177,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 58,
+    "question": "Per quale esigenza può essere consigliato in salone?",
+    "expected_answer": "Per un rapido recupero di corpo, elasticità e luminosità."
+  },
+  {
+    "id": 178,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 59,
+    "question": "Può essere utilizzato su capelli fini?",
+    "expected_answer": "Sì."
+  },
+  {
+    "id": 179,
+    "category": "Hair Mineral Relax Plus",
+    "local_n": 60,
+    "question": "In quale momento del servizio viene indicato come particolarmente ideale?",
+    "expected_answer": "Come trattamento pre-piega per un risultato immediato."
+  },
+  {
+    "id": 180,
+    "category": "Mediterranean Complex",
+    "local_n": 61,
+    "question": "Qual è il concetto generale di Mediterranean Complex?",
+    "expected_answer": "Una linea completa per il trattamento di cute e capelli basata su ingredienti tipici delle regioni mediterranee."
+  },
+  {
+    "id": 181,
+    "category": "Mediterranean Complex",
+    "local_n": 62,
+    "question": "Qual è la base comune ai prodotti della linea?",
+    "expected_answer": "Med Complex+."
+  },
+  {
+    "id": 182,
+    "category": "Mediterranean Complex",
+    "local_n": 63,
+    "question": "Qual è la funzione dell’olio di oliva nel Med Complex+?",
+    "expected_answer": "Nutrimento intenso."
+  },
+  {
+    "id": 183,
+    "category": "Mediterranean Complex",
+    "local_n": 64,
+    "question": "Qual è la funzione dell’olio di vinaccioli?",
+    "expected_answer": "Azione antiossidante."
+  },
+  {
+    "id": 184,
+    "category": "Mediterranean Complex",
+    "local_n": 65,
+    "question": "Qual è la funzione dell’olio di mandorla?",
+    "expected_answer": "Azione idratante e delicata."
+  },
+  {
+    "id": 185,
+    "category": "Mediterranean Complex",
+    "local_n": 66,
+    "question": "Quali piante sono citate tra gli estratti vegetali?",
+    "expected_answer": "Arnica, rosmarino, salvia e malva."
+  },
+  {
+    "id": 186,
+    "category": "Mediterranean Complex",
+    "local_n": 67,
+    "question": "Quali frutti sono citati negli estratti vegetali?",
+    "expected_answer": "Arancia, limone, mandarino, pesca e uva."
+  },
+  {
+    "id": 187,
+    "category": "Mediterranean Complex",
+    "local_n": 68,
+    "question": "A quali capelli è dedicata principalmente la famiglia allo Zucchero Bianco?",
+    "expected_answer": "Ai capelli fini."
+  },
+  {
+    "id": 188,
+    "category": "Mediterranean Complex",
+    "local_n": 69,
+    "question": "Perché lo Shampoo allo Zucchero Bianco è indicato per capelli fini?",
+    "expected_answer": "Perché fornisce idratazione intensa restando molto leggero e senza appesantire."
+  },
+  {
+    "id": 189,
+    "category": "Mediterranean Complex",
+    "local_n": 70,
+    "question": "Qual è la famiglia indicata per cute arida e punte secche?",
+    "expected_answer": "La famiglia Emolliente con Cera d’Api."
+  },
+  {
+    "id": 190,
+    "category": "Mediterranean Complex",
+    "local_n": 71,
+    "question": "A quali capelli è particolarmente indicato l’Impacco Emolliente con Cera d’Api?",
+    "expected_answer": "A capelli trattati medi o grossi."
+  },
+  {
+    "id": 191,
+    "category": "Mediterranean Complex",
+    "local_n": 72,
+    "question": "Qual è il principio attivo caratteristico della famiglia Rigenerante?",
+    "expected_answer": "Estratto di mirto."
+  },
+  {
+    "id": 192,
+    "category": "Mediterranean Complex",
+    "local_n": 73,
+    "question": "Per quali capelli è pensata la famiglia Rigenerante al mirto?",
+    "expected_answer": "Per capelli trattati e destrutturati da colore o decolorazione, soprattutto medi e grossi."
+  },
+  {
+    "id": 193,
+    "category": "Mediterranean Complex",
+    "local_n": 74,
+    "question": "Quale prodotto al mirto è adatto anche ai capelli fini destrutturati?",
+    "expected_answer": "Il Trattamento Rigenerante con estratto di mirto, descritto come una maschera liquida da risciacquo."
+  },
+  {
+    "id": 194,
+    "category": "Mediterranean Complex",
+    "local_n": 75,
+    "question": "Qual è il principio attivo della famiglia Ristrutturante?",
+    "expected_answer": "Estratto di bouganville."
+  },
+  {
+    "id": 195,
+    "category": "Mediterranean Complex",
+    "local_n": 76,
+    "question": "Quale prodotto alla bouganville non richiede risciacquo?",
+    "expected_answer": "Il Latte Ristrutturante con estratto di bouganville."
+  },
+  {
+    "id": 196,
+    "category": "Mediterranean Complex",
+    "local_n": 77,
+    "question": "Qual è il principio attivo della famiglia Purificante?",
+    "expected_answer": "Estratto di hamamelis."
+  },
+  {
+    "id": 197,
+    "category": "Mediterranean Complex",
+    "local_n": 78,
+    "question": "A quale problema è destinato lo Shampoo Purificante all’hamamelis?",
+    "expected_answer": "All’eccesso di sebo e alla cute grassa."
+  },
+  {
+    "id": 198,
+    "category": "Mediterranean Complex",
+    "local_n": 79,
+    "question": "Quale fluido è indicato per la gestione delle doppie punte?",
+    "expected_answer": "Il Fluido Ristrutturante con olio di palma."
+  },
+  {
+    "id": 199,
+    "category": "Mediterranean Complex",
+    "local_n": 80,
+    "question": "Qual è la differenza di finish tra Cera Mat e Cera Lucidante?",
+    "expected_answer": "La Cera Mat produce un effetto opaco e spettinato; la Cera Lucidante produce un effetto bagnato e brillante."
+  },
+  {
+    "id": 200,
+    "category": "Mister Coppola",
+    "local_n": 81,
+    "question": "A chi è dedicata la linea Mister Coppola?",
+    "expected_answer": "All’uomo."
+  },
+  {
+    "id": 201,
+    "category": "Mister Coppola",
+    "local_n": 82,
+    "question": "Qual è il concetto generale della linea?",
+    "expected_answer": "Una mini beauty routine essenziale e completa, con prodotti semplici da utilizzare per pelle, barba e capelli."
+  },
+  {
+    "id": 202,
+    "category": "Mister Coppola",
+    "local_n": 83,
+    "question": "Quale barriera naturale della pelle punta a rispettare la linea?",
+    "expected_answer": "Il film idrolipidico."
+  },
+  {
+    "id": 203,
+    "category": "Mister Coppola",
+    "local_n": 84,
+    "question": "Qual è il ruolo dell’aloe?",
+    "expected_answer": "Idrata, rinfresca, aiuta sulle pelli sensibili e sul rossore ed è indicata anche nel dopo rasatura."
+  },
+  {
+    "id": 204,
+    "category": "Mister Coppola",
+    "local_n": 85,
+    "question": "Quali sostanze sono citate come naturalmente presenti nell’aloe?",
+    "expected_answer": "Vitamine, minerali e aminoacidi."
+  },
+  {
+    "id": 205,
+    "category": "Mister Coppola",
+    "local_n": 86,
+    "question": "Qual è il ruolo del burro di karité?",
+    "expected_answer": "Favorisce elasticità e rinnovamento della pelle e nutre e condiziona capelli e barba."
+  },
+  {
+    "id": 206,
+    "category": "Mister Coppola",
+    "local_n": 87,
+    "question": "Qual è la funzione dell’olio di tea tree?",
+    "expected_answer": "Azione antisettica e purificante; nella rasatura contribuisce anche a un effetto rinfrescante e cicatrizzante."
+  },
+  {
+    "id": 207,
+    "category": "Mister Coppola",
+    "local_n": 88,
+    "question": "Che cosa rende particolare lo Shampoo Mister Coppola?",
+    "expected_answer": "È un prodotto all-in-one utilizzabile sia su barba sia sui capelli."
+  },
+  {
+    "id": 208,
+    "category": "Mister Coppola",
+    "local_n": 89,
+    "question": "Da che cosa derivano i detergenti ultra delicati dello Shampoo?",
+    "expected_answer": "Dal cocco."
+  },
+  {
+    "id": 209,
+    "category": "Mister Coppola",
+    "local_n": 90,
+    "question": "Come si usa lo Shampoo barba e capelli?",
+    "expected_answer": "Su capelli e barba umidi, distribuendolo, massaggiando fino a formare una schiuma densa e poi risciacquando."
+  },
+  {
+    "id": 210,
+    "category": "Mister Coppola",
+    "local_n": 91,
+    "question": "Quali sono le sensazioni finali indicate per lo Shampoo?",
+    "expected_answer": "Delicatezza, idratazione e lucentezza."
+  },
+  {
+    "id": 211,
+    "category": "Mister Coppola",
+    "local_n": 92,
+    "question": "Che cos’è lo Shower Gel?",
+    "expected_answer": "Un detergente corpo delicato, nutriente e idratante."
+  },
+  {
+    "id": 212,
+    "category": "Mister Coppola",
+    "local_n": 93,
+    "question": "Perché viene consigliato anche dopo lo sport?",
+    "expected_answer": "Perché viene descritto come detergente defaticante e rinfrescante."
+  },
+  {
+    "id": 213,
+    "category": "Mister Coppola",
+    "local_n": 94,
+    "question": "Quali ingredienti caratterizzano la Schiuma da Barba?",
+    "expected_answer": "Succo di aloe, burro di karité e olio di tea tree."
+  },
+  {
+    "id": 214,
+    "category": "Mister Coppola",
+    "local_n": 95,
+    "question": "Qual è lo scopo principale della Schiuma da Barba?",
+    "expected_answer": "Mantenere la barba idratata e rendere la rasatura più confortevole."
+  },
+  {
+    "id": 215,
+    "category": "Mister Coppola",
+    "local_n": 96,
+    "question": "Quali ingredienti sono presenti nella Crema Dopobarba?",
+    "expected_answer": "Succo di aloe, burro di karité e olio di mandorla."
+  },
+  {
+    "id": 216,
+    "category": "Mister Coppola",
+    "local_n": 97,
+    "question": "La Crema Dopobarba può essere utilizzata solo subito dopo la rasatura?",
+    "expected_answer": "No. Può essere utilizzata anche quando la pelle necessita di idratazione e nutrimento e per ammorbidire la barba."
+  },
+  {
+    "id": 217,
+    "category": "Mister Coppola",
+    "local_n": 98,
+    "question": "Che finish produce la Cera Mat?",
+    "expected_answer": "Un effetto opaco."
+  },
+  {
+    "id": 218,
+    "category": "Mister Coppola",
+    "local_n": 99,
+    "question": "La Cera Mat può essere utilizzata solo sui capelli?",
+    "expected_answer": "No. Può essere utilizzata anche su barba e baffi."
+  },
+  {
+    "id": 219,
+    "category": "Mister Coppola",
+    "local_n": 100,
+    "question": "Come si applica la Cera Mat?",
+    "expected_answer": "Si scalda tra le mani e si applica sui capelli umidi o asciutti per definire lo styling."
+  },
+  {
+    "id": 220,
+    "category": "Natura Magica",
+    "local_n": 101,
+    "question": "Qual è l’obiettivo principale della linea Natura Magica?",
+    "expected_answer": "Trattare cute e capelli con un’azione energizzante e anticaduta."
+  },
+  {
+    "id": 221,
+    "category": "Natura Magica",
+    "local_n": 102,
+    "question": "Qual è l’ingrediente principe della linea?",
+    "expected_answer": "L’estratto di Cacahuananche."
+  },
+  {
+    "id": 222,
+    "category": "Natura Magica",
+    "local_n": 103,
+    "question": "In quale prodotto il Cacahuananche è presente in concentrazione elevata?",
+    "expected_answer": "Nella Natura Magica Lotion."
+  },
+  {
+    "id": 223,
+    "category": "Natura Magica",
+    "local_n": 104,
+    "question": "Qual è la funzione attribuita all’estratto di Capsico?",
+    "expected_answer": "Un’azione stimolante sul cuoio capelluto."
+  },
+  {
+    "id": 224,
+    "category": "Natura Magica",
+    "local_n": 105,
+    "question": "Qual è la funzione delle glicoproteine derivate dal lievito di birra?",
+    "expected_answer": "Azione fortificante."
+  },
+  {
+    "id": 225,
+    "category": "Natura Magica",
+    "local_n": 106,
+    "question": "Quali ingredienti compongono il mix vegetale tonificante ed energizzante?",
+    "expected_answer": "Olio essenziale di rosmarino, ortica, salvia e ginseng."
+  },
+  {
+    "id": 226,
+    "category": "Natura Magica",
+    "local_n": 107,
+    "question": "Quali sono i benefici generali dichiarati della linea?",
+    "expected_answer": "Azione rigenerante contro la caduta, apporto energetico, riattivazione del metabolismo e sostegno alla vitalità del bulbo capillare."
+  },
+  {
+    "id": 227,
+    "category": "Natura Magica",
+    "local_n": 108,
+    "question": "Qual è la funzione del Natura Magica Shampoo?",
+    "expected_answer": "Rinforzare i capelli deboli e stressati."
+  },
+  {
+    "id": 228,
+    "category": "Natura Magica",
+    "local_n": 109,
+    "question": "Lo Shampoo svolge anche un’azione igienizzante?",
+    "expected_answer": "Sì, viene descritta un’azione igienizzante profonda."
+  },
+  {
+    "id": 229,
+    "category": "Natura Magica",
+    "local_n": 110,
+    "question": "Quali altre due azioni svolge lo Shampoo?",
+    "expected_answer": "Azione districante e lucidante."
+  },
+  {
+    "id": 230,
+    "category": "Natura Magica",
+    "local_n": 111,
+    "question": "Qual è la funzione principale della Natura Magica Mask?",
+    "expected_answer": "Nutrire il capello e donare morbidezza e setosità."
+  },
+  {
+    "id": 231,
+    "category": "Natura Magica",
+    "local_n": 112,
+    "question": "Come viene utilizzata la Mask?",
+    "expected_answer": "Come impacco."
+  },
+  {
+    "id": 232,
+    "category": "Natura Magica",
+    "local_n": 113,
+    "question": "Che cos’è Natura Magica Lotion?",
+    "expected_answer": "Un trattamento leave-in concentrato ad applicazione cutanea."
+  },
+  {
+    "id": 233,
+    "category": "Natura Magica",
+    "local_n": 114,
+    "question": "La Lotion viene applicata sulle lunghezze o sul cuoio capelluto?",
+    "expected_answer": "Sul cuoio capelluto."
+  },
+  {
+    "id": 234,
+    "category": "Natura Magica",
+    "local_n": 115,
+    "question": "Qual è la funzione principale della Lotion?",
+    "expected_answer": "Un’azione fortificante mirata contro la caduta dei capelli."
+  },
+  {
+    "id": 235,
+    "category": "Natura Magica",
+    "local_n": 116,
+    "question": "Quale ingrediente caratterizza maggiormente la Lotion?",
+    "expected_answer": "L’estratto di Cacahuananche ad alta concentrazione."
+  },
+  {
+    "id": 236,
+    "category": "Natura Magica",
+    "local_n": 117,
+    "question": "La Lotion deve essere risciacquata?",
+    "expected_answer": "No. È indicata come trattamento leave-in."
+  },
+  {
+    "id": 237,
+    "category": "Natura Magica",
+    "local_n": 118,
+    "question": "Quale materiale viene utilizzato per il packaging Natura Magica?",
+    "expected_answer": "Vetro."
+  },
+  {
+    "id": 238,
+    "category": "Natura Magica",
+    "local_n": 119,
+    "question": "Quali vantaggi vengono attribuiti al vetro?",
+    "expected_answer": "È descritto come prezioso, versatile, capace di preservare il contenuto nel tempo, eco-sostenibile e riciclabile."
+  },
+  {
+    "id": 239,
+    "category": "Natura Magica",
+    "local_n": 120,
+    "question": "Qual è la differenza fondamentale tra Shampoo, Mask e Lotion Natura Magica?",
+    "expected_answer": "Lo Shampoo deterge e rinforza; la Mask è un impacco nutriente che dona morbidezza e setosità; la Lotion è un trattamento leave-in concentrato sul cuoio capelluto con azione fortificante e anticaduta."
+  }
+]
