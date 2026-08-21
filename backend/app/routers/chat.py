@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
@@ -22,6 +23,8 @@ from app.schemas import (
     MessageOut,
 )
 from app.security import get_current_user
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -139,7 +142,14 @@ async def send_voice_message(
     if audio is None:
         raise HTTPException(status_code=400, detail="File audio mancante")
     audio_bytes = await audio.read()
-    transcript = transcribe_audio(audio_bytes, audio.filename or "voice.ogg", audio.content_type or "audio/ogg")
+    try:
+        transcript = transcribe_audio(audio_bytes, audio.filename or "voice.ogg", audio.content_type or "audio/ogg")
+    except Exception:
+        logger.exception("Trascrizione del messaggio vocale fallita")
+        raise HTTPException(
+            status_code=503,
+            detail="Il servizio di trascrizione vocale non è disponibile al momento. Riprova tra poco o scrivi la domanda in chat.",
+        )
 
     conversation = _get_or_create_conversation(db, user, conversation_id)
     return _handle_incoming_text(db, conversation, transcript, kind="voice", voice_transcript=transcript)
