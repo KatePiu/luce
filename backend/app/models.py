@@ -120,6 +120,40 @@ class Message(Base):
     conversation: Mapped[Conversation] = relationship(back_populates="messages")
 
 
+class Case(Base):
+    """Scheda diagnostica strutturata di una conversazione (Specifica_Definitiva_Tutor_AI,
+    tabella 2). Un caso per conversazione: i campi vengono aggiornati via via che la
+    diagnosi procede — vedi app/rag/case_extraction.py."""
+
+    __tablename__ = "cases"
+
+    id: Mapped[uuid.UUID] = _uuid_col()
+    conversation_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("conversations.id", ondelete="CASCADE"), unique=True
+    )
+    area: Mapped[str | None] = mapped_column(Text)
+    tecnica: Mapped[str | None] = mapped_column(Text)
+    base_partenza: Mapped[str | None] = mapped_column(Text)
+    capelli_bianchi: Mapped[str | None] = mapped_column(Text)
+    storico_tecnico: Mapped[str | None] = mapped_column(Text)
+    porosita: Mapped[str | None] = mapped_column(Text)
+    servizio_eseguito: Mapped[str | None] = mapped_column(Text)
+    formula_prodotti: Mapped[str | None] = mapped_column(Text)
+    tempi_condizioni: Mapped[str | None] = mapped_column(Text)
+    problema_osservato: Mapped[str | None] = mapped_column(Text)
+    zona_coinvolta: Mapped[str | None] = mapped_column(Text)
+    risultato_desiderato: Mapped[str | None] = mapped_column(Text)
+    risultato_reale: Mapped[str | None] = mapped_column(Text)
+    fonti_trovate: Mapped[list | None] = mapped_column(JSONB)
+    livello_confidenza: Mapped[str | None] = mapped_column(Text)
+    esito: Mapped[str | None] = mapped_column(Text)
+    stato: Mapped[str] = mapped_column(String, default="RISPOSTA_AI")
+    validated_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"))
+    validated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
 class Escalation(Base):
     __tablename__ = "escalations"
 
@@ -128,6 +162,7 @@ class Escalation(Base):
     reason: Mapped[str] = mapped_column(String, nullable=False)
     summary: Mapped[str | None] = mapped_column(Text)
     sources_consulted: Mapped[list | None] = mapped_column(JSONB)
+    case_snapshot: Mapped[dict | None] = mapped_column(JSONB)
     status: Mapped[str] = mapped_column(String, default="open")
     resolved_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"))
     resolution_notes: Mapped[str | None] = mapped_column(Text)

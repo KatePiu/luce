@@ -15,12 +15,14 @@ def create_escalation(
     reason: str,
     summary: str,
     sources_consulted: list[CitedSource] | None = None,
+    case_snapshot: dict | None = None,
 ) -> Escalation:
     escalation = Escalation(
         conversation_id=conversation.id,
         reason=reason,
         summary=summary,
         sources_consulted=[s.__dict__ for s in (sources_consulted or [])],
+        case_snapshot=case_snapshot or None,
     )
     db.add(escalation)
 
@@ -45,10 +47,19 @@ def _notify_human_tutor(db: Session, conversation: Conversation, escalation: Esc
         f"[{m.direction}] {m.body or m.voice_transcript or ''}" for m in reversed(recent_messages)
     )
 
+    scheda = ""
+    if escalation.case_snapshot:
+        righe = "\n".join(
+            f"- {campo}: {valore}" for campo, valore in escalation.case_snapshot.items() if valore
+        )
+        if righe:
+            scheda = f"\nScheda diagnostica:\n{righe}\n"
+
     body = (
         f"Nuova escalation dal tutor AI LUCE.\n\n"
         f"Motivo: {escalation.reason}\n"
-        f"Riepilogo: {escalation.summary}\n\n"
+        f"Riepilogo: {escalation.summary}\n"
+        f"{scheda}\n"
         f"Canale: {conversation.channel}\n"
         f"Conversazione: {conversation.id}\n\n"
         f"Ultimi messaggi:\n{transcript}\n"

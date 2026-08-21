@@ -118,6 +118,42 @@ CREATE TABLE IF NOT EXISTS messages (
 CREATE UNIQUE INDEX IF NOT EXISTS idx_messages_external_dedup ON messages(external_message_id) WHERE external_message_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_id);
 
+-- Scheda diagnostica strutturata (Specifica_Definitiva_Tutor_AI, tabella 2 "Scheda
+-- diagnostica standard"): un caso per conversazione, aggiornato dopo ogni risposta del
+-- tutor AI da una chiamata di estrazione dedicata (vedi app/rag/case_extraction.py) — non
+-- inferita una volta sola, ma tenuta aggiornata via via che la diagnosi procede.
+CREATE TABLE IF NOT EXISTS cases (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    conversation_id UUID NOT NULL UNIQUE REFERENCES conversations(id) ON DELETE CASCADE,
+    area TEXT,
+    tecnica TEXT,
+    base_partenza TEXT,
+    capelli_bianchi TEXT,
+    storico_tecnico TEXT,
+    porosita TEXT,
+    servizio_eseguito TEXT,
+    formula_prodotti TEXT,
+    tempi_condizioni TEXT,
+    problema_osservato TEXT,
+    zona_coinvolta TEXT,
+    risultato_desiderato TEXT,
+    risultato_reale TEXT,
+    fonti_trovate JSONB,
+    livello_confidenza TEXT,
+    esito TEXT,
+    -- macchina a stati del caso, Specifica_Definitiva_Tutor_AI punto 12/22.
+    stato TEXT NOT NULL DEFAULT 'RISPOSTA_AI' CHECK (stato IN (
+        'RISPOSTA_AI', 'IN_ATTESA_DI_FEEDBACK', 'RISOLTO_DA_AI', 'ESCALATION_TUTOR',
+        'RISOLTO_DA_TUTOR', 'NON_RISOLTO', 'DA_VALIDARE', 'VALIDATO_PER_KNOWLEDGE'
+    )),
+    validated_by UUID REFERENCES users(id),
+    validated_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_cases_stato ON cases(stato);
+
 CREATE TABLE IF NOT EXISTS escalations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     conversation_id UUID NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
@@ -134,6 +170,10 @@ CREATE TABLE IF NOT EXISTS escalations (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     resolved_at TIMESTAMPTZ
 );
+
+-- Fotografia della scheda diagnostica al momento dell'escalation (tabella 3 del
+-- documento): resta leggibile dal tutor umano anche se il caso evolve dopo.
+ALTER TABLE escalations ADD COLUMN IF NOT EXISTS case_snapshot JSONB;
 
 CREATE INDEX IF NOT EXISTS idx_escalations_status ON escalations(status);
 

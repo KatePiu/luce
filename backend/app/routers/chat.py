@@ -5,6 +5,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
+from app.case_service import case_to_diagnostic_dict, upsert_case_from_conversation
 from app.db import get_db
 from app.escalation import create_escalation
 from app.integrations.stt import transcribe_audio
@@ -79,12 +80,28 @@ def _handle_incoming_text(db: Session, conversation: Conversation, text: str, ki
     )
     db.commit()
 
+    # Aggiorna la scheda diagnostica strutturata della conversazione (Specifica_Definitiva_
+    # Tutor_AI, tabella 2) — best-effort: un fallimento qui non deve mai bloccare la risposta
+    # già data all'utente.
+    full_history = history + [{"role": "user", "content": text}, {"role": "assistant", "content": result.text}]
+    case = upsert_case_from_conversation(
+        db, conversation, full_history, result.escalate, result.cited_sources, result.retrieval_score
+    )
+
     if result.escalate:
         # `result.text` è la risposta del tutor AI: quando arriva a un'escalation dopo aver
         # provato a chiarire la richiesta, contiene il report strutturato per il tutor (area,
         # prodotto/tecnica, fase, domanda precisa, contesto raccolto, informazione mancante) —
-        # molto più utile del solo ultimo messaggio grezzo dell'utente.
-        create_escalation(db, conversation, result.escalation_reason or "insufficient_sources", summary=result.text)
+        # molto più utile del solo ultimo messaggio grezzo dell'utente. Allegata anche la
+        # scheda diagnostica strutturata (tabella 3 del documento), come fotografia al
+        # momento dell'escalation.
+        create_escalation(
+            db,
+            conversation,
+            result.escalation_reason or "insufficient_sources",
+            summary=result.text,
+            case_snapshot=case_to_diagnostic_dict(case),
+        )
 
     return ChatMessageResponse(
         conversation_id=str(conversation.id),

@@ -11,6 +11,7 @@ import re
 from dataclasses import dataclass
 
 from app.integrations.anthropic_client import call_claude
+from app.rag.llm_json import parse_json_response
 from app.rag.prompt import GROUNDEDNESS_VERIFIER_PROMPT
 from app.rag.retrieval import RetrievedChunk
 
@@ -69,27 +70,10 @@ def check_structural(visible_text: str, cited_chunk_ids: list[str], retrieved: l
     return GroundednessResult(True, "Citazioni valide", cited_chunk_ids, visible_text)
 
 
-def _parse_verifier_json(raw: str) -> dict | None:
-    """Il verificatore a volte racchiude il JSON in un blocco ```json ... ``` o aggiunge una
-    frase intorno, nonostante l'istruzione di rispondere solo con l'oggetto: prima di
-    considerarlo un fallimento del formato, si prova a isolare il primo blocco {...}."""
-    try:
-        return json.loads(raw.strip())
-    except json.JSONDecodeError:
-        pass
-    match = re.search(r"\{.*\}", raw, re.DOTALL)
-    if not match:
-        return None
-    try:
-        return json.loads(match.group(0))
-    except json.JSONDecodeError:
-        return None
-
-
 def _run_verifier_once(visible_text: str, sources_block: str) -> GroundednessResult:
     user_message = f"PASSAGGI SORGENTE:\n{sources_block}\n\nRISPOSTA:\n{visible_text}"
     raw = call_claude(system=GROUNDEDNESS_VERIFIER_PROMPT, user_message=user_message, max_tokens=1024)
-    parsed = _parse_verifier_json(raw)
+    parsed = parse_json_response(raw)
     if parsed is None:
         return GroundednessResult(False, "Verificatore non ha risposto in formato valido")
     if parsed.get("verdict") == "PASS":

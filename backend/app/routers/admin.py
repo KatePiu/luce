@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.db import engine, get_db
 from app.escalation import resolve_escalation
-from app.models import Escalation, Source, Technique, User, Video
+from app.models import Case, Escalation, Source, Technique, User, Video
 from app.schema_tools import apply_schema
 from app.rag.generate import answer_question, debug_answer_question
 from app.rag.ingest import SkippedJunkFile, ingest_file
@@ -233,6 +233,51 @@ def resolve_escalation_endpoint(
         status=escalation.status,
         created_at=escalation.created_at,
     )
+
+
+def _case_out(case: Case) -> dict:
+    return {
+        "id": str(case.id),
+        "conversation_id": str(case.conversation_id),
+        "area": case.area,
+        "tecnica": case.tecnica,
+        "base_partenza": case.base_partenza,
+        "capelli_bianchi": case.capelli_bianchi,
+        "storico_tecnico": case.storico_tecnico,
+        "porosita": case.porosita,
+        "servizio_eseguito": case.servizio_eseguito,
+        "formula_prodotti": case.formula_prodotti,
+        "tempi_condizioni": case.tempi_condizioni,
+        "problema_osservato": case.problema_osservato,
+        "zona_coinvolta": case.zona_coinvolta,
+        "risultato_desiderato": case.risultato_desiderato,
+        "risultato_reale": case.risultato_reale,
+        "fonti_trovate": case.fonti_trovate,
+        "livello_confidenza": case.livello_confidenza,
+        "esito": case.esito,
+        "stato": case.stato,
+        "updated_at": case.updated_at,
+    }
+
+
+@router.get("/cases")
+def list_cases(stato: str | None = None, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    """Elenco delle schede diagnostiche (Specifica_Definitiva_Tutor_AI, tabella 2), la più
+    recente per prima — usato per diagnostica e, in una fase successiva, come base del
+    pannello di validazione dei casi."""
+    query = db.query(Case)
+    if stato:
+        query = query.filter(Case.stato == stato)
+    cases = query.order_by(Case.updated_at.desc()).limit(100).all()
+    return [_case_out(c) for c in cases]
+
+
+@router.get("/cases/{conversation_id}")
+def get_case(conversation_id: str, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    case = db.query(Case).filter(Case.conversation_id == conversation_id).one_or_none()
+    if not case:
+        raise HTTPException(status_code=404, detail="Nessuna scheda diagnostica per questa conversazione")
+    return _case_out(case)
 
 
 @router.post("/test-response", response_model=ChatMessageResponse)
