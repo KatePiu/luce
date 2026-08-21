@@ -1,4 +1,5 @@
-from app.rag.groundedness import _parse_verifier_json, check_structural, extract_cited_sources
+from app.rag import groundedness
+from app.rag.groundedness import _parse_verifier_json, check_claims_with_model, check_structural, extract_cited_sources
 from app.rag.retrieval import RetrievedChunk
 
 
@@ -74,3 +75,33 @@ def test_parse_verifier_json_handles_leading_prose():
 
 def test_parse_verifier_json_returns_none_for_garbage():
     assert _parse_verifier_json("non sono riuscito a rispondere in JSON") is None
+
+
+def test_check_claims_retries_once_after_a_spurious_fail(monkeypatch):
+    # Bug reale: la stessa risposta, verificata due volte, dava una volta PASS e una volta
+    # FAIL — un singolo FAIL non deve bastare a bocciare una risposta altrimenti corretta.
+    responses = iter(
+        [
+            '{"verdict": "FAIL", "unsupported_claims": ["tempo di posa"]}',
+            '{"verdict": "PASS", "unsupported_claims": []}',
+        ]
+    )
+    calls = []
+
+    def fake_call_claude(**kwargs):
+        calls.append(kwargs)
+        return next(responses)
+
+    monkeypatch.setattr(groundedness, "call_claude", fake_call_claude)
+    result = check_claims_with_model("Si può procedere con questi passaggi operativi.", [_chunk("c1")])
+    assert result.passed
+    assert len(calls) == 2
+
+
+def test_check_claims_fails_only_after_two_consecutive_fails(monkeypatch):
+    def fake_call_claude(**kwargs):
+        return '{"verdict": "FAIL", "unsupported_claims": ["tempo di posa"]}'
+
+    monkeypatch.setattr(groundedness, "call_claude", fake_call_claude)
+    result = check_claims_with_model("Si può procedere con questi passaggi operativi.", [_chunk("c1")])
+    assert not result.passed

@@ -86,26 +86,40 @@ def _parse_verifier_json(raw: str) -> dict | None:
         return None
 
 
+def _run_verifier_once(visible_text: str, sources_block: str) -> GroundednessResult:
+    user_message = f"PASSAGGI SORGENTE:\n{sources_block}\n\nRISPOSTA:\n{visible_text}"
+    raw = call_claude(system=GROUNDEDNESS_VERIFIER_PROMPT, user_message=user_message, max_tokens=1024)
+    parsed = _parse_verifier_json(raw)
+    if parsed is None:
+        return GroundednessResult(False, "Verificatore non ha risposto in formato valido")
+    if parsed.get("verdict") == "PASS":
+        return GroundednessResult(True, "Claim verificati")
+    return GroundednessResult(False, f"Claim non supportati: {parsed.get('unsupported_claims')}")
+
+
 def check_claims_with_model(visible_text: str, retrieved: list[RetrievedChunk]) -> GroundednessResult:
     """Seconda verifica, con un'altra chiamata al modello dedicata solo a controllare che
-    ogni affermazione tecnica sia supportata dai passaggi forniti (si veda GROUNDEDNESS_VERIFIER_PROMPT)."""
+    ogni affermazione tecnica sia supportata dai passaggi forniti (si veda GROUNDEDNESS_VERIFIER_PROMPT).
+
+    Il verificatore, come qualunque chiamata a un LLM, ha una variabilità naturale tra
+    chiamate identiche: trovato in produzione un caso in cui la STESSA risposta, verificata
+    due volte, dava una volta PASS e una volta FAIL — bloccando una risposta corretta e ben
+    ancorata solo per una fluttuazione del verificatore, non per un problema reale di
+    contenuto. Un singolo FAIL non basta quindi a bocciare la risposta: si ritenta una volta
+    sola, e si considera FAIL definitivo solo se anche il secondo tentativo fallisce (il
+    costo aggiuntivo di una chiamata si paga solo nel caso, raro, di un primo fallimento)."""
     if not _looks_like_procedure(visible_text):
         return GroundednessResult(True, "Nessuna procedura da verificare")
 
     sources_block = "\n\n".join(f"[{c.chunk_id}] {c.text}" for c in retrieved)
-    user_message = f"PASSAGGI SORGENTE:\n{sources_block}\n\nRISPOSTA:\n{visible_text}"
 
-    raw = call_claude(system=GROUNDEDNESS_VERIFIER_PROMPT, user_message=user_message, max_tokens=1024)
-    parsed = _parse_verifier_json(raw)
-    if parsed is None:
-        # Se il verificatore non risponde in JSON valido nemmeno provando a isolare il blocco
-        # {...} (es. testo extra intorno, capitato in produzione), per prudenza si considera
-        # FAIL: meglio un'escalation in più che una risposta non verificata mostrata all'utente.
-        return GroundednessResult(False, "Verificatore non ha risposto in formato valido")
-
-    if parsed.get("verdict") == "PASS":
-        return GroundednessResult(True, "Claim verificati")
-    return GroundednessResult(False, f"Claim non supportati: {parsed.get('unsupported_claims')}")
+    first = _run_verifier_once(visible_text, sources_block)
+    if first.passed:
+        return first
+    second = _run_verifier_once(visible_text, sources_block)
+    if second.passed:
+        return second
+    return second
 
 
 def run_groundedness_checks(raw_response: str, retrieved: list[RetrievedChunk]) -> GroundednessResult:
