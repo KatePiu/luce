@@ -105,18 +105,18 @@ export interface EscalationOut {
   created_at: string;
 }
 
-// Tassonomia a 6 categorie: Shatush e Infusion rientrano in "tecnico" (sono
-// tecniche di colorazione), non categorie a parte. "fonti_esterne" è una
-// categoria a parte e a bassa priorità: principi professionali generali
-// verificati, mai formule/prodotti del marchio — vedi gerarchia fonti nel
-// prompt di sistema (backend/app/rag/prompt.py).
+// Tassonomia a 5 categorie: Shatush e Infusion rientrano in "tecnico" (sono
+// tecniche di colorazione), non categorie a parte. La categoria "fonti_esterne"
+// (principi professionali generali esterni) è stata disattivata per aderire
+// strettamente alla gerarchia fonti a 6 livelli della "Specifica definitiva" —
+// vedi backend/app/rag/prompt.py. I documenti già caricati restano disattivati
+// in produzione, non cancellati.
 export const TECHNIQUE_OPTIONS = [
   { slug: "taglio", label: "Taglio" },
   { slug: "piega", label: "Piega (phon e pieghe)" },
   { slug: "tecnico", label: "Tecnico — Colorazione (incl. Shatush, Infusion)" },
   { slug: "altri_prodotti", label: "Altri prodotti" },
   { slug: "casi_particolari", label: "Casi particolari" },
-  { slug: "fonti_esterne", label: "Fonti esterne verificate (solo principi generali)" },
 ];
 
 const ALTRI_PRODOTTI_NAMES = [

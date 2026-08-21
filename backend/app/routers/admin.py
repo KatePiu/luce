@@ -272,19 +272,11 @@ def debug_retrieval(question: str, admin: User = Depends(require_admin), db: Ses
     """Diagnostica: mostra i punteggi grezzi di recupero per una domanda, senza passare
     dalla generazione/dai controlli di gruppo — utile per capire perché una fonte attesa
     non viene trovata o viene superata da un'altra meno pertinente."""
-    priority, general, external = retrieve_with_priority(db, question)
-    combined = sort_by_relevance_then_richness(priority + general + external)
-
-    def _lane(c: RetrievedChunk) -> str:
-        if c in priority:
-            return "priority"
-        if c in external:
-            return "esterna"
-        return "generale"
+    priority, general = retrieve_with_priority(db, question)
+    combined = sort_by_relevance_then_richness(priority + general)
 
     return {
         "priority": [_debug_chunk(c, "casi_particolari") for c in priority],
         "general": [_debug_chunk(c, "generale") for c in general],
-        "external": [_debug_chunk(c, "esterna") for c in external],
-        "combined_order": [_debug_chunk(c, _lane(c)) for c in combined],
+        "combined_order": [_debug_chunk(c, "priority" if c in priority else "generale") for c in combined],
     }
