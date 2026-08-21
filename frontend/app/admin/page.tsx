@@ -62,6 +62,10 @@ export default function AdminPage() {
   const [newVideoUrl, setNewVideoUrl] = useState("");
   const [newVideoPlatform, setNewVideoPlatform] = useState("drive");
   const [newVideoTechnique, setNewVideoTechnique] = useState(TECHNIQUE_OPTIONS[0].slug);
+  const [newVideoPreviewUrl, setNewVideoPreviewUrl] = useState("");
+  const [newVideoSubcategory, setNewVideoSubcategory] = useState("");
+  const [newVideoTags, setNewVideoTags] = useState("");
+  const [seedingPreviews, setSeedingPreviews] = useState(false);
   const [savingVideo, setSavingVideo] = useState(false);
 
   const [testQuestion, setTestQuestion] = useState("");
@@ -167,9 +171,15 @@ export default function AdminPage() {
         url: newVideoUrl.trim(),
         platform: newVideoPlatform,
         technique_slug: newVideoTechnique,
+        preview_url: newVideoPreviewUrl.trim() || undefined,
+        subcategory: newVideoSubcategory.trim() || undefined,
+        tags: newVideoTags.trim() || undefined,
       });
       setNewVideoTitle("");
       setNewVideoUrl("");
+      setNewVideoPreviewUrl("");
+      setNewVideoSubcategory("");
+      setNewVideoTags("");
       refresh();
     } catch (err) {
       setLoadError(err instanceof Error ? err.message : "Impossibile salvare il video");
@@ -185,6 +195,20 @@ export default function AdminPage() {
     refresh();
   }
 
+  async function handleVideoPreviewEdit(video: VideoOut) {
+    const previewUrl = window.prompt(`URL anteprima per "${video.title}"`, video.preview_url || "");
+    if (previewUrl === null || previewUrl === video.preview_url) return;
+    await api.updateVideo(video.id, { preview_url: previewUrl });
+    refresh();
+  }
+
+  async function handleVideoTagsEdit(video: VideoOut) {
+    const tags = window.prompt(`Tag per "${video.title}" (separati da virgola)`, video.tags || "");
+    if (tags === null || tags === video.tags) return;
+    await api.updateVideo(video.id, { tags });
+    refresh();
+  }
+
   async function handleVideoPlatformChange(video: VideoOut, platform: string) {
     await api.updateVideo(video.id, { platform });
     refresh();
@@ -194,6 +218,23 @@ export default function AdminPage() {
     if (!window.confirm(`Eliminare il video "${video.title}"? Le trascrizioni/guide collegate restano, solo il link viene rimosso.`)) return;
     await api.deleteVideo(video.id);
     refresh();
+  }
+
+  async function handleSeedPreviews() {
+    setSeedingPreviews(true);
+    try {
+      const res = await api.seedVideoPreviews();
+      window.alert(
+        `Anteprime assegnate: ${res.matched.length}\nGià presenti (non toccate): ${res.skipped_existing_preview.length}\nNessuna corrispondenza: ${res.unmatched.length}${
+          res.unmatched.length ? `\n\n${res.unmatched.join("\n")}` : ""
+        }`
+      );
+      refresh();
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : "Impossibile popolare le anteprime");
+    } finally {
+      setSeedingPreviews(false);
+    }
   }
 
   async function handleResolve(escalationId: string) {
@@ -274,6 +315,11 @@ export default function AdminPage() {
           <form onSubmit={handleAddVideo} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             <input placeholder="Titolo del video" value={newVideoTitle} onChange={(e) => setNewVideoTitle(e.target.value)} />
             <input placeholder="Link (Drive, Vimeo, ...)" value={newVideoUrl} onChange={(e) => setNewVideoUrl(e.target.value)} />
+            <input
+              placeholder="URL anteprima (opzionale)"
+              value={newVideoPreviewUrl}
+              onChange={(e) => setNewVideoPreviewUrl(e.target.value)}
+            />
             <div style={{ display: "flex", gap: "0.5rem" }}>
               <select value={newVideoPlatform} onChange={(e) => setNewVideoPlatform(e.target.value)} style={{ flex: 1, minWidth: 0 }}>
                 {PLATFORM_OPTIONS.map((p) => (
@@ -294,10 +340,28 @@ export default function AdminPage() {
                 ))}
               </select>
             </div>
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <input
+                placeholder="Sottocategoria (opzionale)"
+                value={newVideoSubcategory}
+                onChange={(e) => setNewVideoSubcategory(e.target.value)}
+                style={{ flex: 1, minWidth: 0 }}
+              />
+              <input
+                placeholder="Tag, separati da virgola (opzionale)"
+                value={newVideoTags}
+                onChange={(e) => setNewVideoTags(e.target.value)}
+                style={{ flex: 1, minWidth: 0 }}
+              />
+            </div>
             <button className="primary-btn" type="submit" disabled={savingVideo || !newVideoTitle.trim() || !newVideoUrl.trim()}>
               {savingVideo ? "Salvataggio…" : "Aggiungi video"}
             </button>
           </form>
+
+          <button className="icon-btn" style={{ marginTop: "0.75rem" }} onClick={handleSeedPreviews} disabled={seedingPreviews}>
+            {seedingPreviews ? "Popolamento…" : "Popola anteprime dalla mappatura"}
+          </button>
 
           {videos.length > 0 && (
             <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginTop: "1rem" }}>
@@ -313,10 +377,36 @@ export default function AdminPage() {
                     fontSize: "0.85rem",
                   }}
                 >
+                  <div
+                    style={{
+                      flex: "none",
+                      width: 48,
+                      height: 32,
+                      borderRadius: 6,
+                      overflow: "hidden",
+                      background: "var(--surface-2)",
+                    }}
+                  >
+                    {v.preview_url && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={v.preview_url}
+                        alt=""
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                    )}
+                  </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.title}</div>
                     <div style={{ color: "var(--ink-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {v.technique} · {v.url}
+                    </div>
+                    <div style={{ color: "var(--ink-muted)", fontSize: "0.75rem" }}>
+                      {v.transcript_available ? "Trascrizione ✓" : "Trascrizione ✕"} ·{" "}
+                      {v.timestamps_available ? "Timestamp ✓" : "Timestamp ✕"}
                     </div>
                   </div>
                   <select
@@ -332,6 +422,12 @@ export default function AdminPage() {
                   </select>
                   <button className="icon-btn" onClick={() => handleVideoUrlEdit(v)}>
                     Link
+                  </button>
+                  <button className="icon-btn" onClick={() => handleVideoPreviewEdit(v)}>
+                    Preview
+                  </button>
+                  <button className="icon-btn" onClick={() => handleVideoTagsEdit(v)}>
+                    Tag
                   </button>
                   <button className="icon-btn" onClick={() => handleDeleteVideo(v)} style={{ color: "var(--danger)" }}>
                     Elimina

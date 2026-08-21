@@ -10,6 +10,7 @@ def _chunk(source_id: str, score: float, text: str = "testo") -> RetrievedChunk:
         video_title=None,
         video_url=None,
         video_platform=None,
+        video_preview_url=None,
         document_url=None,
         start_timestamp=None,
         end_timestamp=None,

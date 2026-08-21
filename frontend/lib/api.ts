@@ -36,8 +36,18 @@ export interface CitedSource {
   video_title?: string | null;
   video_url?: string | null;
   video_platform?: string | null;
+  video_preview_url?: string | null;
+  video_open_url?: string | null;
   document_url?: string | null;
   start_timestamp?: string | null;
+}
+
+export interface SuggestedVideo {
+  video_id: string;
+  title: string;
+  url: string;
+  platform: string;
+  preview_url?: string | null;
 }
 
 export interface ChatMessageResponse {
@@ -46,6 +56,7 @@ export interface ChatMessageResponse {
   text: string;
   escalated: boolean;
   cited_sources: CitedSource[];
+  suggested_videos: SuggestedVideo[];
   retrieval_score?: number | null;
   transcript?: string | null;
 }
@@ -115,6 +126,11 @@ export interface VideoOut {
   url: string;
   technique: string | null;
   description: string | null;
+  preview_url: string | null;
+  subcategory: string | null;
+  tags: string | null;
+  transcript_available: boolean;
+  timestamps_available: boolean;
   updated_at: string;
 }
 
@@ -277,13 +293,36 @@ export const api = {
 
   listVideos: () => request<VideoOut[]>("/admin/videos"),
 
-  createVideo: (data: { title: string; url: string; platform: string; technique_slug?: string; description?: string }) =>
-    request<VideoOut>("/admin/videos", { method: "POST", body: JSON.stringify(data) }),
+  createVideo: (data: {
+    title: string;
+    url: string;
+    platform: string;
+    technique_slug?: string;
+    description?: string;
+    preview_url?: string;
+    subcategory?: string;
+    tags?: string;
+  }) => request<VideoOut>("/admin/videos", { method: "POST", body: JSON.stringify(data) }),
 
   updateVideo: (
     videoId: string,
-    data: Partial<{ title: string; url: string; platform: string; technique_slug: string; description: string }>
+    data: Partial<{
+      title: string;
+      url: string;
+      platform: string;
+      technique_slug: string;
+      description: string;
+      preview_url: string;
+      subcategory: string;
+      tags: string;
+    }>
   ) => request<VideoOut>(`/admin/videos/${videoId}`, { method: "PATCH", body: JSON.stringify(data) }),
 
   deleteVideo: (videoId: string) => request<void>(`/admin/videos/${videoId}`, { method: "DELETE" }),
+
+  seedVideoPreviews: () =>
+    request<{ matched: string[]; skipped_existing_preview: string[]; unmatched: string[]; mapping_size: number }>(
+      "/admin/videos/seed-previews",
+      { method: "POST" }
+    ),
 };

@@ -33,8 +33,21 @@ class CitedSourceOut(BaseModel):
     video_title: str | None = None
     video_url: str | None = None
     video_platform: str | None = None
+    video_preview_url: str | None = None
+    video_open_url: str | None = None  # video_url, con deep-link al timestamp se la piattaforma lo supporta
     document_url: str | None = None
     start_timestamp: str | None = None
+
+
+class SuggestedVideoOut(BaseModel):
+    """Video indicizzato solo per titolo (nessuna trascrizione): mai un timestamp, per
+    costruzione — vedi Luce_Anteprime_Video_Cowork_Specifica, sezione 5."""
+
+    video_id: str
+    title: str
+    url: str
+    platform: str
+    preview_url: str | None = None
 
 
 class ChatMessageResponse(BaseModel):
@@ -43,6 +56,7 @@ class ChatMessageResponse(BaseModel):
     text: str
     escalated: bool
     cited_sources: list[CitedSourceOut] = []
+    suggested_videos: list[SuggestedVideoOut] = []
     retrieval_score: float | None = None
     transcript: str | None = None  # testo trascritto del messaggio in ingresso, solo per i vocali
 
@@ -86,6 +100,11 @@ class VideoOut(BaseModel):
     url: str
     technique: str | None
     description: str | None
+    preview_url: str | None = None
+    subcategory: str | None = None
+    tags: str | None = None
+    transcript_available: bool = False  # calcolato al volo (Source transcript_csv collegata), non salvato
+    timestamps_available: bool = False  # calcolato al volo (quella trascrizione ha almeno un chunk con timestamp)
     updated_at: datetime
 
 
@@ -95,6 +114,9 @@ class VideoCreateRequest(BaseModel):
     platform: str = "drive"
     technique_slug: str | None = None
     description: str | None = None
+    preview_url: str | None = None
+    subcategory: str | None = None
+    tags: str | None = None
 
 
 class VideoUpdateRequest(BaseModel):
@@ -103,6 +125,9 @@ class VideoUpdateRequest(BaseModel):
     platform: str | None = None
     technique_slug: str | None = None
     description: str | None = None
+    preview_url: str | None = None
+    subcategory: str | None = None
+    tags: str | None = None
 
 
 class EscalationOut(BaseModel):

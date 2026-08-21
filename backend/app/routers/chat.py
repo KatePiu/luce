@@ -21,6 +21,7 @@ from app.schemas import (
     FeedbackRequest,
     FeedbackResponse,
     MessageOut,
+    SuggestedVideoOut,
 )
 from app.security import get_current_user
 
@@ -122,6 +123,7 @@ def _handle_incoming_text(db: Session, conversation: Conversation, text: str, ki
         text=result.text,
         escalated=result.escalate,
         cited_sources=[CitedSourceOut(**s.__dict__) for s in result.cited_sources],
+        suggested_videos=[SuggestedVideoOut(**v.__dict__) for v in result.suggested_videos],
         retrieval_score=result.retrieval_score,
         transcript=voice_transcript,
     )

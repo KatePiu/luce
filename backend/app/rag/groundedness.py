@@ -16,6 +16,7 @@ from app.rag.prompt import GROUNDEDNESS_VERIFIER_PROMPT
 from app.rag.retrieval import RetrievedChunk
 
 CITED_SOURCES_RE = re.compile(r"<cited_sources>(.*?)</cited_sources>", re.DOTALL)
+SUGGESTED_VIDEOS_RE = re.compile(r"<suggested_videos>(.*?)</suggested_videos>", re.DOTALL)
 
 
 @dataclass
@@ -24,21 +25,32 @@ class GroundednessResult:
     reason: str = ""
     cited_chunk_ids: list[str] | None = None
     visible_text: str = ""
+    suggested_video_ids: list[str] | None = None
 
 
-def extract_cited_sources(raw_response: str) -> tuple[str, list[str]]:
-    """Separa il testo destinato all'utente dal blocco <cited_sources>...</cited_sources>."""
-    match = CITED_SOURCES_RE.search(raw_response)
-    visible_text = CITED_SOURCES_RE.sub("", raw_response).strip()
+def _extract_id_list(raw_response: str, pattern: re.Pattern) -> list[str]:
+    match = pattern.search(raw_response)
     if not match:
-        return visible_text, []
+        return []
     try:
         ids = json.loads(match.group(1))
         if isinstance(ids, list):
-            return visible_text, [str(i) for i in ids]
+            return [str(i) for i in ids]
     except (json.JSONDecodeError, TypeError):
         pass
-    return visible_text, []
+    return []
+
+
+def extract_cited_sources(raw_response: str) -> tuple[str, list[str], list[str]]:
+    """Separa il testo destinato all'utente dai blocchi <cited_sources>...</cited_sources> e
+    <suggested_videos>...</suggested_videos> (video indicizzati solo per titolo, proposti per
+    video_id invece che con un URL scritto a mano dal modello — vedi Luce_Anteprime_Video_
+    Cowork_Specifica, sezione 5)."""
+    cited_ids = _extract_id_list(raw_response, CITED_SOURCES_RE)
+    suggested_ids = _extract_id_list(raw_response, SUGGESTED_VIDEOS_RE)
+    visible_text = CITED_SOURCES_RE.sub("", raw_response)
+    visible_text = SUGGESTED_VIDEOS_RE.sub("", visible_text).strip()
+    return visible_text, cited_ids, suggested_ids
 
 
 def _looks_like_procedure(text: str) -> bool:
@@ -107,7 +119,7 @@ def check_claims_with_model(visible_text: str, retrieved: list[RetrievedChunk]) 
 
 
 def run_groundedness_checks(raw_response: str, retrieved: list[RetrievedChunk]) -> GroundednessResult:
-    visible_text, cited_ids = extract_cited_sources(raw_response)
+    visible_text, cited_ids, suggested_video_ids = extract_cited_sources(raw_response)
 
     structural = check_structural(visible_text, cited_ids, retrieved)
     if not structural.passed:
@@ -116,6 +128,6 @@ def run_groundedness_checks(raw_response: str, retrieved: list[RetrievedChunk]) 
     cited_chunks = [c for c in retrieved if c.chunk_id in cited_ids] or retrieved
     claims = check_claims_with_model(visible_text, cited_chunks)
     if not claims.passed:
-        return GroundednessResult(False, claims.reason, cited_ids, visible_text)
+        return GroundednessResult(False, claims.reason, cited_ids, visible_text, suggested_video_ids)
 
-    return GroundednessResult(True, "OK", cited_ids, visible_text)
+    return GroundednessResult(True, "OK", cited_ids, visible_text, suggested_video_ids)

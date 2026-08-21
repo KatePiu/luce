@@ -6,17 +6,19 @@ from sqlalchemy.orm import Session
 from app.case_service import declassify_case, promote_case_to_knowledge
 from app.db import engine, get_db
 from app.escalation import resolve_escalation
-from app.models import Case, Escalation, Source, Technique, User, Video
+from app.models import Case, Chunk, Escalation, Source, Technique, User, Video
 from app.schema_tools import apply_schema
 from app.rag.generate import answer_question, debug_answer_question
 from app.rag.ingest import SkippedJunkFile, ingest_file
-from app.rag.retrieval import RetrievedChunk, retrieve_with_priority, sort_by_relevance_then_richness
+from app.rag.retrieval import TRANSCRIPT_ORIGIN_KIND, RetrievedChunk, retrieve_with_priority, sort_by_relevance_then_richness
+from app.rag.video_previews import VIDEO_PREVIEW_MAP, match_preview_url
 from app.schemas import (
     ChatMessageResponse,
     CitedSourceOut,
     EscalationOut,
     ResolveEscalationRequest,
     SourceOut,
+    SuggestedVideoOut,
     VideoCreateRequest,
     VideoOut,
     VideoUpdateRequest,
@@ -76,7 +78,27 @@ def _source_out(source: Source) -> SourceOut:
     )
 
 
-def _video_out(video: Video) -> VideoOut:
+def _video_transcript_flags(db: Session, video_id) -> tuple[bool, bool]:
+    """Calcolato al volo da Source/Chunk invece che salvato sul record video, per evitare che
+    diventi disallineato quando una trascrizione viene caricata/rimossa altrove."""
+    transcript_source = (
+        db.query(Source)
+        .filter(Source.video_id == video_id, Source.origin_kind == TRANSCRIPT_ORIGIN_KIND, Source.status == "active")
+        .first()
+    )
+    if not transcript_source:
+        return False, False
+    has_timestamp = (
+        db.query(Chunk)
+        .filter(Chunk.source_id == transcript_source.id, Chunk.start_timestamp.isnot(None))
+        .first()
+        is not None
+    )
+    return True, has_timestamp
+
+
+def _video_out(db: Session, video: Video) -> VideoOut:
+    transcript_available, timestamps_available = _video_transcript_flags(db, video.id)
     return VideoOut(
         id=str(video.id),
         title=video.title,
@@ -84,6 +106,11 @@ def _video_out(video: Video) -> VideoOut:
         url=video.url,
         technique=video.technique.slug if video.technique else None,
         description=video.description,
+        preview_url=video.preview_url,
+        subcategory=video.subcategory,
+        tags=video.tags,
+        transcript_available=transcript_available,
+        timestamps_available=timestamps_available,
         updated_at=video.updated_at,
     )
 
@@ -91,7 +118,7 @@ def _video_out(video: Video) -> VideoOut:
 @router.get("/videos", response_model=list[VideoOut])
 def list_videos(admin: User = Depends(require_admin), db: Session = Depends(get_db)):
     videos = db.query(Video).order_by(Video.updated_at.desc()).all()
-    return [_video_out(v) for v in videos]
+    return [_video_out(db, v) for v in videos]
 
 
 @router.post("/videos", response_model=VideoOut)
@@ -109,10 +136,13 @@ def create_video(payload: VideoCreateRequest, admin: User = Depends(require_admi
         platform=payload.platform,
         technique_id=technique.id if technique else None,
         description=payload.description,
+        preview_url=payload.preview_url,
+        subcategory=payload.subcategory,
+        tags=payload.tags,
     )
     db.add(video)
     db.commit()
-    return _video_out(video)
+    return _video_out(db, video)
 
 
 @router.patch("/videos/{video_id}", response_model=VideoOut)
@@ -130,6 +160,12 @@ def update_video(
         video.platform = payload.platform
     if payload.description is not None:
         video.description = payload.description
+    if payload.preview_url is not None:
+        video.preview_url = payload.preview_url
+    if payload.subcategory is not None:
+        video.subcategory = payload.subcategory
+    if payload.tags is not None:
+        video.tags = payload.tags
     if payload.technique_slug is not None:
         technique = db.query(Technique).filter(Technique.slug == payload.technique_slug).one_or_none()
         if not technique:
@@ -138,7 +174,7 @@ def update_video(
             db.flush()
         video.technique_id = technique.id
     db.commit()
-    return _video_out(video)
+    return _video_out(db, video)
 
 
 @router.delete("/videos/{video_id}", status_code=204)
@@ -148,6 +184,36 @@ def delete_video(video_id: str, admin: User = Depends(require_admin), db: Sessio
         raise HTTPException(status_code=404, detail="Video non trovato")
     db.delete(video)
     db.commit()
+
+
+@router.post("/videos/seed-previews")
+def seed_video_previews(admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    """Popola `preview_url` sui video esistenti usando la mappatura di
+    Luce_Anteprime_Video_Cowork_Specifica (sezione 7) — non sovrascrive un preview_url già
+    impostato manualmente. Operazione idempotente e ripetibile: stesso pattern permanente di
+    `/admin/system/apply-schema`, riutilizzabile se in futuro si aggiungono altre anteprime
+    alla mappatura in app/rag/video_previews.py."""
+    videos = db.query(Video).all()
+    matched: list[str] = []
+    skipped_existing: list[str] = []
+    unmatched: list[str] = []
+    for video in videos:
+        if video.preview_url:
+            skipped_existing.append(video.title)
+            continue
+        preview_url = match_preview_url(video.title)
+        if not preview_url:
+            unmatched.append(video.title)
+            continue
+        video.preview_url = preview_url
+        matched.append(video.title)
+    db.commit()
+    return {
+        "matched": matched,
+        "skipped_existing_preview": skipped_existing,
+        "unmatched": unmatched,
+        "mapping_size": len(VIDEO_PREVIEW_MAP),
+    }
 
 
 @router.get("/sources", response_model=list[SourceOut])
@@ -323,6 +389,7 @@ def test_response(question: str, admin: User = Depends(require_admin), db: Sessi
         text=result.text,
         escalated=result.escalate,
         cited_sources=[CitedSourceOut(**s.__dict__) for s in result.cited_sources],
+        suggested_videos=[SuggestedVideoOut(**v.__dict__) for v in result.suggested_videos],
         retrieval_score=result.retrieval_score,
     )
 

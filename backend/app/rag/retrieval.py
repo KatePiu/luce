@@ -46,6 +46,7 @@ class RetrievedChunk:
     video_title: str | None
     video_url: str | None
     video_platform: str | None
+    video_preview_url: str | None
     document_url: str | None
     start_timestamp: str | None
     end_timestamp: str | None
@@ -64,6 +65,7 @@ class VideoCandidate:
     title: str
     url: str
     platform: str
+    preview_url: str | None = None
 
 
 def _base_query():
@@ -88,6 +90,7 @@ def _rows_to_chunks(rows, distances) -> list[RetrievedChunk]:
                 video_title=video.title if video else None,
                 video_url=video.url if video else None,
                 video_platform=video.platform if video else None,
+                video_preview_url=video.preview_url if video else None,
                 document_url=source.document_url,
                 start_timestamp=chunk.start_timestamp,
                 end_timestamp=chunk.end_timestamp,
@@ -285,14 +288,14 @@ def find_candidate_videos(db: Session, query: str, limit: int = 3) -> list[Video
     videos = db.query(Video).all()
     scored: list[tuple[int, Video]] = []
     for video in videos:
-        title_words = _keywords(video.title) | _keywords(video.description or "")
+        title_words = _keywords(video.title) | _keywords(video.description or "") | _keywords(video.tags or "")
         overlap = len(query_words & title_words)
         if overlap > 0:
             scored.append((overlap, video))
 
     scored.sort(key=lambda pair: pair[0], reverse=True)
     return [
-        VideoCandidate(video_id=str(v.id), title=v.title, url=v.url, platform=v.platform)
+        VideoCandidate(video_id=str(v.id), title=v.title, url=v.url, platform=v.platform, preview_url=v.preview_url)
         for _, v in scored[:limit]
     ]
 

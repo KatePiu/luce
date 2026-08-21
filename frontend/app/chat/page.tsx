@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { StopIcon } from "@/components/ActionIcons";
 import LuceMark from "@/components/LuceMark";
-import { FEEDBACK_OPTIONS, api, clearToken, getToken, type CitedSource, type MessageOut } from "@/lib/api";
+import { FEEDBACK_OPTIONS, api, clearToken, getToken, type CitedSource, type MessageOut, type SuggestedVideo } from "@/lib/api";
 
 // Luce genera occasionalmente markdown leggero (**grassetto**) e link diretti ai video nelle
 // risposte (WhatsApp li interpreta nativamente). Nella chat web li rendiamo come <strong> e
@@ -26,6 +26,38 @@ function renderAssistantText(text: string) {
   });
 }
 
+// Card video — usata sia per le fonti citate (con timestamp, se disponibile) sia per i video
+// suggeriti per titolo (mai un timestamp: non esiste per quei video). Anteprima e link
+// testuale sono lo stesso elemento <a>, quindi aprono sempre esattamente lo stesso video —
+// Luce_Anteprime_Video_Cowork_Specifica, criteri di accettazione. Se l'immagine manca o non
+// si carica, la card degrada a solo titolo + link, senza mai bloccare la risposta.
+function VideoCard({
+  title,
+  previewUrl,
+  openUrl,
+  timestampLabel,
+}: {
+  title: string;
+  previewUrl?: string | null;
+  openUrl: string;
+  timestampLabel?: string | null;
+}) {
+  const [imgFailed, setImgFailed] = useState(false);
+  return (
+    <a href={openUrl} target="_blank" rel="noreferrer" className="video-card">
+      {previewUrl && !imgFailed && (
+        <span className="video-card-thumb">
+          <img src={previewUrl} alt="" onError={() => setImgFailed(true)} />
+        </span>
+      )}
+      <span className="video-card-info">
+        <span className="video-card-title">{title}</span>
+        <span className="video-card-link">{timestampLabel ? `Vai al video da ${timestampLabel}` : "Guarda il video"}</span>
+      </span>
+    </a>
+  );
+}
+
 // Domande di esempio per la schermata iniziale: aiutano il primo utilizzo (un tap invece di
 // dover capire cosa scrivere) e mostrano il tipo di domande a cui Luce sa rispondere bene.
 const EXAMPLE_QUESTIONS = [
@@ -39,6 +71,7 @@ interface DisplayMessage {
   direction: "inbound" | "outbound";
   text: string;
   sources?: CitedSource[];
+  suggestedVideos?: SuggestedVideo[];
   escalated?: boolean;
   messageId?: string;
   feedbackTipo?: string;
@@ -135,6 +168,7 @@ function ChatPageInner() {
         direction: "outbound",
         text: res.text,
         sources: res.cited_sources,
+        suggestedVideos: res.suggested_videos,
         escalated: res.escalated,
         messageId: res.message_id || undefined,
       });
@@ -186,6 +220,7 @@ function ChatPageInner() {
         direction: "outbound",
         text: res.text,
         sources: res.cited_sources,
+        suggestedVideos: res.suggested_videos,
         escalated: res.escalated,
         messageId: res.message_id || undefined,
       });
@@ -279,17 +314,37 @@ function ChatPageInner() {
                     {m.sources.map((s) => (
                       <div key={s.source_id}>
                         Fonte: {s.title}
-                        {s.video_title && ` — ${s.video_title}`}
-                        {s.start_timestamp && ` (dal minuto ${s.start_timestamp})`}
-                        {(s.video_url || s.document_url) && (
+                        {!s.video_title && s.document_url && (
                           <>
                             {" · "}
-                            <a href={s.video_url || s.document_url || "#"} target="_blank" rel="noreferrer">
+                            <a href={s.document_url} target="_blank" rel="noreferrer">
                               Apri
                             </a>
                           </>
                         )}
                       </div>
+                    ))}
+                  </div>
+                )}
+                {m.sources && m.sources.some((s) => s.video_title && (s.video_open_url || s.video_url)) && (
+                  <div className="video-cards">
+                    {m.sources
+                      .filter((s) => s.video_title && (s.video_open_url || s.video_url))
+                      .map((s) => (
+                        <VideoCard
+                          key={s.source_id}
+                          title={s.video_title as string}
+                          previewUrl={s.video_preview_url}
+                          openUrl={(s.video_open_url || s.video_url) as string}
+                          timestampLabel={s.start_timestamp}
+                        />
+                      ))}
+                  </div>
+                )}
+                {m.suggestedVideos && m.suggestedVideos.length > 0 && (
+                  <div className="video-cards">
+                    {m.suggestedVideos.map((v) => (
+                      <VideoCard key={v.video_id} title={v.title} previewUrl={v.preview_url} openUrl={v.url} />
                     ))}
                   </div>
                 )}

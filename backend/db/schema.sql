@@ -31,6 +31,10 @@ CREATE TABLE IF NOT EXISTS videos (
 
 CREATE INDEX IF NOT EXISTS idx_videos_technique ON videos(technique_id);
 
+ALTER TABLE videos ADD COLUMN IF NOT EXISTS preview_url TEXT;
+ALTER TABLE videos ADD COLUMN IF NOT EXISTS subcategory TEXT;
+ALTER TABLE videos ADD COLUMN IF NOT EXISTS tags TEXT;
+
 CREATE TABLE IF NOT EXISTS sources (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title TEXT NOT NULL,

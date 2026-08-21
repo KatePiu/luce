@@ -12,6 +12,7 @@ def _chunk(chunk_id: str, source_id: str = "src-1") -> RetrievedChunk:
         video_title="04 - HENNE SHATUSH - CASTANO",
         video_url="https://drive.google.com/x",
         video_platform="drive",
+        video_preview_url=None,
         document_url=None,
         start_timestamp="00:06:06",
         end_timestamp=None,
@@ -22,15 +23,25 @@ def _chunk(chunk_id: str, source_id: str = "src-1") -> RetrievedChunk:
 
 def test_extract_cited_sources_parses_block():
     raw = 'Ecco la procedura.\n<cited_sources>["c1", "c2"]</cited_sources>'
-    visible, ids = extract_cited_sources(raw)
+    visible, ids, suggested = extract_cited_sources(raw)
     assert visible == "Ecco la procedura."
     assert ids == ["c1", "c2"]
+    assert suggested == []
 
 
 def test_extract_cited_sources_handles_missing_block():
-    visible, ids = extract_cited_sources("Serve una domanda di chiarimento.")
+    visible, ids, suggested = extract_cited_sources("Serve una domanda di chiarimento.")
     assert visible == "Serve una domanda di chiarimento."
     assert ids == []
+    assert suggested == []
+
+
+def test_extract_suggested_videos_parses_and_strips_block():
+    raw = 'Trovi un video pertinente.\n<suggested_videos>["v1"]</suggested_videos>'
+    visible, ids, suggested = extract_cited_sources(raw)
+    assert visible == "Trovi un video pertinente."
+    assert ids == []
+    assert suggested == ["v1"]
 
 
 def test_structural_check_fails_when_procedure_has_no_citation():

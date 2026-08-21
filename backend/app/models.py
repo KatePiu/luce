@@ -31,6 +31,13 @@ class Video(Base):
     url: Mapped[str] = mapped_column(String, nullable=False)
     technique_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("techniques.id"))
     description: Mapped[str | None] = mapped_column(Text)
+    preview_url: Mapped[str | None] = mapped_column(String)
+    # Metadati liberi per l'admin — Luce_Anteprime_Video_Cowork_Specifica, sezione 3/6. Nessuna
+    # logica di retrieval per sottocategoria: l'unica dimensione di categoria del sistema resta
+    # `technique_id`. `tags` viene però usato in `find_candidate_videos` insieme a titolo/
+    # descrizione, dove ha un beneficio reale per i video senza trascrizione.
+    subcategory: Mapped[str | None] = mapped_column(String)
+    tags: Mapped[str | None] = mapped_column(String)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

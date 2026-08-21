@@ -20,6 +20,7 @@ from app.rag.retrieval import (
     retrieve_with_priority,
     sort_by_relevance_then_richness,
 )
+from app.rag.video_links import build_video_open_url
 
 INSUFFICIENT_MATERIALS_MESSAGE = (
     "Con i materiali disponibili non ho una procedura verificata sufficiente per "
@@ -61,8 +62,22 @@ class CitedSource:
     video_title: str | None
     video_url: str | None
     video_platform: str | None
+    video_preview_url: str | None
+    video_open_url: str | None
     document_url: str | None
     start_timestamp: str | None
+
+
+@dataclass
+class SuggestedVideo:
+    """Video indicizzato solo per titolo, proposto da Luce per video_id (mai un URL scritto
+    a mano dal modello) — mai un timestamp, per costruzione: VideoCandidate non ne ha."""
+
+    video_id: str
+    title: str
+    url: str
+    platform: str
+    preview_url: str | None
 
 
 @dataclass
@@ -72,6 +87,7 @@ class AnswerResult:
     escalation_reason: str | None = None
     retrieval_score: float | None = None
     cited_sources: list[CitedSource] = field(default_factory=list)
+    suggested_videos: list[SuggestedVideo] = field(default_factory=list)
 
 
 def _format_chunk(c: RetrievedChunk) -> str:
@@ -129,6 +145,11 @@ def _resolve_cited_sources(cited_ids: list[str], retrieved: list[RetrievedChunk]
         if not chunk or chunk.source_id in seen_sources:
             continue
         seen_sources.add(chunk.source_id)
+        open_url = (
+            build_video_open_url(chunk.video_url, chunk.video_platform or "", chunk.start_timestamp)
+            if chunk.video_url
+            else None
+        )
         out.append(
             CitedSource(
                 source_id=chunk.source_id,
@@ -136,8 +157,31 @@ def _resolve_cited_sources(cited_ids: list[str], retrieved: list[RetrievedChunk]
                 video_title=chunk.video_title,
                 video_url=chunk.video_url,
                 video_platform=chunk.video_platform,
+                video_preview_url=chunk.video_preview_url,
+                video_open_url=open_url,
                 document_url=chunk.document_url,
                 start_timestamp=chunk.start_timestamp,
+            )
+        )
+    return out
+
+
+def _resolve_suggested_videos(suggested_ids: list[str], videos: list[VideoCandidate]) -> list[SuggestedVideo]:
+    by_id = {v.video_id: v for v in videos}
+    out: list[SuggestedVideo] = []
+    seen: set[str] = set()
+    for vid in suggested_ids:
+        video = by_id.get(vid)
+        if not video or video.video_id in seen:
+            continue
+        seen.add(video.video_id)
+        out.append(
+            SuggestedVideo(
+                video_id=video.video_id,
+                title=video.title,
+                url=video.url,
+                platform=video.platform,
+                preview_url=video.preview_url,
             )
         )
     return out
@@ -204,11 +248,13 @@ def answer_question(
         )
 
     cited_sources = _resolve_cited_sources(result.cited_chunk_ids or [], combined)
+    suggested_videos = _resolve_suggested_videos(result.suggested_video_ids or [], videos)
     return AnswerResult(
         text=result.visible_text,
         escalate=False,
         retrieval_score=combined[0].score if combined else None,
         cited_sources=cited_sources,
+        suggested_videos=suggested_videos,
     )
 
 
