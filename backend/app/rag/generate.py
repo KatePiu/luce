@@ -29,14 +29,15 @@ INSUFFICIENT_MATERIALS_MESSAGE = (
 
 LOW_CONFIDENCE_NOTE = (
     "ATTENZIONE — PERTINENZA BASSA: i passaggi qui sotto hanno un punteggio di somiglianza "
-    "con la domanda piuttosto basso. Questo capita spesso quando la domanda è troppo "
-    "generica per essere confrontata efficacemente con i materiali (es. \"quanto ne devo "
-    "mettere?\" senza dire di quale prodotto). NON dichiarare subito i materiali "
-    "insufficienti: prima valuta se la domanda manca di un elemento preciso (area, "
-    "prodotto/tecnica, fase) e, se sì, fai la domanda di chiarimento mirata prevista dalle "
-    "istruzioni generali, invece di rispondere con questi passaggi deboli o di inoltrare "
-    "subito la richiesta a un tutor. Solo se la domanda è già precisa e questi passaggi "
-    "restano comunque non pertinenti, componi il report per il tutor come da istruzioni.\n\n"
+    "con l'ULTIMO messaggio piuttosto basso (la ricerca guarda solo l'ultimo messaggio, non "
+    "tutta la conversazione). Questo capita spesso con risposte brevi di chiarimento (es. "
+    "\"Arancione.\", \"Radice.\") che da sole dicono poco, anche quando la conversazione nel "
+    "suo complesso sta procedendo bene: NON è un segnale che manca qualcosa di nuovo, è solo "
+    "un limite della ricerca automatica su un messaggio breve. NON dichiarare i materiali "
+    "insufficienti e NON ripetere l'ultima domanda di chiarimento già fatta: rileggi la "
+    "conversazione, riconosci cosa hai già capito, e fai la domanda successiva della "
+    "sequenza diagnostica (o rispondi, se ormai hai abbastanza informazioni) — mai la stessa "
+    "domanda del turno precedente.\n\n"
 )
 
 AMBIGUITY_NOTE = (
